@@ -1,0 +1,282 @@
+[
+  {
+    "referencePreviewUrl": "blob:http://localhost:3001/4731f936-1153-4d19-a3ee-be6d76da8fb8",
+    "uploadedUrl": "/api/upload/file/1775742411524-fasjuq.jpg",
+    "analysis": {
+      "layout": "Clean product ad with soft gray-blue gradient background. Brand logo top-left, main headline top-right, product image (box and glass) bottom-left, benefit icons with text down the right side, CTA button bottom center spanning nearly full width.",
+      "copyFound": [
+        "Green FLOW",
+        "כביסה נקייה באמת, בטוחה לבית.",
+        "עוצמת ניקיון מוכחת להסרת כתמים",
+        "עדין על הבגדים והעור",
+        "נמס לחלוטין, ללא שאריות",
+        "מתאים לכל סוגי הכביסה ומכונות",
+        "דפי ניקוי כביסה",
+        "100 כביסות",
+        "50 דפים",
+        "ניחוח ירי האהבה",
+        "נסו את גרין פלואו לחוויית כביסה בטוחה"
+      ],
+      "copySections": [
+        {
+          "label": "brand-logo",
+          "text": "Green FLOW"
+        },
+        {
+          "label": "headline",
+          "text": "כביסה נקייה באמת, בטוחה לבית."
+        },
+        {
+          "label": "benefit-1",
+          "text": "עוצמת ניקיון מוכחת להסרת כתמים"
+        },
+        {
+          "label": "benefit-2",
+          "text": "עדין על הבגדים והעור"
+        },
+        {
+          "label": "benefit-3",
+          "text": "נמס לחלוטין, ללא שאריות"
+        },
+        {
+          "label": "benefit-4",
+          "text": "מתאים לכל סוגי הכביסה ומכונות"
+        },
+        {
+          "label": "product-name",
+          "text": "דפי ניקוי כביסה"
+        },
+        {
+          "label": "quantity-main",
+          "text": "100"
+        },
+        {
+          "label": "quantity-unit",
+          "text": "כביסות"
+        },
+        {
+          "label": "quantity-sheets",
+          "text": "50 דפים"
+        },
+        {
+          "label": "fragrance",
+          "text": "ניחוח ירי האהבה"
+        },
+        {
+          "label": "cta",
+          "text": "נסו את גרין פלואו לחוויית כביסה בטוחה"
+        }
+      ],
+      "productPlacement": "Product box and glass of water positioned in bottom-left area, showing the laundry sheets dissolving in water demonstration",
+      "colorScheme": [
+        "#E8EAED",
+        "#4A90C2",
+        "#FFFFFF",
+        "#2E5A87",
+        "#87CEEB"
+      ],
+      "angle": "Safe, effective cleaning with proven results - demonstrating product dissolving completely",
+      "niche": "other",
+      "nicheMapping": "Laundry cleaning product concept maps to pest control: 'proven cleaning power that removes stains' becomes 'proven technology that removes pests'; 'dissolves completely, no residue' becomes 'works completely, no toxic residue'; 'safe for clothes and skin' becomes 'safe for family and pets'; demonstration of sheets dissolving becomes demonstration of pest elimination process",
+      "suggestedPrompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Green FLOW' with 'Bugo' and (2) replace the laundry product box and glass demonstration with the Bugo ultrasonic pest repeller device. Every visual element — colors, layout, typography, icons, button shape, gradients — must be pixel-identical to the reference.\n\nBACKGROUND: Soft light gray-blue gradient background (#E8EAED to #F5F7FA), subtle and clean with no texture or pattern.\n\nBRAND LOGO (top-left corner): 'Bugo' in elegant serif font, dark blue color (#2E5A87), same size and position as 'Green FLOW', with small leaf accent replaced by small wave/signal icon.\n\nMAIN HEADLINE (top-right, large text): \nLine 1: 'בית נקי באמת,' — bold dark blue (#2E5A87), large sans-serif font\nLine 2: 'בטוח למשפחה.' — bold dark blue (#2E5A87), same font size\n\nPRODUCT IMAGE (bottom-left): REMOVE the laundry box and glass completely. Replace with the Bugo device: white oval/egg-shaped ultrasonic pest repeller positioned at slight angle, blue LED glow effect (#4A90C2) from bottom rim, 'Bugo' text visible on device face in gray. Position device where the box was, with soft shadow beneath.\n\nBENEFIT ICONS (right side, vertical column, 4 circular icons):\nIcon 1 (top): White t-shirt with sparkles → Shield with checkmark icon, blue circle background (#4A90C2)\nIcon 2: Hands → House silhouette with protective dome, blue circle background (#4A90C2) \nIcon 3: Water drops → Sound waves radiating, blue circle background (#4A90C2)\nIcon 4 (bottom): Washing machine → Coverage area icon (concentric circles), blue circle background (#4A90C2)\n\nBENEFIT TEXT (right of each icon, right-aligned RTL):\nBenefit 1: 'עוצמת הדברה מוכחת' — dark blue (#2E5A87), medium sans-serif\n'להרחקת מזיקים' — smaller text, same color\nBenefit 2: 'בטוח למשפחה' — dark blue (#2E5A87), medium sans-serif  \n'וחיות מחמד' — smaller text, same color\nBenefit 3: 'פועל ללא הפסקה,' — dark blue (#2E5A87), medium sans-serif\n'ללא כימיקלים' — smaller text, same color\nBenefit 4: 'מתאים לכל הבית' — dark blue (#2E5A87), medium sans-serif\n'ומשרדים' — smaller text, same color\n\nCTA BUTTON (bottom center, spanning nearly full width): Rounded rectangle with dark blue background (#2E5A87), white text in medium bold font: 'הזמינו את בוגו לבית נקי ממזיקים'\n\nASPECT RATIO: 1:1\n\nDO NOT add any element not present in the reference. DO NOT remove any visual element except the specific product replacement. DO NOT reposition any element. Maintain exact spacing, typography hierarchy, and color relationships from the reference image."
+    },
+    "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Green FLOW' with 'Bugo' and (2) replace the laundry product box and glass demonstration with the Bugo ultrasonic pest repeller device. Every visual element — colors, layout, typography, icons, button shape, gradients — must be pixel-identical to the reference.\n\nBACKGROUND: Soft light gray-blue gradient background (#E8EAED to #F5F7FA), subtle and clean with no texture or pattern.\n\nBRAND LOGO (top-left corner): 'Bugo' in elegant serif font, dark blue color (#2E5A87), same size and position as 'Green FLOW', with small leaf accent replaced by small wave/signal icon.\n\nMAIN HEADLINE (top-right, large text): \nLine 1: 'בית נקי באמת,' — bold dark blue (#2E5A87), large sans-serif font\nLine 2: 'בטוח למשפחה.' — bold dark blue (#2E5A87), same font size\n\nPRODUCT IMAGE (bottom-left): REMOVE the laundry box and glass completely. Replace with the Bugo device: white oval/egg-shaped ultrasonic pest repeller positioned at slight angle, blue LED glow effect (#4A90C2) from bottom rim, 'Bugo' text visible on device face in gray. Position device where the box was, with soft shadow beneath.\n\nBENEFIT ICONS (right side, vertical column, 4 circular icons):\nIcon 1 (top): White t-shirt with sparkles → Shield with checkmark icon, blue circle background (#4A90C2)\nIcon 2: Hands → House silhouette with protective dome, blue circle background (#4A90C2) \nIcon 3: Water drops → Sound waves radiating, blue circle background (#4A90C2)\nIcon 4 (bottom): Washing machine → Coverage area icon (concentric circles), blue circle background (#4A90C2)\n\nBENEFIT TEXT (right of each icon, right-aligned RTL):\nBenefit 1: 'עוצמת הדברה מוכחת' — dark blue (#2E5A87), medium sans-serif\n'להרחקת מזיקים' — smaller text, same color\nBenefit 2: 'בטוח למשפחה' — dark blue (#2E5A87), medium sans-serif  \n'וחיות מחמד' — smaller text, same color\nBenefit 3: 'פועל ללא הפסקה,' — dark blue (#2E5A87), medium sans-serif\n'ללא כימיקלים' — smaller text, same color\nBenefit 4: 'מתאים לכל הבית' — dark blue (#2E5A87), medium sans-serif\n'ומשרדים' — smaller text, same color\n\nCTA BUTTON (bottom center, spanning nearly full width): Rounded rectangle with dark blue background (#2E5A87), white text in medium bold font: 'הזמינו את בוגו לבית נקי ממזיקים'\n\nASPECT RATIO: 1:1\n\nDO NOT add any element not present in the reference. DO NOT remove any visual element except the specific product replacement. DO NOT reposition any element. Maintain exact spacing, typography hierarchy, and color relationships from the reference image.",
+    "copyVariations": [
+      {
+        "id": "var-1",
+        "angle": "proven technology and family safety",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "brand-logo",
+            "originalText": "Green FLOW",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s2",
+            "label": "headline",
+            "originalText": "כביסה נקייה באמת, בטוחה לבית.",
+            "adaptedText": "בית נקי באמת, בטוח למשפחה."
+          },
+          {
+            "id": "s3",
+            "label": "benefit-1",
+            "originalText": "עוצמת ניקיון מוכחת להסרת כתמים",
+            "adaptedText": "עוצמת הדברה מוכחת להרחקת מזיקים"
+          },
+          {
+            "id": "s4",
+            "label": "benefit-2",
+            "originalText": "עדין על הבגדים והעור",
+            "adaptedText": "בטוח למשפחה וחיות מחמד"
+          },
+          {
+            "id": "s5",
+            "label": "benefit-3",
+            "originalText": "נמס לחלוטין, ללא שאריות",
+            "adaptedText": "פועל ללא הפסקה, ללא כימיקלים"
+          },
+          {
+            "id": "s6",
+            "label": "benefit-4",
+            "originalText": "מתאים לכל סוגי הכביסה ומכונות",
+            "adaptedText": "מתאים לכל הבית ומשרדים"
+          },
+          {
+            "id": "s7",
+            "label": "cta",
+            "originalText": "נסו את גרין פלואו לחוויית כביסה בטוחה",
+            "adaptedText": "הזמינו את בוגו לבית נקי ממזיקים"
+          }
+        ]
+      },
+      {
+        "id": "var-2",
+        "angle": "convenience and effectiveness",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "brand-logo",
+            "originalText": "Green FLOW",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s2",
+            "label": "headline",
+            "originalText": "כביסה נקייה באמת, בטוחה לבית.",
+            "adaptedText": "הדברה פשוטה באמת, יעילה לבית."
+          },
+          {
+            "id": "s3",
+            "label": "benefit-1",
+            "originalText": "עוצמת ניקיון מוכחת להסרת כתמים",
+            "adaptedText": "טכנולוגיה מוכחת להרחקת מזיקים"
+          },
+          {
+            "id": "s4",
+            "label": "benefit-2",
+            "originalText": "עדין על הבגדים והעור",
+            "adaptedText": "מחברים לשקע ושוכחים"
+          },
+          {
+            "id": "s5",
+            "label": "benefit-3",
+            "originalText": "נמס לחלוטין, ללא שאריות",
+            "adaptedText": "עובד אוטומטית, ללא תחזוקה"
+          },
+          {
+            "id": "s6",
+            "label": "benefit-4",
+            "originalText": "מתאים לכל סוגי הכביסה ומכונות",
+            "adaptedText": "יעיל נגד כל סוגי המזיקים"
+          },
+          {
+            "id": "s7",
+            "label": "cta",
+            "originalText": "נסו את גרין פלואו לחוויית כביסה בטוחה",
+            "adaptedText": "הזמינו את בוגו לחיים ללא מזיקים"
+          }
+        ]
+      },
+      {
+        "id": "var-3",
+        "angle": "long-term protection and value",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "brand-logo",
+            "originalText": "Green FLOW",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s2",
+            "label": "headline",
+            "originalText": "כביסה נקייה באמת, בטוחה לבית.",
+            "adaptedText": "הגנה מתמשכת באמת, חסכון לבית."
+          },
+          {
+            "id": "s3",
+            "label": "benefit-1",
+            "originalText": "עוצמת ניקיון מוכחת להסרת כתמים",
+            "adaptedText": "הגנה מתמשכת עד 5 שנים"
+          },
+          {
+            "id": "s4",
+            "label": "benefit-2",
+            "originalText": "עדין על הבגדים והעור",
+            "adaptedText": "חוסך אלפי שקלים"
+          },
+          {
+            "id": "s5",
+            "label": "benefit-3",
+            "originalText": "נמס לחלוטין, ללא שאריות",
+            "adaptedText": "פתרון חד-פעמי, תוצאות לשנים"
+          },
+          {
+            "id": "s6",
+            "label": "benefit-4",
+            "originalText": "מתאים לכל סוגי הכביסה ומכונות",
+            "adaptedText": "מחליף חברות הדברה יקרות"
+          },
+          {
+            "id": "s7",
+            "label": "cta",
+            "originalText": "נסו את גרין פלואו לחוויית כביסה בטוחה",
+            "adaptedText": "השקיעו בבוגו להגנה לשנים"
+          }
+        ]
+      },
+      {
+        "id": "var-4",
+        "angle": "coverage and comprehensive solution",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "brand-logo",
+            "originalText": "Green FLOW",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s2",
+            "label": "headline",
+            "originalText": "כביסה נקייה באמת, בטוחה לבית.",
+            "adaptedText": "כיסוי מלא באמת, בטוח לכולם."
+          },
+          {
+            "id": "s3",
+            "label": "benefit-1",
+            "originalText": "עוצמת ניקיון מוכחת להסרת כתמים",
+            "adaptedText": "כיסוי עד 28 מ\"ר למכשיר"
+          },
+          {
+            "id": "s4",
+            "label": "benefit-2",
+            "originalText": "עדין על הבגדים והעור",
+            "adaptedText": "יעיל נגד 8 סוגי מזיקים"
+          },
+          {
+            "id": "s5",
+            "label": "benefit-3",
+            "originalText": "נמס לחלוטין, ללא שאריות",
+            "adaptedText": "חודר דרך קירות ורהיטים"
+          },
+          {
+            "id": "s6",
+            "label": "benefit-4",
+            "originalText": "מתאים לכל סוגי הכביסה ומכונות",
+            "adaptedText": "פתרון שלם לכל הבית"
+          },
+          {
+            "id": "s7",
+            "label": "cta",
+            "originalText": "נסו את גרין פלואו לחוויית כביסה בטוחה",
+            "adaptedText": "הזמינו בוגו להגנה מקיפה"
+          }
+        ]
+      }
+    ],
+    "language": "he",
+    "id": "hist-1775742471404-ado4",
+    "createdAt": "2026-04-09T13:47:51.404Z"
+  }
+]

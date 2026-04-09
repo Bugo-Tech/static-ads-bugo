@@ -10,6 +10,9 @@ export default function HistoryPage() {
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [generating, setGenerating] = useState<Set<string>>(new Set());
+  // Per-entry: which variation is being viewed, and which are selected for generation
+  const [viewingVariation, setViewingVariation] = useState<Record<string, string>>({});
+  const [selectedForGen, setSelectedForGen] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     fetch("/api/history")
@@ -21,6 +24,23 @@ export default function HistoryPage() {
   async function handleDelete(id: string) {
     await fetch(`/api/history?id=${id}`, { method: "DELETE" });
     setEntries((prev) => prev.filter((e) => e.id !== id));
+  }
+
+  function getViewingVariation(entryId: string, entry: HistoryEntry): string {
+    return viewingVariation[entryId] || entry.copyVariations[0]?.id || "";
+  }
+
+  function getSelectedForGen(entryId: string, entry: HistoryEntry): string[] {
+    return selectedForGen[entryId] || [entry.copyVariations[0]?.id || ""];
+  }
+
+  function toggleVariationForGen(entryId: string, variationId: string, entry: HistoryEntry) {
+    setSelectedForGen((prev) => {
+      const current = prev[entryId] || [entry.copyVariations[0]?.id || ""];
+      const has = current.includes(variationId);
+      const updated = has ? current.filter((id) => id !== variationId) : [...current, variationId];
+      return { ...prev, [entryId]: updated.length > 0 ? updated : current };
+    });
   }
 
   function updateEntryCopy(entryId: string, variationId: string, sectionId: string, text: string) {
@@ -233,32 +253,37 @@ export default function HistoryPage() {
 
                       <CopyEditor
                         variations={entry.copyVariations}
-                        selectedVariationId={entry.copyVariations[0]?.id}
-                        selectedVariationIds={entry.copyVariations.map((v) => v.id)}
-                        onSelectVariation={() => {}}
-                        onToggleForGeneration={() => {}}
+                        selectedVariationId={getViewingVariation(entry.id, entry)}
+                        selectedVariationIds={getSelectedForGen(entry.id, entry)}
+                        onSelectVariation={(vId) =>
+                          setViewingVariation((prev) => ({ ...prev, [entry.id]: vId }))
+                        }
+                        onToggleForGeneration={(vId) =>
+                          toggleVariationForGen(entry.id, vId, entry)
+                        }
                         onUpdateSection={(vId, sId, text) =>
                           updateEntryCopy(entry.id, vId, sId, text)
                         }
                         language={(entry.language || "he") as Language}
                       />
 
-                      <div className="flex justify-end gap-3">
-                        <button
-                          onClick={() =>
-                            handleRegenerate(
-                              entry,
-                              entry.copyVariations.map((v) => v.id)
-                            )
-                          }
-                          disabled={isGenerating}
-                          className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-dark disabled:opacity-50 transition-all"
-                        >
-                          {isGenerating
-                            ? "Generating..."
-                            : `Re-generate All (${entry.copyVariations.length * 2} images)`}
-                        </button>
-                      </div>
+                      {(() => {
+                        const selected = getSelectedForGen(entry.id, entry);
+                        const imageCount = selected.length * 2;
+                        return (
+                          <div className="flex justify-end gap-3">
+                            <button
+                              onClick={() => handleRegenerate(entry, selected)}
+                              disabled={isGenerating}
+                              className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-dark disabled:opacity-50 transition-all"
+                            >
+                              {isGenerating
+                                ? "Generating..."
+                                : `Generate ${imageCount} image${imageCount !== 1 ? "s" : ""} (${selected.length} variation${selected.length !== 1 ? "s" : ""})`}
+                            </button>
+                          </div>
+                        );
+                      })()}
                     </div>
                   )}
                 </div>
