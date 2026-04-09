@@ -192,7 +192,7 @@
             "id": "s2",
             "label": "headline",
             "originalText": "כביסה נקייה באמת, בטוחה לבית.",
-            "adaptedText": "הגנה מתמשכת באמת, חסכון לבית."
+            "adaptedText": "הגנה מלאה, בלי כימיקלים ובלי רעלים "
           },
           {
             "id": "s3",
@@ -204,25 +204,25 @@
             "id": "s4",
             "label": "benefit-2",
             "originalText": "עדין על הבגדים והעור",
-            "adaptedText": "חוסך אלפי שקלים"
+            "adaptedText": "חסכון של אלפי שקלים"
           },
           {
             "id": "s5",
             "label": "benefit-3",
             "originalText": "נמס לחלוטין, ללא שאריות",
-            "adaptedText": "פתרון חד-פעמי, תוצאות לשנים"
+            "adaptedText": "אין יותר מזיקים "
           },
           {
             "id": "s6",
             "label": "benefit-4",
             "originalText": "מתאים לכל סוגי הכביסה ומכונות",
-            "adaptedText": "מחליף חברות הדברה יקרות"
+            "adaptedText": "30 יום ניסיון ללא התחייבות "
           },
           {
             "id": "s7",
             "label": "cta",
             "originalText": "נסו את גרין פלואו לחוויית כביסה בטוחה",
-            "adaptedText": "השקיעו בבוגו להגנה לשנים"
+            "adaptedText": "הפטרו מג׳וקים ומזיקים בבית עוד היום "
           }
         ]
       },

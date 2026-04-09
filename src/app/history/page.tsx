@@ -10,6 +10,7 @@ export default function HistoryPage() {
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [generating, setGenerating] = useState<Set<string>>(new Set());
+  const [genProgress, setGenProgress] = useState<Record<string, { total: number; done: number; failed: number }>>({});
   // Per-entry: which variation is being viewed, and which are selected for generation
   const [viewingVariation, setViewingVariation] = useState<Record<string, string>>({});
   const [selectedForGen, setSelectedForGen] = useState<Record<string, string[]>>({});
@@ -94,6 +95,9 @@ export default function HistoryPage() {
     });
 
     // Generate for each variation x size
+    const totalImages = variations.length * sizes.length;
+    setGenProgress((prev) => ({ ...prev, [entry.id]: { total: totalImages, done: 0, failed: 0 } }));
+
     let successCount = 0;
     for (const variation of variations) {
       for (const size of sizes) {
@@ -104,7 +108,7 @@ export default function HistoryPage() {
             body: JSON.stringify({
               prompt: entry.prompt,
               referenceImageUrl: entry.uploadedUrl,
-              productImageIds: [], // TODO: could save selected products in history
+              productImageIds: [],
               size,
               copyVariation: variation,
             }),
@@ -112,17 +116,12 @@ export default function HistoryPage() {
           const data = await res.json();
           if (data.jobId) {
             successCount++;
-            // Poll for completion and save to gallery
-            pollAndSave(data.jobId, size, variation.angle || "");
+            pollAndSave(entry.id, data.jobId, size, variation.angle || "");
           }
         } catch {
           // continue with other generations
         }
       }
-    }
-
-    if (successCount > 0) {
-      alert(`${successCount} images submitted for generation. Check the Gallery for results.`);
     }
 
     setGenerating((prev) => {
@@ -132,15 +131,14 @@ export default function HistoryPage() {
     });
   }
 
-  async function pollAndSave(jobId: string, size: string, angle: string) {
-    const maxAttempts = 60; // 5 minutes max
+  async function pollAndSave(entryId: string, jobId: string, size: string, angle: string) {
+    const maxAttempts = 60;
     for (let i = 0; i < maxAttempts; i++) {
       await new Promise((r) => setTimeout(r, 5000));
       try {
         const res = await fetch(`/api/image-status?jobId=${jobId}`);
         const data = await res.json();
         if (data.status === "completed" && data.resultUrl) {
-          // Save to gallery
           await fetch("/api/gallery", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -153,9 +151,19 @@ export default function HistoryPage() {
               folderId: "root",
             }),
           });
+          setGenProgress((prev) => {
+            const p = prev[entryId] || { total: 0, done: 0, failed: 0 };
+            return { ...prev, [entryId]: { ...p, done: p.done + 1 } };
+          });
           return;
         }
-        if (data.status === "failed") return;
+        if (data.status === "failed") {
+          setGenProgress((prev) => {
+            const p = prev[entryId] || { total: 0, done: 0, failed: 0 };
+            return { ...prev, [entryId]: { ...p, failed: p.failed + 1 } };
+          });
+          return;
+        }
       } catch {
         // retry
       }
@@ -205,7 +213,7 @@ export default function HistoryPage() {
                     <img
                       src={entry.referencePreviewUrl || entry.uploadedUrl}
                       alt="Reference"
-                      className="h-16 w-16 rounded-lg border border-border object-cover flex-shrink-0"
+                      className="h-20 w-20 rounded-lg border border-border object-contain bg-gray-50 flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -244,6 +252,49 @@ export default function HistoryPage() {
                   {/* Expanded content */}
                   {isExpanded && (
                     <div className="border-t border-border p-6 space-y-4">
+                      {/* Reference image full view */}
+                      <div className="flex gap-4">
+                        <div className="w-48 flex-shrink-0">
+                          <img
+                            src={entry.uploadedUrl || entry.referencePreviewUrl}
+                            alt="Reference"
+                            className="w-full rounded-xl border border-border object-contain bg-gray-50"
+                          />
+                          <p className="mt-1 text-xs text-gray-400 text-center">Reference</p>
+                        </div>
+                        <div className="flex-1 space-y-4">
+
+                      {/* Progress indicator */}
+                      {(isGenerating || genProgress[entry.id]) && (() => {
+                        const p = genProgress[entry.id] || { total: 0, done: 0, failed: 0 };
+                        const finished = p.done + p.failed;
+                        const pct = p.total > 0 ? Math.round((finished / p.total) * 100) : 0;
+                        const allDone = finished >= p.total && p.total > 0;
+                        return (
+                          <div className="rounded-xl border border-border bg-gray-50 p-3">
+                            <div className="flex items-center justify-between text-sm mb-2">
+                              <span className="font-medium text-gray-700">
+                                {allDone
+                                  ? `Done! ${p.done} image${p.done !== 1 ? "s" : ""} saved to Gallery`
+                                  : `Generating: ${p.done}/${p.total} completed`}
+                                {p.failed > 0 && <span className="text-red-500 ml-1">({p.failed} failed)</span>}
+                              </span>
+                              {allDone && (
+                                <a href="/gallery" className="text-sm text-primary font-medium hover:underline">
+                                  Open Gallery
+                                </a>
+                              )}
+                            </div>
+                            <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-500 ${allDone ? "bg-accent" : "bg-primary"}`}
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })()}
+
                       <PromptEditor
                         prompt={entry.prompt}
                         promptMode="manual"
@@ -284,6 +335,9 @@ export default function HistoryPage() {
                           </div>
                         );
                       })()}
+
+                        </div>{/* end flex-1 */}
+                      </div>{/* end flex row */}
                     </div>
                   )}
                 </div>
