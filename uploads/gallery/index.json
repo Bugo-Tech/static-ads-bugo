@@ -1,0 +1,44 @@
+{
+  "images": [
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775727989085-sio89k412t.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Green Flow' with 'Bugo' and (2) adapt all text content to pest control messaging while maintaining Hebrew R",
+      "size": "1:1",
+      "angle": "Long-term protection and value",
+      "folderId": "folder-1775728228451-65q7",
+      "id": "gal-1775727991320-1bp1so",
+      "filename": "gal-1775727991320-1bp1so.png",
+      "url": "/api/gallery/file/gal-1775727991320-1bp1so.png",
+      "createdAt": "2026-04-09T09:46:32.556Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775728030848-g6jrgvke4h6.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Green Flow' with 'Bugo' and (2) adapt all text content to pest control messaging while maintaining Hebrew R",
+      "size": "1:1",
+      "angle": "Advanced technology and effectiveness",
+      "folderId": "folder-1775728228451-65q7",
+      "id": "gal-1775728036460-81mrkp",
+      "filename": "gal-1775728036460-81mrkp.png",
+      "url": "/api/gallery/file/gal-1775728036460-81mrkp.png",
+      "createdAt": "2026-04-09T09:47:17.739Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/r/d907270c441ce6f4c6a2b8db4ea752c2_1775728118_yvze53eo.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Green Flow' with 'Bugo' and (2) adapt all text content to pest control messaging while maintaining Hebrew R",
+      "size": "9:16",
+      "angle": "Long-term protection and value",
+      "folderId": "folder-1775728228451-65q7",
+      "id": "gal-1775728121082-ap8mm2",
+      "filename": "gal-1775728121082-ap8mm2.png",
+      "url": "/api/gallery/file/gal-1775728121082-ap8mm2.png",
+      "createdAt": "2026-04-09T09:48:42.141Z"
+    }
+  ],
+  "folders": [
+    {
+      "id": "folder-1775728228451-65q7",
+      "name": "שלט חוצות",
+      "createdAt": "2026-04-09T09:50:28.451Z"
+    }
+  ]
+}

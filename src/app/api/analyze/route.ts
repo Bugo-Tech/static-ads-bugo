@@ -39,10 +39,25 @@ export async function POST(request: NextRequest) {
       }
 
       const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      imageBase64 = buffer.toString("base64");
+      let buffer = Buffer.from(bytes);
       // Detect actual MIME type from file magic bytes, don't trust browser
       mimeType = detectMimeType(buffer) || file.type || "image/png";
+
+      // Resize if over 4MB (Claude limit is 5MB, leave margin)
+      if (buffer.length > 4 * 1024 * 1024) {
+        const { execSync } = await import("child_process");
+        const tmpIn = `/tmp/analyze-in-${Date.now()}.${mimeType.includes("png") ? "png" : "jpg"}`;
+        const tmpOut = `/tmp/analyze-out-${Date.now()}.jpg`;
+        const { writeFileSync, readFileSync } = await import("fs");
+        writeFileSync(tmpIn, buffer);
+        execSync(`sips -Z 1024 --setProperty format jpeg --setProperty formatOptions 80 "${tmpIn}" --out "${tmpOut}"`, { stdio: "ignore" });
+        buffer = readFileSync(tmpOut);
+        mimeType = "image/jpeg";
+        // Clean up
+        try { execSync(`rm "${tmpIn}" "${tmpOut}"`, { stdio: "ignore" }); } catch {}
+      }
+
+      imageBase64 = buffer.toString("base64");
     } else {
       // JSON body with imageUrl (local file path)
       const body = await request.json();

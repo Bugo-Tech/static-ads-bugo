@@ -54,13 +54,20 @@ If the reference is for a competing pest control product:
 - Power outlets: if visible, use Israeli Type H
 
 ### Scenario B: Different Niche (any other product category)
-If the reference is NOT pest control (e.g., hair care, supplements, cleaning, beauty):
+If the reference is NOT pest control (e.g., hair care, supplements, cleaning, dishwasher, beauty):
 - KEEP the exact visual layout, composition, colors, typography style, and design approach
 - MAP the original product's concept to ${brand.productName}'s world:
   - Original "before/after process" → map to pest disappearance timeline (e.g., Day 1: pests visible → Day 3: fewer → Day 7: pest-free home)
   - Original pain points → map to equivalent ${brand.productName} pain points
   - Original testimonials → adapt to pest control testimonials
-  - Original product imagery → replace with ${brand.productName} device
+- **CRITICAL — PRODUCT IMAGE REPLACEMENT**:
+  - ALL product images (bottles, packages, boxes, tubes, devices) must be replaced with the ${brand.productName} device: a white oval/egg-shaped ultrasonic pest repeller with a blue LED glow and "${brand.productName}" text on the face
+  - Do NOT overlay ${brand.productName} on top of the original packaging — REMOVE the original product entirely and place the ${brand.productName} device in its position
+  - If the user provided a product image (second reference image), use THAT exact image as the replacement
+- **CONTEXT-AWARE VISUAL ADAPTATION**:
+  - Remove visual elements that don't make sense for pest control (e.g., water drops from dishwasher ads, hair strands from hair care ads, food from cooking ads)
+  - Replace them with pest-control relevant visuals where appropriate (e.g., cockroach silhouettes, clean home imagery, shield/protection icons)
+  - If the ad shows a "before/after" or "process over time" — adapt to pest disappearance: dirty kitchen with pests → fewer pests → completely clean home
 - Maintain the SAME emotional tone and persuasion structure
 - Power outlets: if visible, use Israeli Type H
 
@@ -129,9 +136,13 @@ The prompt MUST be 800-2000 words and follow this exact structure:
    - Any effects (glow, shadow, outline)
    - If text is inside a shape (pill, banner, rectangle), describe the shape, its color, border-radius
 
-4. **PRODUCT/DEVICE**: Describe the ${brand.productName} device in detail — "white oval/egg-shaped ultrasonic pest repeller, same 3D render angle, same drop shadow, blue LED glow from bottom rim (#2196F3), text '${brand.productName}' on device face in gray, same font size and position as original brand."
+4. **PRODUCT/DEVICE** (CRITICAL):
+   - If same niche: "Replace brand text on device with '${brand.productName}', keep everything else identical"
+   - If different niche: "REMOVE the original product (bottle/box/package/tube) COMPLETELY. In its exact position, place the ${brand.productName} device: a white oval/egg-shaped ultrasonic pest repeller with blue LED glow from the bottom rim (#2196F3), '${brand.productName}' text in gray on the device face. The user will upload the actual ${brand.productName} product photo as a second reference image — use that exact product image."
+   - NEVER overlay ${brand.productName} branding on top of another product's packaging
+   - Remove any visual elements from the original product category that don't apply to pest control (water drops, food, hair, etc.)
 
-5. **ICONS/GRAPHICS**: Describe every icon, arrow, badge, starburst — exact position, color, style.
+5. **ICONS/GRAPHICS**: Describe every icon, arrow, badge, starburst — exact position, color, style. If icons show things irrelevant to pest control, replace with pest-relevant icons (cockroach, ant, mouse, spider, shield, checkmark, house).
 
 6. **CTA BUTTON**: Exact shape, color (hex), text, font, position.
 
