@@ -14,11 +14,20 @@ export default function HistoryPage() {
   // Per-entry: which variation is being viewed, and which are selected for generation
   const [viewingVariation, setViewingVariation] = useState<Record<string, string>>({});
   const [selectedForGen, setSelectedForGen] = useState<Record<string, string[]>>({});
+  const [productImageIds, setProductImageIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetch("/api/history")
       .then((r) => r.json())
       .then((data) => setEntries(data.entries || []))
+      .catch(() => {});
+    // Load product library for re-generation
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((data) => {
+        const prods = data.products || [];
+        setProductImageIds(prods.map((p: { id: string }) => p.id));
+      })
       .catch(() => {});
   }, []);
 
@@ -108,7 +117,7 @@ export default function HistoryPage() {
             body: JSON.stringify({
               prompt: entry.prompt,
               referenceImageUrl: entry.uploadedUrl,
-              productImageIds: [],
+              productImageIds,
               size,
               copyVariation: variation,
             }),
@@ -124,11 +133,8 @@ export default function HistoryPage() {
       }
     }
 
-    setGenerating((prev) => {
-      const next = new Set(prev);
-      next.delete(entry.id);
-      return next;
-    });
+    // Don't clear generating here — it clears when progress shows all done
+    // The progress bar handles the visual state
   }
 
   async function pollAndSave(entryId: string, jobId: string, size: string, angle: string) {
@@ -153,14 +159,23 @@ export default function HistoryPage() {
           });
           setGenProgress((prev) => {
             const p = prev[entryId] || { total: 0, done: 0, failed: 0 };
-            return { ...prev, [entryId]: { ...p, done: p.done + 1 } };
+            const updated = { ...p, done: p.done + 1 };
+            // Clear generating when all done
+            if (updated.done + updated.failed >= updated.total) {
+              setGenerating((g) => { const n = new Set(g); n.delete(entryId); return n; });
+            }
+            return { ...prev, [entryId]: updated };
           });
           return;
         }
         if (data.status === "failed") {
           setGenProgress((prev) => {
             const p = prev[entryId] || { total: 0, done: 0, failed: 0 };
-            return { ...prev, [entryId]: { ...p, failed: p.failed + 1 } };
+            const updated = { ...p, failed: p.failed + 1 };
+            if (updated.done + updated.failed >= updated.total) {
+              setGenerating((g) => { const n = new Set(g); n.delete(entryId); return n; });
+            }
+            return { ...prev, [entryId]: updated };
           });
           return;
         }
@@ -211,7 +226,7 @@ export default function HistoryPage() {
                     onClick={() => setExpandedId(isExpanded ? null : entry.id)}
                   >
                     <img
-                      src={entry.referencePreviewUrl || entry.uploadedUrl}
+                      src={entry.uploadedUrl || entry.referencePreviewUrl}
                       alt="Reference"
                       className="h-20 w-20 rounded-lg border border-border object-contain bg-gray-50 flex-shrink-0"
                     />
