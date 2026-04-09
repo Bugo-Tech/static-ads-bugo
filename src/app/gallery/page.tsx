@@ -8,6 +8,7 @@ export default function GalleryPage() {
   const [folders, setFolders] = useState<GalleryFolder[]>([]);
   const [activeFolder, setActiveFolder] = useState<string>("root");
   const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<GalleryImage | null>(null);
   const [dragOverFolderId, setDragOverFolderId] = useState<string | null>(null);
   const [newFolderName, setNewFolderName] = useState("");
   const [showNewFolder, setShowNewFolder] = useState(false);
@@ -320,12 +321,15 @@ export default function GalleryPage() {
                         </svg>
                       </button>
 
-                      {/* Image */}
-                      <div className="aspect-square overflow-hidden bg-gray-100">
+                      {/* Image — click to view full */}
+                      <div
+                        className="aspect-square overflow-hidden bg-gray-100 cursor-pointer"
+                        onClick={() => setLightboxImage(img)}
+                      >
                         <img
                           src={img.url}
                           alt={img.prompt?.substring(0, 50) || "Generated ad"}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain"
                           loading="lazy"
                         />
                       </div>
@@ -369,6 +373,44 @@ export default function GalleryPage() {
           </div>
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setLightboxImage(null)}
+        >
+          <div className="relative max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={lightboxImage.url}
+              alt="Full view"
+              className="max-h-[85vh] max-w-[85vw] rounded-lg object-contain"
+            />
+            <div className="mt-3 flex items-center justify-center gap-3">
+              <button
+                onClick={() => handleDownload(lightboxImage.url, lightboxImage.filename)}
+                className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100 transition-colors"
+              >
+                Download
+              </button>
+              <button
+                onClick={() => setLightboxImage(null)}
+                className="rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white hover:bg-white/30 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+            <button
+              onClick={() => setLightboxImage(null)}
+              className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-600 shadow-lg hover:bg-gray-100"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

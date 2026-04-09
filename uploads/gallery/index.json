@@ -1,39 +1,6 @@
 {
   "images": [
     {
-      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775727989085-sio89k412t.png",
-      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Green Flow' with 'Bugo' and (2) adapt all text content to pest control messaging while maintaining Hebrew R",
-      "size": "1:1",
-      "angle": "Long-term protection and value",
-      "folderId": "folder-1775728228451-65q7",
-      "id": "gal-1775727991320-1bp1so",
-      "filename": "gal-1775727991320-1bp1so.png",
-      "url": "/api/gallery/file/gal-1775727991320-1bp1so.png",
-      "createdAt": "2026-04-09T09:46:32.556Z"
-    },
-    {
-      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775728030848-g6jrgvke4h6.png",
-      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Green Flow' with 'Bugo' and (2) adapt all text content to pest control messaging while maintaining Hebrew R",
-      "size": "1:1",
-      "angle": "Advanced technology and effectiveness",
-      "folderId": "folder-1775728228451-65q7",
-      "id": "gal-1775728036460-81mrkp",
-      "filename": "gal-1775728036460-81mrkp.png",
-      "url": "/api/gallery/file/gal-1775728036460-81mrkp.png",
-      "createdAt": "2026-04-09T09:47:17.739Z"
-    },
-    {
-      "sourceUrl": "https://tempfile.aiquickdraw.com/r/d907270c441ce6f4c6a2b8db4ea752c2_1775728118_yvze53eo.png",
-      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Green Flow' with 'Bugo' and (2) adapt all text content to pest control messaging while maintaining Hebrew R",
-      "size": "9:16",
-      "angle": "Long-term protection and value",
-      "folderId": "folder-1775728228451-65q7",
-      "id": "gal-1775728121082-ap8mm2",
-      "filename": "gal-1775728121082-ap8mm2.png",
-      "url": "/api/gallery/file/gal-1775728121082-ap8mm2.png",
-      "createdAt": "2026-04-09T09:48:42.141Z"
-    },
-    {
       "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775729824214-z1uw90mzni.png",
       "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'PestLab' with 'Bugo' on the device and (2) replace all English text with Hebrew text, right-aligned (RTL). ",
       "size": "1:1",
@@ -120,13 +87,84 @@
       "filename": "gal-1775730078454-69q4nd.png",
       "url": "/api/gallery/file/gal-1775730078454-69q4nd.png",
       "createdAt": "2026-04-09T10:21:19.815Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775740359941-x4welrxl8e.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'FLEAVA' with 'Bugo' and all English text with Hebrew text, right-aligned (RTL), and (2) COMPLETELY REMOVE t",
+      "size": "1:1",
+      "angle": "Fast results emphasis - showing quick pest elimination",
+      "folderId": "root",
+      "id": "gal-1775740361052-cablwf",
+      "filename": "gal-1775740361052-cablwf.png",
+      "url": "/api/gallery/file/gal-1775740361052-cablwf.png",
+      "createdAt": "2026-04-09T13:12:42.728Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775740359665-oxnhz91idbi.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'FLEAVA' with 'Bugo' and all English text with Hebrew text, right-aligned (RTL), and (2) COMPLETELY REMOVE t",
+      "size": "9:16",
+      "angle": "Peace of mind focus - from pest problem to worry-free home",
+      "folderId": "root",
+      "id": "gal-1775740361769-ybllid",
+      "filename": "gal-1775740361769-ybllid.png",
+      "url": "/api/gallery/file/gal-1775740361769-ybllid.png",
+      "createdAt": "2026-04-09T13:12:43.153Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775740372388-23hkyqx8i8d.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'FLEAVA' with 'Bugo' and all English text with Hebrew text, right-aligned (RTL), and (2) COMPLETELY REMOVE t",
+      "size": "1:1",
+      "angle": "Progressive elimination timeline - showing steady pest disappearance",
+      "folderId": "root",
+      "id": "gal-1775740374937-lzue3z",
+      "filename": "gal-1775740374937-lzue3z.png",
+      "url": "/api/gallery/file/gal-1775740374937-lzue3z.png",
+      "createdAt": "2026-04-09T13:12:56.173Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775740370832-g8acpjjxldt.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'FLEAVA' with 'Bugo' and all English text with Hebrew text, right-aligned (RTL), and (2) COMPLETELY REMOVE t",
+      "size": "1:1",
+      "angle": "Peace of mind focus - from pest problem to worry-free home",
+      "folderId": "root",
+      "id": "gal-1775740375902-bjiceo",
+      "filename": "gal-1775740375902-bjiceo.png",
+      "url": "/api/gallery/file/gal-1775740375902-bjiceo.png",
+      "createdAt": "2026-04-09T13:12:57.318Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775740370832-g8acpjjxldt.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'FLEAVA' with 'Bugo' and all English text with Hebrew text, right-aligned (RTL), and (2) COMPLETELY REMOVE t",
+      "size": "1:1",
+      "angle": "Peace of mind focus - from pest problem to worry-free home",
+      "folderId": "root",
+      "id": "gal-1775740376136-bx91da",
+      "filename": "gal-1775740376136-bx91da.png",
+      "url": "/api/gallery/file/gal-1775740376136-bx91da.png",
+      "createdAt": "2026-04-09T13:12:57.477Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775740376636-bu9t1fvcv9.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'FLEAVA' with 'Bugo' and all English text with Hebrew text, right-aligned (RTL), and (2) COMPLETELY REMOVE t",
+      "size": "9:16",
+      "angle": "Fast results emphasis - showing quick pest elimination",
+      "folderId": "root",
+      "id": "gal-1775740380598-u4liy8",
+      "filename": "gal-1775740380598-u4liy8.png",
+      "url": "/api/gallery/file/gal-1775740380598-u4liy8.png",
+      "createdAt": "2026-04-09T13:13:01.860Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775740429198-bs261v1m4ql.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'FLEAVA' with 'Bugo' and all English text with Hebrew text, right-aligned (RTL), and (2) COMPLETELY REMOVE t",
+      "size": "9:16",
+      "angle": "Progressive elimination timeline - showing steady pest disappearance",
+      "folderId": "root",
+      "id": "gal-1775740430396-jihkuq",
+      "filename": "gal-1775740430396-jihkuq.png",
+      "url": "/api/gallery/file/gal-1775740430396-jihkuq.png",
+      "createdAt": "2026-04-09T13:13:51.515Z"
     }
   ],
-  "folders": [
-    {
-      "id": "folder-1775728228451-65q7",
-      "name": "שלט חוצות",
-      "createdAt": "2026-04-09T09:50:28.451Z"
-    }
-  ]
+  "folders": []
 }

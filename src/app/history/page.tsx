@@ -1,0 +1,272 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { HistoryEntry } from "@/lib/adHistory";
+import CopyEditor from "../components/CopyEditor";
+import PromptEditor from "../components/PromptEditor";
+import { CopyVariation, Language } from "@/lib/types";
+
+export default function HistoryPage() {
+  const [entries, setEntries] = useState<HistoryEntry[]>([]);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [generating, setGenerating] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    fetch("/api/history")
+      .then((r) => r.json())
+      .then((data) => setEntries(data.entries || []))
+      .catch(() => {});
+  }, []);
+
+  async function handleDelete(id: string) {
+    await fetch(`/api/history?id=${id}`, { method: "DELETE" });
+    setEntries((prev) => prev.filter((e) => e.id !== id));
+  }
+
+  function updateEntryCopy(entryId: string, variationId: string, sectionId: string, text: string) {
+    setEntries((prev) =>
+      prev.map((e) => {
+        if (e.id !== entryId) return e;
+        return {
+          ...e,
+          copyVariations: e.copyVariations.map((v) => {
+            if (v.id !== variationId) return v;
+            return {
+              ...v,
+              sections: v.sections.map((s) =>
+                s.id === sectionId ? { ...s, adaptedText: text } : s
+              ),
+            };
+          }),
+        };
+      })
+    );
+  }
+
+  function updateEntryPrompt(entryId: string, prompt: string) {
+    setEntries((prev) =>
+      prev.map((e) => (e.id === entryId ? { ...e, prompt } : e))
+    );
+  }
+
+  async function handleRegenerate(entry: HistoryEntry, variationIds: string[]) {
+    setGenerating((prev) => new Set([...prev, entry.id]));
+
+    const variations = variationIds
+      .map((vId) => entry.copyVariations.find((v) => v.id === vId))
+      .filter(Boolean) as CopyVariation[];
+
+    if (variations.length === 0 && entry.copyVariations.length > 0) {
+      variations.push(entry.copyVariations[0]);
+    }
+
+    const sizes: ("1:1" | "9:16")[] = ["1:1", "9:16"];
+
+    // Save updated copy before generating
+    await fetch("/api/history", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "update",
+        id: entry.id,
+        updates: { prompt: entry.prompt, copyVariations: entry.copyVariations },
+      }),
+    });
+
+    // Generate for each variation x size
+    let successCount = 0;
+    for (const variation of variations) {
+      for (const size of sizes) {
+        try {
+          const res = await fetch("/api/generate-image", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: entry.prompt,
+              referenceImageUrl: entry.uploadedUrl,
+              productImageIds: [], // TODO: could save selected products in history
+              size,
+              copyVariation: variation,
+            }),
+          });
+          const data = await res.json();
+          if (data.jobId) {
+            successCount++;
+            // Poll for completion and save to gallery
+            pollAndSave(data.jobId, size, variation.angle || "");
+          }
+        } catch {
+          // continue with other generations
+        }
+      }
+    }
+
+    if (successCount > 0) {
+      alert(`${successCount} images submitted for generation. Check the Gallery for results.`);
+    }
+
+    setGenerating((prev) => {
+      const next = new Set(prev);
+      next.delete(entry.id);
+      return next;
+    });
+  }
+
+  async function pollAndSave(jobId: string, size: string, angle: string) {
+    const maxAttempts = 60; // 5 minutes max
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise((r) => setTimeout(r, 5000));
+      try {
+        const res = await fetch(`/api/image-status?jobId=${jobId}`);
+        const data = await res.json();
+        if (data.status === "completed" && data.resultUrl) {
+          // Save to gallery
+          await fetch("/api/gallery", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "add-image",
+              sourceUrl: data.resultUrl,
+              prompt: "",
+              size,
+              angle,
+              folderId: "root",
+            }),
+          });
+          return;
+        }
+        if (data.status === "failed") return;
+      } catch {
+        // retry
+      }
+    }
+  }
+
+  const expanded = entries.find((e) => e.id === expandedId);
+
+  return (
+    <div className="min-h-screen bg-surface">
+      {/* Header */}
+      <header className="border-b border-border bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-3">
+            <a href="/" className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </a>
+            <h1 className="text-lg font-bold text-gray-900">Previous Ads</h1>
+            <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+              {entries.length} analyzed
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-7xl px-6 py-8">
+        {entries.length === 0 ? (
+          <div className="rounded-2xl border-2 border-dashed border-border py-16 text-center">
+            <p className="text-sm text-gray-400">No previous ads yet</p>
+            <p className="mt-1 text-xs text-gray-400">Analyzed ads will appear here automatically</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {entries.map((entry) => {
+              const isExpanded = expandedId === entry.id;
+              const isGenerating = generating.has(entry.id);
+
+              return (
+                <div key={entry.id} className="rounded-2xl border border-border bg-white overflow-hidden">
+                  {/* Collapsed header */}
+                  <div
+                    className="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                    onClick={() => setExpandedId(isExpanded ? null : entry.id)}
+                  >
+                    <img
+                      src={entry.referencePreviewUrl || entry.uploadedUrl}
+                      alt="Reference"
+                      className="h-16 w-16 rounded-lg border border-border object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                          entry.analysis.niche === "pest-control"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}>
+                          {entry.analysis.niche === "pest-control" ? "Same Niche" : "Cross-Niche"}
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          {new Date(entry.createdAt).toLocaleDateString("he-IL")} {new Date(entry.createdAt).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-sm text-gray-700 truncate">{entry.analysis.angle}</p>
+                      <p className="text-xs text-gray-400">{entry.copyVariations.length} variations</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(entry.id);
+                        }}
+                        className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                      <svg className={`h-5 w-5 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Expanded content */}
+                  {isExpanded && (
+                    <div className="border-t border-border p-6 space-y-4">
+                      <PromptEditor
+                        prompt={entry.prompt}
+                        promptMode="manual"
+                        onPromptChange={(p) => updateEntryPrompt(entry.id, p)}
+                        onModeChange={() => {}}
+                      />
+
+                      <CopyEditor
+                        variations={entry.copyVariations}
+                        selectedVariationId={entry.copyVariations[0]?.id}
+                        selectedVariationIds={entry.copyVariations.map((v) => v.id)}
+                        onSelectVariation={() => {}}
+                        onToggleForGeneration={() => {}}
+                        onUpdateSection={(vId, sId, text) =>
+                          updateEntryCopy(entry.id, vId, sId, text)
+                        }
+                        language={(entry.language || "he") as Language}
+                      />
+
+                      <div className="flex justify-end gap-3">
+                        <button
+                          onClick={() =>
+                            handleRegenerate(
+                              entry,
+                              entry.copyVariations.map((v) => v.id)
+                            )
+                          }
+                          disabled={isGenerating}
+                          className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-dark disabled:opacity-50 transition-all"
+                        >
+                          {isGenerating
+                            ? "Generating..."
+                            : `Re-generate All (${entry.copyVariations.length * 2} images)`}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

@@ -127,6 +127,21 @@ export default function Home() {
           copyVariations: data.copyVariations,
           selectedVariationId: data.copyVariations?.[0]?.id,
         });
+
+        // Auto-save to history
+        fetch("/api/history", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "add",
+            referencePreviewUrl: ref.previewUrl,
+            uploadedUrl: uploadedUrl || "",
+            analysis: data.analysis,
+            prompt: data.analysis.suggestedPrompt,
+            copyVariations: data.copyVariations,
+            language: state.language,
+          }),
+        }).catch(() => {}); // silently save
       } catch (err) {
         updateReference(ref.id, {
           status: "error",
@@ -234,6 +249,12 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <a
+              href="/history"
+              className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Previous Ads
+            </a>
             <a
               href="/gallery"
               className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
