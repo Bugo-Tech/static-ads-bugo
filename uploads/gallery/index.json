@@ -34,48 +34,92 @@
       "createdAt": "2026-04-09T09:48:42.141Z"
     },
     {
-      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775729182402-vkr7ym7369f.png",
-      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. This is a billboard advertisement. Only two types of changes are permitted: (1) replace 'Green Flow' with 'Bugo' and (2) adapt all text content to pest control w",
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775729824214-z1uw90mzni.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'PestLab' with 'Bugo' on the device and (2) replace all English text with Hebrew text, right-aligned (RTL). ",
       "size": "1:1",
-      "angle": "Powerful technology without compromise",
+      "angle": "Social proof emphasizing effectiveness and safety",
       "folderId": "root",
-      "id": "gal-1775729187389-bgnrvz",
-      "filename": "gal-1775729187389-bgnrvz.png",
-      "url": "/api/gallery/file/gal-1775729187389-bgnrvz.png",
-      "createdAt": "2026-04-09T10:06:28.952Z"
+      "id": "gal-1775729829485-5kquxy",
+      "filename": "gal-1775729829485-5kquxy.png",
+      "url": "/api/gallery/file/gal-1775729829485-5kquxy.png",
+      "createdAt": "2026-04-09T10:17:10.350Z"
     },
     {
-      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775729188148-sby6qiwnpxg.png",
-      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. This is a billboard advertisement. Only two types of changes are permitted: (1) replace 'Green Flow' with 'Bugo' and (2) adapt all text content to pest control w",
-      "size": "9:16",
-      "angle": "Family safety and chemical-free protection",
-      "folderId": "root",
-      "id": "gal-1775729192915-we18om",
-      "filename": "gal-1775729192915-we18om.png",
-      "url": "/api/gallery/file/gal-1775729192915-we18om.png",
-      "createdAt": "2026-04-09T10:06:33.767Z"
-    },
-    {
-      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775729199632-6xlxjvb2tfe.png",
-      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. This is a billboard advertisement. Only two types of changes are permitted: (1) replace 'Green Flow' with 'Bugo' and (2) adapt all text content to pest control w",
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775729844134-apewrk14m74.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'PestLab' with 'Bugo' and (2) replace all English text with Hebrew text, right-aligned (RTL). Every visual e",
       "size": "1:1",
-      "angle": "Family safety and chemical-free protection",
+      "angle": "Exclusive scarcity offer with cost savings",
       "folderId": "root",
-      "id": "gal-1775729202654-9g34wm",
-      "filename": "gal-1775729202654-9g34wm.png",
-      "url": "/api/gallery/file/gal-1775729202654-9g34wm.png",
-      "createdAt": "2026-04-09T10:06:44.017Z"
+      "id": "gal-1775729849643-fovobz",
+      "filename": "gal-1775729849643-fovobz.png",
+      "url": "/api/gallery/file/gal-1775729849643-fovobz.png",
+      "createdAt": "2026-04-09T10:17:30.315Z"
     },
     {
-      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775729287860-hl9onb8hnbe.png",
-      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. This is a billboard advertisement. Only two types of changes are permitted: (1) replace 'Green Flow' with 'Bugo' and (2) adapt all text content to pest control w",
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775729893052-4o4vcng1eus.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Pestie' with 'Bugo' and (2) replace all English text with Hebrew text, right-aligned (RTL). Every visual el",
       "size": "9:16",
-      "angle": "Powerful technology without compromise",
+      "angle": "Problem recognition + technology solution",
       "folderId": "root",
-      "id": "gal-1775729292356-tzkfis",
-      "filename": "gal-1775729292356-tzkfis.png",
-      "url": "/api/gallery/file/gal-1775729292356-tzkfis.png",
-      "createdAt": "2026-04-09T10:08:13.306Z"
+      "id": "gal-1775729894636-587azi",
+      "filename": "gal-1775729894636-587azi.png",
+      "url": "/api/gallery/file/gal-1775729894636-587azi.png",
+      "createdAt": "2026-04-09T10:18:15.705Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775729890516-mzuvgzzzr8h.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Pestie' with 'Bugo' and (2) replace all English text with Hebrew text, right-aligned (RTL). Every visual el",
+      "size": "9:16",
+      "angle": "Fear-based infestation awareness + immediate solution",
+      "folderId": "root",
+      "id": "gal-1775729895102-gznvbo",
+      "filename": "gal-1775729895102-gznvbo.png",
+      "url": "/api/gallery/file/gal-1775729895102-gznvbo.png",
+      "createdAt": "2026-04-09T10:18:17.224Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775729954979-vweehqocdmd.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Pestie' with 'Bugo' and (2) replace all English text with Hebrew text, right-aligned (RTL). Every visual el",
+      "size": "1:1",
+      "angle": "Fear-based infestation awareness + immediate solution",
+      "folderId": "root",
+      "id": "gal-1775729958712-rkryhn",
+      "filename": "gal-1775729958712-rkryhn.png",
+      "url": "/api/gallery/file/gal-1775729958712-rkryhn.png",
+      "createdAt": "2026-04-09T10:19:19.434Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775730044679-stud0q2873.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'Pestie' with 'Bugo' and (2) replace all English text with Hebrew text, right-aligned (RTL). Every visual el",
+      "size": "1:1",
+      "angle": "Problem recognition + technology solution",
+      "folderId": "root",
+      "id": "gal-1775730048406-07bmnh",
+      "filename": "gal-1775730048406-07bmnh.png",
+      "url": "/api/gallery/file/gal-1775730048406-07bmnh.png",
+      "createdAt": "2026-04-09T10:20:49.406Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/r/6394069a0c6155865d4aba40417266bc_1775730060_mh3pev4c.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'PestLab' with 'Bugo' and (2) replace all English text with Hebrew text, right-aligned (RTL). Every visual e",
+      "size": "9:16",
+      "angle": "Exclusive scarcity offer with cost savings",
+      "folderId": "root",
+      "id": "gal-1775730063681-bncuwk",
+      "filename": "gal-1775730063681-bncuwk.png",
+      "url": "/api/gallery/file/gal-1775730063681-bncuwk.png",
+      "createdAt": "2026-04-09T10:21:04.464Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775730076881-yej7c6bf56.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'PestLab' with 'Bugo' on the device and (2) replace all English text with Hebrew text, right-aligned (RTL). ",
+      "size": "9:16",
+      "angle": "Social proof emphasizing effectiveness and safety",
+      "folderId": "root",
+      "id": "gal-1775730078454-69q4nd",
+      "filename": "gal-1775730078454-69q4nd.png",
+      "url": "/api/gallery/file/gal-1775730078454-69q4nd.png",
+      "createdAt": "2026-04-09T10:21:19.815Z"
     }
   ],
   "folders": [
