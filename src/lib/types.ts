@@ -53,6 +53,7 @@ export interface ReferenceAd {
   promptMode: PromptMode;
   copyVariations?: CopyVariation[];
   selectedVariationId?: string;
+  selectedVariationIds?: string[]; // multi-selection for generation
   generations?: GenerationJob[];
 }
 
@@ -130,5 +131,6 @@ export type WorkflowAction =
   | { type: "SET_SELECTED_PRODUCTS"; ids: string[] }
   | { type: "UPDATE_COPY_SECTION"; refId: string; variationId: string; sectionId: string; text: string }
   | { type: "SELECT_VARIATION"; refId: string; variationId: string }
+  | { type: "TOGGLE_VARIATION_FOR_GENERATION"; refId: string; variationId: string }
   | { type: "UPDATE_GENERATION"; refId: string; jobId: string; updates: Partial<GenerationJob> }
   | { type: "RESET" };

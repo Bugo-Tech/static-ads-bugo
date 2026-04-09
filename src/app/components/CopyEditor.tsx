@@ -5,7 +5,9 @@ import { CopyVariation, Language } from "@/lib/types";
 interface CopyEditorProps {
   variations: CopyVariation[];
   selectedVariationId?: string;
+  selectedVariationIds?: string[];
   onSelectVariation: (id: string) => void;
+  onToggleForGeneration: (id: string) => void;
   onUpdateSection: (variationId: string, sectionId: string, text: string) => void;
   language: Language;
 }
@@ -15,7 +17,9 @@ const rtlLanguages: Language[] = ["he", "ar"];
 export default function CopyEditor({
   variations,
   selectedVariationId,
+  selectedVariationIds = [],
   onSelectVariation,
+  onToggleForGeneration,
   onUpdateSection,
   language,
 }: CopyEditorProps) {
@@ -23,24 +27,53 @@ export default function CopyEditor({
 
   return (
     <div className="space-y-3">
-      <h4 className="text-sm font-bold text-gray-700">Copy Variations</h4>
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-bold text-gray-700">Copy Variations</h4>
+        <span className="text-xs text-gray-400">
+          {selectedVariationIds.length} selected for generation
+        </span>
+      </div>
 
-      {/* Variation tabs */}
-      <div className="flex gap-2">
-        {variations.map((v, i) => (
-          <button
-            key={v.id}
-            onClick={() => onSelectVariation(v.id)}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
-              v.id === selectedVariationId
-                ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            Variation {i + 1}
-            <span className="ml-1 text-xs opacity-70">({v.angle})</span>
-          </button>
-        ))}
+      {/* Variation tabs with checkboxes */}
+      <div className="flex flex-wrap gap-2">
+        {variations.map((v, i) => {
+          const isViewing = v.id === selectedVariationId;
+          const isSelectedForGen = selectedVariationIds.includes(v.id);
+
+          return (
+            <div key={v.id} className="flex items-center gap-1">
+              {/* Checkbox for generation selection */}
+              <button
+                onClick={() => onToggleForGeneration(v.id)}
+                className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-all ${
+                  isSelectedForGen
+                    ? "border-accent bg-accent text-white"
+                    : "border-gray-300 bg-white hover:border-gray-400"
+                }`}
+                title={isSelectedForGen ? "Remove from generation" : "Add to generation"}
+              >
+                {isSelectedForGen && (
+                  <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </button>
+
+              {/* Tab button to view/edit */}
+              <button
+                onClick={() => onSelectVariation(v.id)}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+                  isViewing
+                    ? "bg-primary text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                Variation {i + 1}
+                <span className="ml-1 text-xs opacity-70">({v.angle})</span>
+              </button>
+            </div>
+          );
+        })}
       </div>
 
       {/* Active variation sections */}

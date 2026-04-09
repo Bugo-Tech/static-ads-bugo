@@ -32,6 +32,7 @@ export default function Home() {
     setSelectedProducts,
     updateCopySection,
     selectVariation,
+    toggleVariationForGeneration,
     updateGeneration,
     reset,
   } = useAdWorkflow();
@@ -54,6 +55,21 @@ export default function Home() {
               resultUrl: data.resultUrl,
               error: data.error,
             });
+            // Auto-save to gallery when completed
+            if (data.status === "completed" && data.resultUrl) {
+              fetch("/api/gallery", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  action: "add-image",
+                  sourceUrl: data.resultUrl,
+                  prompt: ref.prompt?.substring(0, 200) || "",
+                  size: gen.size,
+                  angle: ref.copyVariations?.find((v) => v.id === gen.variationId)?.angle || "",
+                  folderId: "root",
+                }),
+              }).catch(() => {}); // silently save
+            }
           }
         } catch {
           // silently retry on next poll
@@ -125,61 +141,79 @@ export default function Home() {
     setStep("review");
   }
 
-  // --- Generate ---
+  // --- Generate (runs in background, doesn't block UI) ---
   async function handleGenerate() {
     setStep("generate");
 
+    // Fire off all generations without awaiting — they run in background
     for (const ref of state.references) {
       if (ref.status === "error" || !ref.analysis) continue;
       updateReference(ref.id, { status: "generating" });
 
-      const selectedVariation = ref.copyVariations?.find(
-        (v) => v.id === ref.selectedVariationId
-      ) || ref.copyVariations?.[0];
+      // Get all selected variations (multi-select)
+      const variationIds = ref.selectedVariationIds?.length
+        ? ref.selectedVariationIds
+        : [ref.selectedVariationId || ref.copyVariations?.[0]?.id || ""];
+
+      const selectedVariations = variationIds
+        .map((vId) => ref.copyVariations?.find((v) => v.id === vId))
+        .filter(Boolean);
 
       const sizes: ("1:1" | "9:16")[] = ["1:1", "9:16"];
 
-      try {
-        const jobs = await Promise.all(
-          sizes.map(async (size) => {
-            const res = await fetch("/api/generate-image", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                prompt: ref.prompt,
-                referenceImageUrl: ref.uploadedUrl,
-                productImageIds: state.selectedProductImageIds,
-                size,
-                copyVariation: selectedVariation,
-              }),
-            });
-            const data = await res.json();
-            if (!res.ok || !data.jobId) {
-              return {
-                jobId: `failed-${size}-${Date.now()}`,
-                size,
-                variationId: selectedVariation?.id || "",
-                status: "failed" as const,
-                error: data.error || "Failed to submit generation",
-              };
-            }
-            return {
-              jobId: data.jobId,
-              size,
-              variationId: selectedVariation?.id || "",
-              status: "queued" as const,
-            };
-          })
-        );
-        updateReference(ref.id, { generations: jobs });
-      } catch {
-        updateReference(ref.id, { status: "error", error: "Generation failed" });
-      }
+      // Generate for each selected variation x each size
+      (async () => {
+        try {
+          const jobs = await Promise.all(
+            selectedVariations.flatMap((variation) =>
+              sizes.map(async (size) => {
+                const res = await fetch("/api/generate-image", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    prompt: ref.prompt,
+                    referenceImageUrl: ref.uploadedUrl,
+                    productImageIds: state.selectedProductImageIds,
+                    size,
+                    copyVariation: variation,
+                  }),
+                });
+                const data = await res.json();
+                if (!res.ok || !data.jobId) {
+                  return {
+                    jobId: `failed-${size}-${variation?.id}-${Date.now()}`,
+                    size,
+                    variationId: variation?.id || "",
+                    status: "failed" as const,
+                    error: data.error || "Failed to submit generation",
+                  };
+                }
+                return {
+                  jobId: data.jobId,
+                  size,
+                  variationId: variation?.id || "",
+                  status: "queued" as const,
+                };
+              })
+            )
+          );
+          updateReference(ref.id, { generations: jobs });
+        } catch {
+          updateReference(ref.id, { status: "error", error: "Generation failed" });
+        }
+      })();
     }
   }
 
   const canAnalyze = state.references.length > 0 && state.references.some((r) => r.status === "idle");
   const canGenerate = state.references.some((r) => r.status === "analyzed");
+
+  // Count total images that will be generated
+  const totalToGenerate = state.references.reduce((sum, ref) => {
+    if (ref.status !== "analyzed") return sum;
+    const varCount = ref.selectedVariationIds?.length || 1;
+    return sum + varCount * 2; // 2 sizes per variation
+  }, 0);
   const allDone = state.step === "generate" && state.references.every(
     (r) => r.status === "done" || r.status === "error" ||
     (r.generations || []).every((g) => g.status === "completed" || g.status === "failed")
@@ -200,6 +234,12 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <a
+              href="/gallery"
+              className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Gallery
+            </a>
             <a
               href="/brand"
               className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
@@ -371,7 +411,9 @@ export default function Home() {
                       <CopyEditor
                         variations={ref.copyVariations}
                         selectedVariationId={ref.selectedVariationId}
+                        selectedVariationIds={ref.selectedVariationIds || [ref.selectedVariationId || ref.copyVariations[0]?.id || ""]}
                         onSelectVariation={(vId) => selectVariation(ref.id, vId)}
+                        onToggleForGeneration={(vId) => toggleVariationForGeneration(ref.id, vId)}
                         onUpdateSection={(vId, sId, text) =>
                           updateCopySection(ref.id, vId, sId, text)
                         }
@@ -389,7 +431,7 @@ export default function Home() {
                 disabled={!canGenerate}
                 className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Generate Ads
+                Generate {totalToGenerate} Ad{totalToGenerate !== 1 ? "s" : ""}
               </button>
             </div>
           </div>

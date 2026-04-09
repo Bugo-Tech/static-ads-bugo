@@ -89,6 +89,20 @@ function workflowReducer(state: WorkflowState, action: WorkflowAction): Workflow
         ),
       };
 
+    case "TOGGLE_VARIATION_FOR_GENERATION":
+      return {
+        ...state,
+        references: state.references.map((r) => {
+          if (r.id !== action.refId) return r;
+          const current = r.selectedVariationIds || [r.selectedVariationId || ""];
+          const has = current.includes(action.variationId);
+          const updated = has
+            ? current.filter((id) => id !== action.variationId)
+            : [...current, action.variationId];
+          return { ...r, selectedVariationIds: updated.length > 0 ? updated : current };
+        }),
+      };
+
     case "UPDATE_GENERATION":
       return {
         ...state,
@@ -158,6 +172,12 @@ export function useAdWorkflow() {
     []
   );
 
+  const toggleVariationForGeneration = useCallback(
+    (refId: string, variationId: string) =>
+      dispatch({ type: "TOGGLE_VARIATION_FOR_GENERATION", refId, variationId }),
+    []
+  );
+
   const updateGeneration = useCallback(
     (refId: string, jobId: string, updates: Partial<import("@/lib/types").GenerationJob>) =>
       dispatch({ type: "UPDATE_GENERATION", refId, jobId, updates }),
@@ -177,6 +197,7 @@ export function useAdWorkflow() {
     setSelectedProducts,
     updateCopySection,
     selectVariation,
+    toggleVariationForGeneration,
     updateGeneration,
     reset,
   };
