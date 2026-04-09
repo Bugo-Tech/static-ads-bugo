@@ -46,7 +46,7 @@ export async function submitGeneration(params: GenerateImageParams): Promise<Gen
   }
 
   const body = {
-    model: "google/nano-banana",
+    model: "nano-banana-pro",
     input,
   };
 
