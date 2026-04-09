@@ -19,8 +19,16 @@ export default function ProductLibrary({
   useEffect(() => {
     fetch("/api/products")
       .then((r) => r.json())
-      .then((data) => setProducts(data.products || []))
+      .then((data) => {
+        const prods = data.products || [];
+        setProducts(prods);
+        // Auto-select all product images if none are selected yet
+        if (selectedIds.length === 0 && prods.length > 0) {
+          onSelectionChange(prods.map((p: ProductImage) => p.id));
+        }
+      })
       .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleUpload(files: FileList | null) {

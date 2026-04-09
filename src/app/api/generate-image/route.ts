@@ -59,9 +59,9 @@ export async function POST(request: NextRequest) {
     console.log("Size:", size);
     console.log("=== END DEBUG ===");
 
-    // If product image is provided, add instruction to replace original product
+    // If product image is provided, add explicit instruction
     if (publicProductUrl) {
-      finalPrompt += `\n\nPRODUCT IMAGE REPLACEMENT: The second reference image is the Bugo product photo. Replace ALL product/package images in the ad with this exact Bugo device. Do NOT keep the original product packaging or bottles — replace them entirely with the Bugo device shown in the second image. The Bugo device is a white oval/egg-shaped ultrasonic pest repeller with a blue LED glow.`;
+      finalPrompt += `\n\nCRITICAL — PRODUCT IMAGE: You are receiving TWO images. Image 1 is the reference ad to replicate. Image 2 is the EXACT Bugo product photo — you MUST use this exact product image (not an approximation or recreation) to replace ALL product/package images in the ad. Copy the Bugo device from Image 2 pixel-for-pixel into the ad layout. Do NOT generate or approximate the device — use the provided photo exactly as it appears. The Bugo device must look IDENTICAL to Image 2.`;
     }
 
     const result = await submitGeneration({
