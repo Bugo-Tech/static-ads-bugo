@@ -1,5 +1,721 @@
 [
   {
+    "referencePreviewUrl": "blob:http://localhost:3001/7b8fd145-e0fe-4db0-b6a0-1f265a66f4e5",
+    "uploadedUrl": "/api/upload/file/1775837292724-xv2ipw.jpg",
+    "analysis": {
+      "layout": "Split-screen vertical layout with product showcase on left (hand holding supplement bottle) and problem demonstration on right (hand holding hair brush with hair loss). Clean beige/cream background on both sides.",
+      "copyFound": [
+        "הכירו את",
+        "GROW BY GOOM",
+        "תוסף תזונה בגומי טעים שימכיל כוח של מעבדה שלמה עבור השיער שלך",
+        "שוב מברשת השיער נראית כך?",
+        "הפסו לשיער",
+        "כשהזקנים טעימים מכל",
+        "באישור משרד הבריאות",
+        "16 רכיבים פעילים",
+        "חדש באתר",
+        "גמי בטעם תות"
+      ],
+      "copySections": [
+        {
+          "label": "intro-text",
+          "text": "הכירו את"
+        },
+        {
+          "label": "brand-name",
+          "text": "GROW BY GOOM"
+        },
+        {
+          "label": "product-description",
+          "text": "תוסף תזונה בגומי טעים שימכיל כוח של מעבדה שלמה עבור השיער שלך"
+        },
+        {
+          "label": "problem-headline",
+          "text": "שוב מברשת השיער נראית כך?"
+        },
+        {
+          "label": "cta-primary",
+          "text": "הפסו לשיער"
+        },
+        {
+          "label": "feature-1",
+          "text": "כשהזקנים טעימים מכל"
+        },
+        {
+          "label": "certification",
+          "text": "באישור משרד הבריאות"
+        },
+        {
+          "label": "feature-2",
+          "text": "16 רכיבים פעילים"
+        },
+        {
+          "label": "badge",
+          "text": "חדש באתר"
+        },
+        {
+          "label": "flavor",
+          "text": "גמי בטעם תות"
+        }
+      ],
+      "productPlacement": "Left side shows hand holding blue supplement bottle with GOOM branding. Right side shows hand holding black hair brush with excessive hair loss strands stuck in bristles.",
+      "colorScheme": [
+        "#E8E0D5",
+        "#2E5BBA",
+        "#FFFFFF",
+        "#DC143C",
+        "#000000"
+      ],
+      "angle": "Problem-solution comparison showing hair loss problem (brush full of fallen hair) vs. solution (hair growth supplement)",
+      "niche": "other",
+      "nicheMapping": "Hair care supplement mapped to pest control: Left side shows the Bugo device solution, right side shows pest problem (cockroaches/pests in kitchen/home area). The before/after concept translates to pest-infested space vs. clean protected home.",
+      "suggestedPrompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace the supplement bottle with the Bugo ultrasonic pest repeller device and (2) replace all text with Hebrew pest control copy, maintaining RTL alignment.\n\nBACKGROUND: Clean beige/cream background (#E8E0D5) split vertically down the middle. Left side same cream tone, right side identical cream tone. No gradients, patterns, or textures.\n\nLEFT SIDE - SOLUTION:\nTOP TEXT (right-aligned Hebrew RTL):\nLine 1: \"הכירו את\" - dark gray (#333333), medium sans-serif font, positioned top-right\nLine 2: \"BUGO\" - large white bold text with dark outline/shadow effect, prominent display font\nLine 3: Long red banner/pill shape (#DC143C) with white text inside: \"מכשיר הדברה אולטרסוני ואלקטרומגנטי להרחקת מזיקים מהבית\"\n\nPRODUCT IMAGE: REMOVE the blue supplement bottle completely. Replace with the Bugo device - white oval/egg-shaped ultrasonic pest repeller held in the same hand position, same angle. Device has blue LED glow from bottom rim, 'Bugo' text on face. Hand positioning identical to reference.\n\nBOTTOM LEFT FEATURES (red pill-shaped badges):\n- \"הפסו למזיקים\" (red pill #DC143C, white text)\n- \"טכנולוgia דו-גלית\" (red pill)\n- \"באישור מוסדות\" (red pill)\n- \"עד 28 מ״ר כיסוי\" (red pill)\n- \"חדש בישראל\" (red pill)\n- \"בטוח לילדים וחיות\" (red pill)\n\nRIGHT SIDE - PROBLEM:\nTOP QUESTION (right-aligned Hebrew RTL): \"שוב מברשת השיער נראית כך?\" BECOMES \"שוב המטבח מלא מזיקים?\"\n\nPROBLEM IMAGE: REMOVE the hair brush with hair strands. Replace with a hand holding a kitchen utensil (spatula or wooden spoon) with 3-4 realistic black cockroach silhouettes crawling on it, positioned exactly where the hair strands were in the reference. Maintain same hand position and angle.\n\nCIRCULAR LOGO: Bottom right corner - white 'G' logo becomes white 'B' (Bugo logo) in same circular design, same size and position.\n\nTYPOGRAPHY: All Hebrew text right-aligned (RTL), same font weights and hierarchy as original. Red elements maintain exact same red color (#DC143C). White text maintains same styling with shadows/outlines.\n\nSPACING AND PROPORTIONS: Maintain exact spacing between all elements, same margins, same text-to-image ratios as reference.\n\nASPECT RATIO: 1:1 (square format)\n\nDO NOT add any element not present in the reference. DO NOT remove layout elements. DO NOT change positioning, colors, or proportions."
+    },
+    "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace the supplement bottle with the Bugo ultrasonic pest repeller device and (2) replace all text with Hebrew pest control copy, maintaining RTL alignment.\n\nBACKGROUND: Clean beige/cream background (#E8E0D5) split vertically down the middle. Left side same cream tone, right side identical cream tone. No gradients, patterns, or textures.\n\nLEFT SIDE - SOLUTION:\nTOP TEXT (right-aligned Hebrew RTL):\nLine 1: \"הכירו את\" - dark gray (#333333), medium sans-serif font, positioned top-right\nLine 2: \"BUGO\" - large white bold text with dark outline/shadow effect, prominent display font\nLine 3: Long red banner/pill shape (#DC143C) with white text inside: \"מכשיר הדברה אולטרסוני ואלקטרומגנטי להרחקת מזיקים מהבית\"\n\nPRODUCT IMAGE: REMOVE the blue supplement bottle completely. Replace with the Bugo device - white oval/egg-shaped ultrasonic pest repeller held in the same hand position, same angle. Device has blue LED glow from bottom rim, 'Bugo' text on face. Hand positioning identical to reference.\n\nBOTTOM LEFT FEATURES (red pill-shaped badges):\n- \"הפסו למזיקים\" (red pill #DC143C, white text)\n- \"טכנולוgia דו-גלית\" (red pill)\n- \"באישור מוסדות\" (red pill)\n- \"עד 28 מ״ר כיסוי\" (red pill)\n- \"חדש בישראל\" (red pill)\n- \"בטוח לילדים וחיות\" (red pill)\n\nRIGHT SIDE - PROBLEM:\nTOP QUESTION (right-aligned Hebrew RTL): \"שוב מברשת השיער נראית כך?\" BECOMES \"שוב המטבח מלא מזיקים?\"\n\nPROBLEM IMAGE: REMOVE the hair brush with hair strands. Replace with a hand holding a kitchen utensil (spatula or wooden spoon) with 3-4 realistic black cockroach silhouettes crawling on it, positioned exactly where the hair strands were in the reference. Maintain same hand position and angle.\n\nCIRCULAR LOGO: Bottom right corner - white 'G' logo becomes white 'B' (Bugo logo) in same circular design, same size and position.\n\nTYPOGRAPHY: All Hebrew text right-aligned (RTL), same font weights and hierarchy as original. Red elements maintain exact same red color (#DC143C). White text maintains same styling with shadows/outlines.\n\nSPACING AND PROPORTIONS: Maintain exact spacing between all elements, same margins, same text-to-image ratios as reference.\n\nASPECT RATIO: 1:1 (square format)\n\nDO NOT add any element not present in the reference. DO NOT remove layout elements. DO NOT change positioning, colors, or proportions.",
+    "copyVariations": [
+      {
+        "id": "var-1",
+        "angle": "Problem-solution comparison focusing on kitchen pest infestation",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "intro-text",
+            "originalText": "הכירו את",
+            "adaptedText": "הכירו את"
+          },
+          {
+            "id": "s2",
+            "label": "brand-name",
+            "originalText": "GROW BY GOOM",
+            "adaptedText": "BUGO"
+          },
+          {
+            "id": "s3",
+            "label": "product-description",
+            "originalText": "תוסף תזונה בגומי טעים שימכיל כוח של מעבדה שלמה עבור השיער שלך",
+            "adaptedText": "מכשיר הדברה אולטרסוני ואלקטרומגנטי להרחקת מזיקים מהבית"
+          },
+          {
+            "id": "s4",
+            "label": "problem-headline",
+            "originalText": "שוב מברשת השיער נראית כך?",
+            "adaptedText": "שוב המטבח מלא מזיקים?"
+          },
+          {
+            "id": "s5",
+            "label": "cta-primary",
+            "originalText": "הפסו לשיער",
+            "adaptedText": "הפסו למזיקים"
+          },
+          {
+            "id": "s6",
+            "label": "feature-1",
+            "originalText": "כשהזקנים טעימים מכל",
+            "adaptedText": "טכנולוגיה דו-גלית"
+          },
+          {
+            "id": "s7",
+            "label": "certification",
+            "originalText": "באישור משרד הבריאות",
+            "adaptedText": "באישור מוסדות"
+          },
+          {
+            "id": "s8",
+            "label": "feature-2",
+            "originalText": "16 רכיבים פעילים",
+            "adaptedText": "עד 28 מ״ר כיסוי"
+          },
+          {
+            "id": "s9",
+            "label": "badge",
+            "originalText": "חדש באתר",
+            "adaptedText": "חדש בישראל"
+          },
+          {
+            "id": "s10",
+            "label": "flavor",
+            "originalText": "גמי בטעם תות",
+            "adaptedText": "בטוח לילדים וחיות"
+          }
+        ]
+      },
+      {
+        "id": "var-2",
+        "angle": "Safety and family protection focus",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "intro-text",
+            "originalText": "הכירו את",
+            "adaptedText": "הכירו את"
+          },
+          {
+            "id": "s2",
+            "label": "brand-name",
+            "originalText": "GROW BY GOOM",
+            "adaptedText": "BUGO"
+          },
+          {
+            "id": "s3",
+            "label": "product-description",
+            "originalText": "תוסף תזונה בגומי טעים שימכיל כוח של מעבדה שלמה עבור השיער שלך",
+            "adaptedText": "הגנה מלאה ללא כימיקלים - בטוח למשפחה שלכם"
+          },
+          {
+            "id": "s4",
+            "label": "problem-headline",
+            "originalText": "שוב מברשת השיער נראית כך?",
+            "adaptedText": "עוד פעם ג'וקים במטבח?"
+          },
+          {
+            "id": "s5",
+            "label": "cta-primary",
+            "originalText": "הפסו לשיער",
+            "adaptedText": "הגנו על הבית"
+          },
+          {
+            "id": "s6",
+            "label": "feature-1",
+            "originalText": "כשהזקנים טעימים מכל",
+            "adaptedText": "ללא רעלים וכימיקלים"
+          },
+          {
+            "id": "s7",
+            "label": "certification",
+            "originalText": "באישור משרד הבריאות",
+            "adaptedText": "מוכח ובטוח"
+          },
+          {
+            "id": "s8",
+            "label": "feature-2",
+            "originalText": "16 רכיבים פעילים",
+            "adaptedText": "8 סוגי מזיקים"
+          },
+          {
+            "id": "s9",
+            "label": "badge",
+            "originalText": "חדש באתר",
+            "adaptedText": "הגנה 24/7"
+          },
+          {
+            "id": "s10",
+            "label": "flavor",
+            "originalText": "גמי בטעם תות",
+            "adaptedText": "שקט ובלתי נראה"
+          }
+        ]
+      },
+      {
+        "id": "var-3",
+        "angle": "Technology and effectiveness emphasis",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "intro-text",
+            "originalText": "הכירו את",
+            "adaptedText": "הכירו את"
+          },
+          {
+            "id": "s2",
+            "label": "brand-name",
+            "originalText": "GROW BY GOOM",
+            "adaptedText": "BUGO"
+          },
+          {
+            "id": "s3",
+            "label": "product-description",
+            "originalText": "תוסף תזונה בגומי טעים שימכיל כוח של מעבדה שלמה עבור השיער שלך",
+            "adaptedText": "טכנולוגיה מתקדמת - גלים אולטרסוניים ואלקטרומגנטיים"
+          },
+          {
+            "id": "s4",
+            "label": "problem-headline",
+            "originalText": "שוב מברשת השיער נראית כך?",
+            "adaptedText": "שוב נמלים בסלון?"
+          },
+          {
+            "id": "s5",
+            "label": "cta-primary",
+            "originalText": "הפסו לשיער",
+            "adaptedText": "סלקו מזיקים עכשיו"
+          },
+          {
+            "id": "s6",
+            "label": "feature-1",
+            "originalText": "כשהזקנים טעימים מכל",
+            "adaptedText": "תוצאות תוך ימים"
+          },
+          {
+            "id": "s7",
+            "label": "certification",
+            "originalText": "באישור משרד הבריאות",
+            "adaptedText": "טכנולוגיה מוכחת"
+          },
+          {
+            "id": "s8",
+            "label": "feature-2",
+            "originalText": "16 רכיבים פעילים",
+            "adaptedText": "תדרים משתנים"
+          },
+          {
+            "id": "s9",
+            "label": "badge",
+            "originalText": "חדש באתר",
+            "adaptedText": "חדשני ויעיל"
+          },
+          {
+            "id": "s10",
+            "label": "flavor",
+            "originalText": "גמי בטעם תות",
+            "adaptedText": "פשוט לשימוש"
+          }
+        ]
+      },
+      {
+        "id": "var-4",
+        "angle": "Long-term solution and value",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "intro-text",
+            "originalText": "הכירו את",
+            "adaptedText": "הכירו את"
+          },
+          {
+            "id": "s2",
+            "label": "brand-name",
+            "originalText": "GROW BY GOOM",
+            "adaptedText": "BUGO"
+          },
+          {
+            "id": "s3",
+            "label": "product-description",
+            "originalText": "תוסף תזונה בגומי טעים שימכיל כוח של מעבדה שלמה עבור השיער שלך",
+            "adaptedText": "פתרון לטווח ארוך - 4-5 שנים של הגנה רציפה"
+          },
+          {
+            "id": "s4",
+            "label": "problem-headline",
+            "originalText": "שוב מברשת השיער נראית כך?",
+            "adaptedText": "שוב עכברים בבית?"
+          },
+          {
+            "id": "s5",
+            "label": "cta-primary",
+            "originalText": "הפסו לשיער",
+            "adaptedText": "הבית שלך, בלי מזיקים"
+          },
+          {
+            "id": "s6",
+            "label": "feature-1",
+            "originalText": "כשהזקנים טעימים מכל",
+            "adaptedText": "מחברים ושוכחים"
+          },
+          {
+            "id": "s7",
+            "label": "certification",
+            "originalText": "באישור משרד הבריאות",
+            "adaptedText": "אחריות 30 יום"
+          },
+          {
+            "id": "s8",
+            "label": "feature-2",
+            "originalText": "16 רכיבים פעילים",
+            "adaptedText": "כיסוי 28 מ״ר"
+          },
+          {
+            "id": "s9",
+            "label": "badge",
+            "originalText": "חדש באתר",
+            "adaptedText": "פתרון קבוע"
+          },
+          {
+            "id": "s10",
+            "label": "flavor",
+            "originalText": "גמי בטעם תות",
+            "adaptedText": "139 ש״ח בלבד"
+          }
+        ]
+      }
+    ],
+    "language": "he",
+    "id": "hist-1775837358401-fb4b",
+    "createdAt": "2026-04-10T16:09:18.401Z"
+  },
+  {
+    "referencePreviewUrl": "blob:http://localhost:3001/45874354-41f4-43a8-9f58-dddc5de43ed5",
+    "uploadedUrl": "/api/upload/file/1775745591392-fuewl9.jpg",
+    "analysis": {
+      "layout": "Split-screen comparison ad with light blue left side showing 'old' solution and dark blue right side showing 'new' solution, with a banner message at bottom spanning both sides",
+      "copyFound": [
+        "הישן והמסורבל",
+        "כולל פלסטיק מיותר",
+        "תופס מקום בארון",
+        "החדש והקומפקטי",
+        "נמס לחלוטין במים",
+        "חוסר מקום אחסון",
+        "80 המטות בערכ ח/ש",
+        "Green FLOW",
+        "Eco-Friendly",
+        "דפים לבנים כלים במדיח כלים",
+        "מוצרים מוצדים",
+        "עמיד בפלסטיק - לליד בלבד",
+        "הגיע הזמן להתקדם לניקיון חכם, נסו את גרין פלואו."
+      ],
+      "copySections": [
+        {
+          "label": "left-headline",
+          "text": "הישן והמסורבל"
+        },
+        {
+          "label": "left-subtext-1",
+          "text": "כולל פלסטיק מיותר"
+        },
+        {
+          "label": "left-subtext-2",
+          "text": "תופס מקום בארון"
+        },
+        {
+          "label": "right-headline",
+          "text": "החדש והקומפקטי"
+        },
+        {
+          "label": "right-subtext-1",
+          "text": "נמס לחלוטין במים"
+        },
+        {
+          "label": "right-subtext-2",
+          "text": "חוסר מקום אחסון"
+        },
+        {
+          "label": "product-badge",
+          "text": "80 המטות בערכ ח/ש"
+        },
+        {
+          "label": "brand-name",
+          "text": "Green FLOW"
+        },
+        {
+          "label": "eco-badge",
+          "text": "Eco-Friendly"
+        },
+        {
+          "label": "product-description",
+          "text": "דפים לבנים כלים במדיח כלים"
+        },
+        {
+          "label": "bottom-banner",
+          "text": "הגיע הזמן להתקדם לניקיון חכם, נסו את גרין פלואו."
+        }
+      ],
+      "productPlacement": "Left side shows old dishwasher tablet in bulky plastic packaging, right side shows new eco-friendly dishwasher sheets in compact packaging with water splash effects",
+      "colorScheme": [
+        "#87CEEB",
+        "#1E3A8A",
+        "#FFFFFF",
+        "#000000"
+      ],
+      "angle": "Old vs new comparison - traditional bulky solution versus modern compact innovation",
+      "niche": "other",
+      "nicheMapping": "Dishwasher tablet comparison maps to pest control methods: Left side shows traditional pest control (sprays, traps, exterminators) - messy, temporary, expensive. Right side shows Bugo - clean, permanent, compact solution. The 'dissolves completely' concept becomes 'pests disappear completely'. The eco-friendly angle becomes safe for family/pets.",
+      "suggestedPrompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace all product imagery with pest control context and (2) adapt all text to Hebrew pest control messaging while maintaining identical positioning and styling.\n\nBACKGROUND: Split-screen layout with light powder blue gradient (#B0E0E6 to #87CEEB) on left side, deep navy blue gradient (#1E3A8A to #0F172A) on right side. Clean vertical division down the center.\n\nLEFT SIDE (Traditional Method):\nHEADLINE (top-left, right-aligned): 'הדרך הישנה והמסורבלת' - white text with dark blue outline, bold sans-serif font, approximately 32px size.\nSUBTEXT-1 (below headline): 'כימיקלים ורעלים מסוכנים' - dark blue text, medium weight, 18px.\nSUBTEXT-2 (below subtext-1): 'פתרון זמני ויקר' - dark blue text, medium weight, 18px.\nVISUAL ELEMENT: Replace dishwasher tablet with illustration of pest spray bottles, mouse traps, and exterminator equipment scattered messily. Show cockroach and ant silhouettes around the items to indicate the pest problem persists.\n\nRIGHT SIDE (Bugo Solution):\nHEADLINE (top-right, right-aligned): 'החדש והחכם' - white text, bold sans-serif, 32px.\nSUBTEXT-1 (below headline): 'ללא כימיקלים מזיקים' - white text, medium weight, 18px.\nSUBTEXT-2 (below subtext-1): 'פתרון קבוע וחסכוני' - white text, medium weight, 18px.\n\nPRODUCT (center-right): REMOVE the Green Flow packaging completely. Place the Bugo device - white oval/egg-shaped ultrasonic pest repeller with blue LED glow (#2196F3) from bottom rim, 'Bugo' text in gray on device face. Position at same angle as original product. Add subtle blue glow effect around device.\n\nPRODUCT BADGE (top-right corner): White rounded rectangle with blue border, Hebrew text: 'כיסוי עד 28 מ\"ר' - blue text, bold, 14px.\n\nBRAND REPLACEMENT: Replace 'Green FLOW' with 'Bugo' in same white text style and position.\n\nECO BADGE: Replace 'Eco-Friendly' with 'בטוח למשפחה' in same white text style.\n\nPRODUCT DESCRIPTION: Replace dishwasher text with 'הרחקת מזיקים ללא כימיקלים' in same white text positioning.\n\nWATER EFFECTS: Replace water splash effects with subtle blue wave/sound wave graphics emanating from the Bugo device to represent ultrasonic waves.\n\nBOTTOM BANNER: White rounded rectangle spanning both sides, same positioning as original.\nBANNER TEXT (center, dark blue): 'הגיע הזמן להתקדם להדברה חכמה, נסו את בוגו.' - dark blue text (#1E3A8A), medium bold, 20px, right-aligned (RTL).\n\nASPECT RATIO: 1:1 (square format)\n\nDO NOT add any element not present in the reference. DO NOT remove the split-screen layout, banner, or any structural elements. DO NOT reposition any text or visual elements - only replace content within existing positions."
+    },
+    "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace all product imagery with pest control context and (2) adapt all text to Hebrew pest control messaging while maintaining identical positioning and styling.\n\nBACKGROUND: Split-screen layout with light powder blue gradient (#B0E0E6 to #87CEEB) on left side, deep navy blue gradient (#1E3A8A to #0F172A) on right side. Clean vertical division down the center.\n\nLEFT SIDE (Traditional Method):\nHEADLINE (top-left, right-aligned): 'הדרך הישנה והמסורבלת' - white text with dark blue outline, bold sans-serif font, approximately 32px size.\nSUBTEXT-1 (below headline): 'כימיקלים ורעלים מסוכנים' - dark blue text, medium weight, 18px.\nSUBTEXT-2 (below subtext-1): 'פתרון זמני ויקר' - dark blue text, medium weight, 18px.\nVISUAL ELEMENT: Replace dishwasher tablet with illustration of pest spray bottles, mouse traps, and exterminator equipment scattered messily. Show cockroach and ant silhouettes around the items to indicate the pest problem persists.\n\nRIGHT SIDE (Bugo Solution):\nHEADLINE (top-right, right-aligned): 'החדש והחכם' - white text, bold sans-serif, 32px.\nSUBTEXT-1 (below headline): 'ללא כימיקלים מזיקים' - white text, medium weight, 18px.\nSUBTEXT-2 (below subtext-1): 'פתרון קבוע וחסכוני' - white text, medium weight, 18px.\n\nPRODUCT (center-right): REMOVE the Green Flow packaging completely. Place the Bugo device - white oval/egg-shaped ultrasonic pest repeller with blue LED glow (#2196F3) from bottom rim, 'Bugo' text in gray on device face. Position at same angle as original product. Add subtle blue glow effect around device.\n\nPRODUCT BADGE (top-right corner): White rounded rectangle with blue border, Hebrew text: 'כיסוי עד 28 מ\"ר' - blue text, bold, 14px.\n\nBRAND REPLACEMENT: Replace 'Green FLOW' with 'Bugo' in same white text style and position.\n\nECO BADGE: Replace 'Eco-Friendly' with 'בטוח למשפחה' in same white text style.\n\nPRODUCT DESCRIPTION: Replace dishwasher text with 'הרחקת מזיקים ללא כימיקלים' in same white text positioning.\n\nWATER EFFECTS: remove water at all \n\nBOTTOM BANNER: White rounded rectangle spanning both sides, same positioning as original.\nBANNER TEXT (center, dark blue): 'הגיע הזמן להתקדם להדברה חכמה, נסו את בוגו.' - dark blue text (#1E3A8A), medium bold, 20px, right-aligned (RTL).\n\nASPECT RATIO: 1:1 (square format)\n\nDO NOT add any element not present in the reference. DO NOT remove the split-screen layout, banner, or any structural elements. DO NOT reposition any text or visual elements - only replace content within existing positions.",
+    "copyVariations": [
+      {
+        "id": "var-1",
+        "angle": "Traditional vs modern pest control methods",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "left-headline",
+            "originalText": "הישן והמסורבל",
+            "adaptedText": "הדרך הישנה והמסורבלת"
+          },
+          {
+            "id": "s2",
+            "label": "left-subtext-1",
+            "originalText": "כולל פלסטיק מיותר",
+            "adaptedText": "כימיקלים ורעלים מסוכנים"
+          },
+          {
+            "id": "s3",
+            "label": "left-subtext-2",
+            "originalText": "תופס מקום בארון",
+            "adaptedText": "פתרון זמני ויקר"
+          },
+          {
+            "id": "s4",
+            "label": "right-headline",
+            "originalText": "החדש והקומפקטי",
+            "adaptedText": "החדש והחכם"
+          },
+          {
+            "id": "s5",
+            "label": "right-subtext-1",
+            "originalText": "נמס לחלוטין במים",
+            "adaptedText": "ללא כימיקלים מזיקים"
+          },
+          {
+            "id": "s6",
+            "label": "right-subtext-2",
+            "originalText": "חוסר מקום אחסון",
+            "adaptedText": "פתרון קבוע וחסכוני"
+          },
+          {
+            "id": "s7",
+            "label": "product-badge",
+            "originalText": "80 המטות בערכ ח/ש",
+            "adaptedText": "עד 5 שנות הגנה מלאה "
+          },
+          {
+            "id": "s8",
+            "label": "brand-name",
+            "originalText": "Green FLOW",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s9",
+            "label": "eco-badge",
+            "originalText": "Eco-Friendly",
+            "adaptedText": "בטוח למשפחה ולחיות המחמד "
+          },
+          {
+            "id": "s10",
+            "label": "product-description",
+            "originalText": "דפים לבנים כלים במדיח כלים",
+            "adaptedText": "הרחקת מזיקים ללא כימיקלים"
+          },
+          {
+            "id": "s11",
+            "label": "bottom-banner",
+            "originalText": "הגיע הזמן להתקדם לניקיון חכם, נסו את גרין פלואו.",
+            "adaptedText": "הגיע הזמן להתקדם להדברה חכמה, נסו את באגו "
+          }
+        ]
+      },
+      {
+        "id": "var-2",
+        "angle": "Cost comparison - expensive exterminators vs one-time Bugo investment",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "left-headline",
+            "originalText": "הישן והמסורבל",
+            "adaptedText": "יקר ולא יעיל"
+          },
+          {
+            "id": "s2",
+            "label": "left-subtext-1",
+            "originalText": "כולל פלסטיק מיותר",
+            "adaptedText": "מדביר כל חודש - מאות שקלים"
+          },
+          {
+            "id": "s3",
+            "label": "left-subtext-2",
+            "originalText": "תופס מקום בארון",
+            "adaptedText": "המזיקים חוזרים שוב ושוב"
+          },
+          {
+            "id": "s4",
+            "label": "right-headline",
+            "originalText": "החדש והקומפקטי",
+            "adaptedText": "חסכוני ויעיל"
+          },
+          {
+            "id": "s5",
+            "label": "right-subtext-1",
+            "originalText": "נמס לחלוטין במים",
+            "adaptedText": "השקעה חד-פעמית של 139 ש\"ח"
+          },
+          {
+            "id": "s6",
+            "label": "right-subtext-2",
+            "originalText": "חוסר מקום אחסון",
+            "adaptedText": "הגנה רציפה 4-5 שנים"
+          },
+          {
+            "id": "s7",
+            "label": "product-badge",
+            "originalText": "80 המטות בערכ ח/ש",
+            "adaptedText": "חסכון אלפי שקלים"
+          },
+          {
+            "id": "s8",
+            "label": "brand-name",
+            "originalText": "Green FLOW",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s9",
+            "label": "eco-badge",
+            "originalText": "Eco-Friendly",
+            "adaptedText": "חסכוני"
+          },
+          {
+            "id": "s10",
+            "label": "product-description",
+            "originalText": "דפים לבנים כלים במדיח כלים",
+            "adaptedText": "מחברים לשקע ושוכחים"
+          },
+          {
+            "id": "s11",
+            "label": "bottom-banner",
+            "originalText": "הגיע הזמן להתקדם לניקיון חכם, נסו את גרין פלואו.",
+            "adaptedText": "הגיע הזמן לחסוך כסף ולהיפטר מהמזיקים עם בוגו."
+          }
+        ]
+      },
+      {
+        "id": "var-3",
+        "angle": "Safety focus - dangerous chemicals vs safe family solution",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "left-headline",
+            "originalText": "הישן והמסורבל",
+            "adaptedText": "מסוכן ולא בטוח"
+          },
+          {
+            "id": "s2",
+            "label": "left-subtext-1",
+            "originalText": "כולל פלסטיק מיותר",
+            "adaptedText": "רעלים וכימיקלים בבית"
+          },
+          {
+            "id": "s3",
+            "label": "left-subtext-2",
+            "originalText": "תופס מקום בארון",
+            "adaptedText": "סכנה לילדים וחיות מחמד"
+          },
+          {
+            "id": "s4",
+            "label": "right-headline",
+            "originalText": "החדש והקומפקטי",
+            "adaptedText": "בטוח ומוגן"
+          },
+          {
+            "id": "s5",
+            "label": "right-subtext-1",
+            "originalText": "נמס לחלוטין במים",
+            "adaptedText": "טכנולוגיה ללא כימיקלים"
+          },
+          {
+            "id": "s6",
+            "label": "right-subtext-2",
+            "originalText": "חוסר מקום אחסון",
+            "adaptedText": "בטוח לכל המשפחה"
+          },
+          {
+            "id": "s7",
+            "label": "product-badge",
+            "originalText": "80 המטות בערכ ח/ש",
+            "adaptedText": "בטיחות מלאה"
+          },
+          {
+            "id": "s8",
+            "label": "brand-name",
+            "originalText": "Green FLOW",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s9",
+            "label": "eco-badge",
+            "originalText": "Eco-Friendly",
+            "adaptedText": "ללא רעלים"
+          },
+          {
+            "id": "s10",
+            "label": "product-description",
+            "originalText": "דפים לבנים כלים במדיח כלים",
+            "adaptedText": "בטוח לילדים ותינוקות"
+          },
+          {
+            "id": "s11",
+            "label": "bottom-banner",
+            "originalText": "הגיע הזמן להתקדם לניקיון חכם, נסו את גרין פלואו.",
+            "adaptedText": "הגיע הזמן לבחור בפתרון בטוח למשפחה עם בוגו."
+          }
+        ]
+      },
+      {
+        "id": "var-4",
+        "angle": "Effectiveness comparison - temporary fixes vs permanent solution",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "left-headline",
+            "originalText": "הישן והמסורבל",
+            "adaptedText": "זמני ולא יעיל"
+          },
+          {
+            "id": "s2",
+            "label": "left-subtext-1",
+            "originalText": "כולל פלסטיק מיותר",
+            "adaptedText": "מלכודות ותרסיסים שלא עובדים"
+          },
+          {
+            "id": "s3",
+            "label": "left-subtext-2",
+            "originalText": "תופס מקום בארון",
+            "adaptedText": "המזיקים מסתגלים ושורדים"
+          },
+          {
+            "id": "s4",
+            "label": "right-headline",
+            "originalText": "החדש והקומפקטי",
+            "adaptedText": "קבוע ויעיל"
+          },
+          {
+            "id": "s5",
+            "label": "right-subtext-1",
+            "originalText": "נמס לחלוטין במים",
+            "adaptedText": "טכנולוגיה דו-גלית מתקדמת"
+          },
+          {
+            "id": "s6",
+            "label": "right-subtext-2",
+            "originalText": "חוסר מקום אחסון",
+            "adaptedText": "הגנה רציפה ללא הפסקה"
+          },
+          {
+            "id": "s7",
+            "label": "product-badge",
+            "originalText": "80 המטות בערכ ח/ש",
+            "adaptedText": "תוצאות תוך ימים"
+          },
+          {
+            "id": "s8",
+            "label": "brand-name",
+            "originalText": "Green FLOW",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s9",
+            "label": "eco-badge",
+            "originalText": "Eco-Friendly",
+            "adaptedText": "יעילות מוכחת"
+          },
+          {
+            "id": "s10",
+            "label": "product-description",
+            "originalText": "דפים לבנים כלים במדיח כלים",
+            "adaptedText": "כנגד כל סוגי המזיקים"
+          },
+          {
+            "id": "s11",
+            "label": "bottom-banner",
+            "originalText": "הגיע הזמן להתקדם לניקיון חכם, נסו את גרין פלואו.",
+            "adaptedText": "הגיע הזמן לפתרון קבוע שבאמת עובד עם בוגו."
+          }
+        ]
+      }
+    ],
+    "language": "he",
+    "id": "hist-1775745663353-6ovj",
+    "createdAt": "2026-04-09T14:41:03.353Z"
+  },
+  {
     "referencePreviewUrl": "blob:http://localhost:3001/1ccf2e13-46af-4f90-a017-e22a93a936b3",
     "uploadedUrl": "/api/upload/file/1775744571046-6bd8hj.jpg",
     "analysis": {

@@ -252,6 +252,50 @@
       "filename": "gal-1775744841898-ymwown.png",
       "url": "/api/gallery/file/gal-1775744841898-ymwown.png",
       "createdAt": "2026-04-09T14:27:29.842Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775745843876-59vcqixbtv4.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace all product imagery with pest control context and (2) adapt all text to Hebrew pest control messaging while ",
+      "size": "1:1",
+      "angle": "Traditional vs modern pest control methods",
+      "folderId": "root",
+      "id": "gal-1775745846563-3dnuyp",
+      "filename": "gal-1775745846563-3dnuyp.png",
+      "url": "/api/gallery/file/gal-1775745846563-3dnuyp.png",
+      "createdAt": "2026-04-09T14:44:10.705Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775745876668-oyhvi7f1l4.png",
+      "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace all product imagery with pest control context and (2) adapt all text to Hebrew pest control messaging while ",
+      "size": "9:16",
+      "angle": "Traditional vs modern pest control methods",
+      "folderId": "root",
+      "id": "gal-1775745881554-c01qew",
+      "filename": "gal-1775745881554-c01qew.png",
+      "url": "/api/gallery/file/gal-1775745881554-c01qew.png",
+      "createdAt": "2026-04-09T14:44:45.357Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775746040921-6ra63xdj6z7.png",
+      "prompt": "",
+      "size": "1:1",
+      "angle": "Traditional vs modern pest control methods",
+      "folderId": "root",
+      "id": "gal-1775746046672-3h3qj9",
+      "filename": "gal-1775746046672-3h3qj9.png",
+      "url": "/api/gallery/file/gal-1775746046672-3h3qj9.png",
+      "createdAt": "2026-04-09T14:47:30.425Z"
+    },
+    {
+      "sourceUrl": "https://tempfile.aiquickdraw.com/images/1775746141785-yuvvm2bicif.png",
+      "prompt": "",
+      "size": "9:16",
+      "angle": "Traditional vs modern pest control methods",
+      "folderId": "root",
+      "id": "gal-1775746147408-zuly26",
+      "filename": "gal-1775746147408-zuly26.png",
+      "url": "/api/gallery/file/gal-1775746147408-zuly26.png",
+      "createdAt": "2026-04-09T14:49:11.436Z"
     }
   ],
   "folders": []
