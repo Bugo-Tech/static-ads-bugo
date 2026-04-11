@@ -1,5 +1,942 @@
 [
   {
+    "referencePreviewUrl": "blob:http://localhost:3001/99c1799d-e2f3-4345-b6d1-e86a27e04c3c",
+    "uploadedUrl": "/api/upload/file/1775910125568-5qxfg9.jpg",
+    "analysis": {
+      "layout": "Instagram Stories format (9:16) with smartphone interface styling. Features chat bubbles at top, main headline on dark overlay, product image (supplement bottle) with circular before/after inset, and testimonial text box at bottom.",
+      "copyFound": [
+        "עונה לכן על כל השאלות ✨",
+        "יש לך המלצה למשהו שעוזר עם הנשירה? כל חפיפה המקלחת שלי מתמלאת שיערר 😭😭",
+        "איך קטע שאת שואלת!! הקשיבי שאני מה זה מבינה אותך,",
+        "שהבינו שכה זה היה נראה בכל חפיפה אצלי",
+        "התחלתי לקחת את הגומי החדש של GOOM לפני ארבעה שבועות זה עזר לי בטירופף, פשוט תוצאות מדהימות גם מבחינת הברק בשיער וגם עצירה משמעותית לנשירה עצירת לי !!"
+      ],
+      "copySections": [
+        {
+          "label": "header-answer",
+          "text": "עונה לכן על כל השאלות ✨"
+        },
+        {
+          "label": "question-bubble",
+          "text": "יש לך המלצה למשהו שעוזר עם הנשירה? כל חפיפה המקלחת שלי מתמלאת שיערר 😭😭"
+        },
+        {
+          "label": "headline",
+          "text": "איך קטע שאת שואלת!! הקשיבי שאני מה זה מבינה אותך,"
+        },
+        {
+          "label": "before-caption",
+          "text": "שהבינו שכה זה היה נראה בכל חפיפה אצלי"
+        },
+        {
+          "label": "testimonial",
+          "text": "התחלתי לקחת את הגומי החדש של GOOM לפני ארבעה שבועות זה עזר לי בטירופף, פשוט תוצאות מדהימות גם מבחינת הברק בשיער וגם עצירה משמעותית לנשירה עצירת לי !!"
+        }
+      ],
+      "productPlacement": "Blue supplement bottle labeled 'GOOM Grow' positioned on left side with circular inset showing hair in drain",
+      "colorScheme": [
+        "#F5F2EE",
+        "#2E3A59",
+        "#FFFFFF",
+        "#4A90E2",
+        "#000000"
+      ],
+      "angle": "Social proof through authentic conversation/testimonial about hair loss problem and solution",
+      "niche": "other",
+      "nicheMapping": "Hair loss supplement conversation maps to pest control testimonial - someone asking for pest solution recommendation, getting enthusiastic response about Bugo device effectiveness. Before/after becomes pest-infested home vs clean home.",
+      "suggestedPrompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'GOOM' with 'Bugo' and (2) adapt the hair loss conversation context to pest control conversation, maintaining identical visual layout and styling.\n\nBACKGROUND: Light beige/cream background (#F5F2EE) with subtle texture, Instagram Stories interface visible at top with brown circular profile pic, gray username bar, '9h' timestamp, three dots menu and X close button in top corners.\n\nTOP CHAT BUBBLE (dark overlay): Dark navy blue rounded rectangle (#2E3A59) with white text, right-aligned Hebrew: \"עונה לכן על כל השאלות ✨\" with sparkle emoji. Same rounded corners and positioning as reference.\n\nQUESTION BUBBLE (white): White rounded chat bubble, right-aligned Hebrew text: \"יש לכם המלצה למשהו שעוזר עם המזיקים? כל פעם הבית שלי מלא ג'וקים ונמלים 😭😭\" with crying emojis, same bubble shape and shadow as original.\n\nMAIN HEADLINE (center): Black text overlay on semi-transparent dark background, right-aligned Hebrew: \"איך קטע שאתה שואל!! תקשיב אני מה זה מבין אותך,\" - exact same font weight, size and positioning as reference.\n\nPRODUCT AREA: COMPLETELY REMOVE the blue GOOM supplement bottle. In its exact position, place the Bugo device: white oval/egg-shaped ultrasonic pest repeller with blue LED glow from bottom rim (#2196F3), 'Bugo' text in gray on device face, same 3D angle and lighting as the original bottle.\n\nCIRCULAR INSET (right side): Replace hair in drain image with cockroach and ant silhouettes on white tile background, same circular crop, same positioning relative to the device.\n\nBEFORE CAPTION (black text on white): Right-aligned Hebrew: \"שהבנו שככה זה היה נראה בכל חדר אצלי\" - same font, same positioning below the circular inset.\n\nTESTIMONIAL BOX (bottom): White rounded rectangle with same dimensions and shadow, right-aligned Hebrew text: \"התחלתי להשתמש במכשיר החדש של Bugo לפני ארבעה שבועות זה עזר לי בטירוף, פשוט תוצאות מדהימות - הבית נקי לגמרי מכל המזיקים!!\" - maintain same text density and formatting.\n\nASPECT RATIO: 9:16 (Instagram Stories format)\n\nDO NOT add any element not present in the reference. DO NOT remove any UI elements (profile pic, timestamp, menu buttons). DO NOT reposition any text or visual elements. Maintain exact spacing, shadows, and rounded corners throughout."
+    },
+    "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'GOOM' with 'Bugo' and (2) adapt the hair loss conversation context to pest control conversation, maintaining identical visual layout and styling.\n\nBACKGROUND: Light beige/cream background (#F5F2EE) with subtle texture, Instagram Stories interface visible at top with brown circular profile pic, gray username bar, '9h' timestamp, three dots menu and X close button in top corners.\n\nTOP CHAT BUBBLE (dark overlay): Dark navy blue rounded rectangle (#2E3A59) with white text, right-aligned Hebrew: \"עונה לכן על כל השאלות ✨\" with sparkle emoji. Same rounded corners and positioning as reference.\n\nQUESTION BUBBLE (white): White rounded chat bubble, right-aligned Hebrew text: \"יש לכם המלצה למשהו שעוזר עם המזיקים? כל פעם הבית שלי מלא ג'וקים ונמלים 😭😭\" with crying emojis, same bubble shape and shadow as original.\n\nMAIN HEADLINE (center): Black text overlay on semi-transparent dark background, right-aligned Hebrew: \"איך קטע שאתה שואל!! תקשיב אני מה זה מבין אותך,\" - exact same font weight, size and positioning as reference.\n\nPRODUCT AREA: COMPLETELY REMOVE the blue GOOM supplement bottle. In its exact position, place the Bugo device: white oval/egg-shaped ultrasonic pest repeller with blue LED glow from bottom rim (#2196F3), 'Bugo' text in gray on device face, same 3D angle and lighting as the original bottle.\n\nCIRCULAR INSET (right side): Replace hair in drain image with cockroach and ant silhouettes on white tile background, same circular crop, same positioning relative to the device.\n\nBEFORE CAPTION (black text on white): Right-aligned Hebrew: \"שהבנו שככה זה היה נראה בכל חדר אצלי\" - same font, same positioning below the circular inset.\n\nTESTIMONIAL BOX (bottom): White rounded rectangle with same dimensions and shadow, right-aligned Hebrew text: \"התחלתי להשתמש במכשיר החדש של Bugo לפני ארבעה שבועות זה עזר לי בטירוף, פשוט תוצאות מדהימות - הבית נקי לגמרי מכל המזיקים!!\" - maintain same text density and formatting.\n\nASPECT RATIO: 9:16 (Instagram Stories format)\n\nDO NOT add any element not present in the reference. DO NOT remove any UI elements (profile pic, timestamp, menu buttons). DO NOT reposition any text or visual elements. Maintain exact spacing, shadows, and rounded corners throughout.",
+    "copyVariations": [
+      {
+        "id": "var-1",
+        "angle": "Social proof - neighbor recommendation",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "header-answer",
+            "originalText": "עונה לכן על כל השאלות ✨",
+            "adaptedText": "עונה לכן על כל השאלות ✨"
+          },
+          {
+            "id": "s2",
+            "label": "question-bubble",
+            "originalText": "יש לך המלצה למשהו שעוזר עם הנשירה?",
+            "adaptedText": "יש לכם המלצה למשהו שעוזר עם המזיקים? הבית שלי מלא ג'וקים ונמלים 😭😭"
+          },
+          {
+            "id": "s3",
+            "label": "headline",
+            "originalText": "איך קטע שאת שואלת!! הקשיבי שאני מה זה מבינה אותך,",
+            "adaptedText": "איך קטע שאתה שואל!! תקשיב אני מה זה מבין אותך,"
+          },
+          {
+            "id": "s4",
+            "label": "before-caption",
+            "originalText": "שהבינו שכה זה היה נראה בכל חפיפה אצלי",
+            "adaptedText": "שהבנו שככה זה היה נראה בכל חדר אצלי"
+          },
+          {
+            "id": "s5",
+            "label": "testimonial",
+            "originalText": "התחלתי לקחת את הגומי החדש של GOOM לפני ארבעה שבועות",
+            "adaptedText": "התחלתי להשתמש במכשיר החדש של Bugo לפני ארבעה שבועות - זה עזר לי בטירוף! פשוט תוצאות מדהימות, הבית נקי לגמרי מכל המזיקים!!"
+          }
+        ]
+      },
+      {
+        "id": "var-2",
+        "angle": "Immediate results and effectiveness",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "header-answer",
+            "originalText": "עונה לכן על כל השאלות ✨",
+            "adaptedText": "התשובה שחיפשתם ✨"
+          },
+          {
+            "id": "s2",
+            "label": "question-bubble",
+            "originalText": "יש לך המלצה למשהו שעוזר עם הנשירה?",
+            "adaptedText": "מישהו יודע איך להיפטר מעכברים בבית? כבר ניסיתי הכל 😭😭"
+          },
+          {
+            "id": "s3",
+            "label": "headline",
+            "originalText": "איך קטע שאת שואלת!! הקשיבי שאני מה זה מבינה אותך,",
+            "adaptedText": "וואי בדיוק עברתי את זה!! תשמע אני מה זה מבין אותך,"
+          },
+          {
+            "id": "s4",
+            "label": "before-caption",
+            "originalText": "שהבינו שכה זה היה נראה בכל חפיפה אצלי",
+            "adaptedText": "שהבנו שככה זה היה נראה בכל פינה אצלי"
+          },
+          {
+            "id": "s5",
+            "label": "testimonial",
+            "originalText": "התחלתי לקחת את הגומי החדש של GOOM לפני ארבעה שבועות",
+            "adaptedText": "קניתי את Bugo לפני שלושה שבועות וזה פשוט מושלם! תוצאות תוך ימים - המזיקים נעלמו לגמרי והבית חזר להיות שקט!!"
+          }
+        ]
+      },
+      {
+        "id": "var-3",
+        "angle": "Chemical-free safety for family",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "header-answer",
+            "originalText": "עונה לכן על כל השאלות ✨",
+            "adaptedText": "הפתרון הבטוח למשפחה ✨"
+          },
+          {
+            "id": "s2",
+            "label": "question-bubble",
+            "originalText": "יש לך המלצה למשהו שעוזר עם הנשירה?",
+            "adaptedText": "מה עושים עם פשפשי מיטה? יש לי ילדים קטנים ואני מפחדת מרעלים 😭😭"
+          },
+          {
+            "id": "s3",
+            "label": "headline",
+            "originalText": "איך קטע שאת שואלת!! הקשיבי שאני מה זה מבינה אותך,",
+            "adaptedText": "בדיוק הבעיה שלי היתה!! תשמעי אני מה זה הבנתי אותך,"
+          },
+          {
+            "id": "s4",
+            "label": "before-caption",
+            "originalText": "שהבינו שכה זה היה נראה בכל חפיפה אצלי",
+            "adaptedText": "שהבנו שככה זה היה נראה במיטה אצלי"
+          },
+          {
+            "id": "s5",
+            "label": "testimonial",
+            "originalText": "התחלתי לקחת את הגומי החדש של GOOM לפני ארבעה שבועות",
+            "adaptedText": "התקנתי את Bugo לפני חודש - בלי כימיקלים, בלי רעלים, בטוח לחלוטין לילדים! והכי חשוב - עובד מעולה, המזיקים נעלמו!!"
+          }
+        ]
+      },
+      {
+        "id": "var-4",
+        "angle": "Cost-effective vs exterminator",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "header-answer",
+            "originalText": "עונה לכן על כל השאלות ✨",
+            "adaptedText": "חוסך אלפי שקלים ✨"
+          },
+          {
+            "id": "s2",
+            "label": "question-bubble",
+            "originalText": "יש לך המלצה למשהו שעוזר עם הנשירה?",
+            "adaptedText": "יש לכם משהו טוב נגד נמלים? חברת הדברה ביקשה הון 😭😭"
+          },
+          {
+            "id": "s3",
+            "label": "headline",
+            "originalText": "איך קטע שאת שואלת!! הקשיבי שאני מה זה מבינה אותך,",
+            "adaptedText": "נו בדיוק!! תשמע אני גם שילמתי הון וחזר,"
+          },
+          {
+            "id": "s4",
+            "label": "before-caption",
+            "originalText": "שהבינו שכה זה היה נראה בכל חפיפה אצלי",
+            "adaptedText": "שהבנו שככה זה היה נראה בכל המטבח אצלי"
+          },
+          {
+            "id": "s5",
+            "label": "testimonial",
+            "originalText": "התחלתי לקחת את הגומי החדש של GOOM לפני ארבעה שבועות",
+            "adaptedText": "קניתי את Bugo ב-139 שקל במקום לשלם אלפים למדביר! עובד כבר חודשיים ללא הפסקה - הכי משתלם שקניתי השנה!!"
+          }
+        ]
+      }
+    ],
+    "language": "he",
+    "id": "hist-1775910195134-ny0j",
+    "createdAt": "2026-04-11T12:23:15.134Z"
+  },
+  {
+    "referencePreviewUrl": "blob:http://localhost:3001/469bc76c-92bd-4a5e-83e2-bb00c3f34a00",
+    "uploadedUrl": "/api/upload/file/1775910125550-e9h697.jpg",
+    "analysis": {
+      "layout": "Square format anime-style illustration with central character holding product, surrounded by benefit icons in a circular arrangement. Light beige/cream gradient background with orange accent text at top and Hebrew text throughout.",
+      "copyFound": [
+        "גם אנחנו הצטרפנו לטרנד ואין",
+        "ספק שהבקבוקים שלנו נראים",
+        "טוב גם באנימה!",
+        "טבעוני",
+        "ללא סוכר",
+        "פעילות מעיים תקינה",
+        "תחושה קלילה",
+        "מיליארדי חיידקים טובים",
+        "באישור משרד הבריאות"
+      ],
+      "copySections": [
+        {
+          "label": "headline-line1",
+          "text": "גם אנחנו הצטרפנו לטרנד ואין"
+        },
+        {
+          "label": "headline-line2",
+          "text": "ספק שהבקבוקים שלנו נראים"
+        },
+        {
+          "label": "headline-line3",
+          "text": "טוב גם באנימה!"
+        },
+        {
+          "label": "benefit-1",
+          "text": "טבעוני"
+        },
+        {
+          "label": "benefit-2",
+          "text": "ללא סוכר"
+        },
+        {
+          "label": "benefit-3",
+          "text": "פעילות מעיים תקינה"
+        },
+        {
+          "label": "benefit-4",
+          "text": "תחושה קלילה"
+        },
+        {
+          "label": "benefit-5",
+          "text": "מיליארדי חיידקים טובים"
+        },
+        {
+          "label": "benefit-6",
+          "text": "באישור משרד הבריאות"
+        }
+      ],
+      "productPlacement": "Central character (anime-style girl) holding a purple box containing orange bottles/tubes. Product is the focal point of the composition.",
+      "colorScheme": [
+        "#FF6B35",
+        "#E8E0D4",
+        "#9B7FB8",
+        "#FF4500",
+        "#2D2D2D"
+      ],
+      "angle": "Trendy anime aesthetic appeal combined with health benefits positioning",
+      "niche": "other",
+      "nicheMapping": "Health supplement with anime branding → Bugo with anime aesthetic. The 'trending anime style' concept translates to 'we joined the tech trend' for pest control. Product benefits (natural, safe, effective) map perfectly to Bugo's chemical-free, safe-for-family positioning. The character holding the product box maps to holding/presenting the Bugo device.",
+      "suggestedPrompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace the supplement bottles/box with the Bugo ultrasonic pest repeller device and (2) replace all text with Hebrew pest control copy, maintaining right-aligned RTL text direction. Every visual element — anime character, pose, background gradient, icon positions, colors — must be pixel-identical to the reference.\n\nBACKGROUND: Soft cream to beige radial gradient background (#F5F0E8 center fading to #E8E0D4 at edges). Clean, minimal gradient with no texture or patterns.\n\nHEADLINE (top section, three lines, orange color #FF6B35):\nLine 1: \"גם אנחנו הצטרפנו לטכנולוגיה\" — right-aligned, bold rounded sans-serif\nLine 2: \"שמרחיקה מזיקים בצורה\" — right-aligned, same font weight and size\nLine 3: \"חכמה וללא כימיקלים!\" — right-aligned, same font with exclamation point\n\nCENTRAL CHARACTER: Identical anime-style girl with long reddish-brown hair, orange/amber eyes, white tank top, blue jeans. Same pose, same facial expression, same lighting and shading style. CRITICAL CHANGE: Instead of holding a purple supplement box, she holds the white oval Bugo ultrasonic pest repeller device in both hands, presenting it toward the viewer. The device should be the white egg-shaped pest repeller with blue LED glow and 'Bugo' text on the front.\n\nSIX BENEFIT ICONS (arranged around character, orange outline style #FF6B35):\n\nTop-left icon: Simple house outline\nBelow icon text (black, medium sans-serif): \"הגנה על\" (line 1), \"הבית\" (line 2)\n\nTop-right icon: Leaf outline\nBelow icon text (black): \"ללא\" (line 1), \"כימיקלים\" (line 2)\n\nMiddle-left icon: Crossed-out bug/pest silhouette\nBelow icon text (black): \"מרחיק\" (line 1), \"מזיקים\" (line 2)\n\nMiddle-right icon: Smiley face outline\nBelow icon text (black): \"בטוח\" (line 1), \"למשפחה\" (line 2)\n\nBottom-left icon: Gear/settings outline\nBelow icon text (black): \"טכנולוגיה\" (line 1), \"מתקדמת\" (line 2)\n\nBottom-right icon: Shield with checkmark\nBelow icon text (black): \"יעיל\" (line 1), \"ומוכח\" (line 2)\n\nAll icons maintain exact same positions, sizes, and orange outline style (#FF6B35) as in reference. All text below icons is black (#2D2D2D), right-aligned Hebrew, same font weight and size as reference.\n\nCHARACTER DETAILS: Maintain identical anime art style, same hair texture and color, same eye color and expression, same clothing (white tank top, blue jeans with button detail), same hand positioning but holding the Bugo device instead of supplement box.\n\nLIGHTING AND SHADING: Preserve exact same soft lighting on character, same shadow placement, same highlight areas on hair and clothing.\n\nASPECT RATIO: 1:1 (square format)\n\nDO NOT add any element not present in the reference. DO NOT remove any structural element (character, icons, text hierarchy). DO NOT reposition any element. Only replace the product and adapt the text content while maintaining exact visual positioning and styling."
+    },
+    "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace the supplement bottles/box with the Bugo ultrasonic pest repeller device and (2) replace all text with Hebrew pest control copy, maintaining right-aligned RTL text direction. Every visual element — anime character, pose, background gradient, icon positions, colors — must be pixel-identical to the reference.\n\nBACKGROUND: Soft cream to beige radial gradient background (#F5F0E8 center fading to #E8E0D4 at edges). Clean, minimal gradient with no texture or patterns.\n\nHEADLINE (top section, three lines, orange color #FF6B35):\nLine 1: \"גם אנחנו הצטרפנו לטכנולוגיה\" — right-aligned, bold rounded sans-serif\nLine 2: \"שמרחיקה מזיקים בצורה\" — right-aligned, same font weight and size\nLine 3: \"חכמה וללא כימיקלים!\" — right-aligned, same font with exclamation point\n\nCENTRAL CHARACTER: Identical anime-style girl with long reddish-brown hair, orange/amber eyes, white tank top, blue jeans. Same pose, same facial expression, same lighting and shading style. CRITICAL CHANGE: Instead of holding a purple supplement box, she holds the white oval Bugo ultrasonic pest repeller device in both hands, presenting it toward the viewer. The device should be the white egg-shaped pest repeller with blue LED glow and 'Bugo' text on the front.\n\nSIX BENEFIT ICONS (arranged around character, orange outline style #FF6B35):\n\nTop-left icon: Simple house outline\nBelow icon text (black, medium sans-serif): \"הגנה על\" (line 1), \"הבית\" (line 2)\n\nTop-right icon: Leaf outline\nBelow icon text (black): \"ללא\" (line 1), \"כימיקלים\" (line 2)\n\nMiddle-left icon: Crossed-out bug/pest silhouette\nBelow icon text (black): \"מרחיק\" (line 1), \"מזיקים\" (line 2)\n\nMiddle-right icon: Smiley face outline\nBelow icon text (black): \"בטוח\" (line 1), \"למשפחה\" (line 2)\n\nBottom-left icon: Gear/settings outline\nBelow icon text (black): \"טכנולוגיה\" (line 1), \"מתקדמת\" (line 2)\n\nBottom-right icon: Shield with checkmark\nBelow icon text (black): \"יעיל\" (line 1), \"ומוכח\" (line 2)\n\nAll icons maintain exact same positions, sizes, and orange outline style (#FF6B35) as in reference. All text below icons is black (#2D2D2D), right-aligned Hebrew, same font weight and size as reference.\n\nCHARACTER DETAILS: Maintain identical anime art style, same hair texture and color, same eye color and expression, same clothing (white tank top, blue jeans with button detail), same hand positioning but holding the Bugo device instead of supplement box.\n\nLIGHTING AND SHADING: Preserve exact same soft lighting on character, same shadow placement, same highlight areas on hair and clothing.\n\nASPECT RATIO: 1:1 (square format)\n\nDO NOT add any element not present in the reference. DO NOT remove any structural element (character, icons, text hierarchy). DO NOT reposition any element. Only replace the product and adapt the text content while maintaining exact visual positioning and styling.",
+    "copyVariations": [
+      {
+        "id": "var-1",
+        "angle": "Modern tech trend appeal",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "headline-line1",
+            "originalText": "גם אנחנו הצטרפנו לטרנד ואין",
+            "adaptedText": "גם אנחנו הצטרפנו לטכנולוגיה"
+          },
+          {
+            "id": "s2",
+            "label": "headline-line2",
+            "originalText": "ספק שהבקבוקים שלנו נראים",
+            "adaptedText": "שמרחיקה מזיקים בצורה"
+          },
+          {
+            "id": "s3",
+            "label": "headline-line3",
+            "originalText": "טוב גם באנימה!",
+            "adaptedText": "חכמה וללא כימיקלים!"
+          },
+          {
+            "id": "s4",
+            "label": "benefit-1",
+            "originalText": "טבעוני",
+            "adaptedText": "הגנה על הבית"
+          },
+          {
+            "id": "s5",
+            "label": "benefit-2",
+            "originalText": "ללא סוכר",
+            "adaptedText": "ללא כימיקלים"
+          },
+          {
+            "id": "s6",
+            "label": "benefit-3",
+            "originalText": "פעילות מעיים תקינה",
+            "adaptedText": "מרחיק מזיקים"
+          },
+          {
+            "id": "s7",
+            "label": "benefit-4",
+            "originalText": "תחושה קלילה",
+            "adaptedText": "בטוח למשפחה"
+          },
+          {
+            "id": "s8",
+            "label": "benefit-5",
+            "originalText": "מיליארדי חיידקים טובים",
+            "adaptedText": "טכנולוגיה מתקדמת"
+          },
+          {
+            "id": "s9",
+            "label": "benefit-6",
+            "originalText": "באישור משרד הבריאות",
+            "adaptedText": "יעיל ומוכח"
+          }
+        ]
+      },
+      {
+        "id": "var-2",
+        "angle": "Family safety focus",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "headline-line1",
+            "originalText": "גם אנחנו הצטרפנו לטרנד ואין",
+            "adaptedText": "סוף סוף פתרון למזיקים"
+          },
+          {
+            "id": "s2",
+            "label": "headline-line2",
+            "originalText": "ספק שהבקבוקים שלנו נראים",
+            "adaptedText": "שבטוח לכל המשפחה"
+          },
+          {
+            "id": "s3",
+            "label": "headline-line3",
+            "originalText": "טוב גם באנימה!",
+            "adaptedText": "כולל ילדים וחיות מחמד!"
+          },
+          {
+            "id": "s4",
+            "label": "benefit-1",
+            "originalText": "טבעוני",
+            "adaptedText": "28 מ\"ר כיסוי"
+          },
+          {
+            "id": "s5",
+            "label": "benefit-2",
+            "originalText": "ללא סוכר",
+            "adaptedText": "ללא רעלים"
+          },
+          {
+            "id": "s6",
+            "label": "benefit-3",
+            "originalText": "פעילות מעיים תקינה",
+            "adaptedText": "נגד ג'וקים ונמלים"
+          },
+          {
+            "id": "s7",
+            "label": "benefit-4",
+            "originalText": "תחושה קלילה",
+            "adaptedText": "בטוח לתינוקות"
+          },
+          {
+            "id": "s8",
+            "label": "benefit-5",
+            "originalText": "מיליארדי חיידקים טובים",
+            "adaptedText": "גלים אולטרסוניים"
+          },
+          {
+            "id": "s9",
+            "label": "benefit-6",
+            "originalText": "באישור משרד הבריאות",
+            "adaptedText": "4-5 שנים הגנה"
+          }
+        ]
+      },
+      {
+        "id": "var-3",
+        "angle": "Ease of use and effectiveness",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "headline-line1",
+            "originalText": "גם אנחנו הצטרפנו לטרנד ואין",
+            "adaptedText": "מחברים לשקע ופשוט"
+          },
+          {
+            "id": "s2",
+            "label": "headline-line2",
+            "originalText": "ספק שהבקבוקים שלנו נראים",
+            "adaptedText": "שוכחים מהמזיקים"
+          },
+          {
+            "id": "s3",
+            "label": "headline-line3",
+            "originalText": "טוב גם באנימה!",
+            "adaptedText": "לתמיד!"
+          },
+          {
+            "id": "s4",
+            "label": "benefit-1",
+            "originalText": "טבעוני",
+            "adaptedText": "קל להפעלה"
+          },
+          {
+            "id": "s5",
+            "label": "benefit-2",
+            "originalText": "ללא סוכר",
+            "adaptedText": "ללא תחזוקה"
+          },
+          {
+            "id": "s6",
+            "label": "benefit-3",
+            "originalText": "פעילות מעיים תקינה",
+            "adaptedText": "יעיל נגד עכברים"
+          },
+          {
+            "id": "s7",
+            "label": "benefit-4",
+            "originalText": "תחושה קלילה",
+            "adaptedText": "שקט מוחלט"
+          },
+          {
+            "id": "s8",
+            "label": "benefit-5",
+            "originalText": "מיליארדי חיידקים טובים",
+            "adaptedText": "תוצאות בימים"
+          },
+          {
+            "id": "s9",
+            "label": "benefit-6",
+            "originalText": "באישור משרד הבריאות",
+            "adaptedText": "תקע ישראלי"
+          }
+        ]
+      },
+      {
+        "id": "var-4",
+        "angle": "Value and comprehensive pest control",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "headline-line1",
+            "originalText": "גם אנחנו הצטרפנו לטרנד ואין",
+            "adaptedText": "פתרון אחד לכל סוגי"
+          },
+          {
+            "id": "s2",
+            "label": "headline-line2",
+            "originalText": "ספק שהבקבוקים שלנו נראים",
+            "adaptedText": "המזיקים בבית"
+          },
+          {
+            "id": "s3",
+            "label": "headline-line3",
+            "originalText": "טוב גם באנימה!",
+            "adaptedText": "ב-139 ש\"ח בלבד!"
+          },
+          {
+            "id": "s4",
+            "label": "benefit-1",
+            "originalText": "טבעוני",
+            "adaptedText": "נגד פשפשים"
+          },
+          {
+            "id": "s5",
+            "label": "benefit-2",
+            "originalText": "ללא סוכר",
+            "adaptedText": "ללא ריח"
+          },
+          {
+            "id": "s6",
+            "label": "benefit-3",
+            "originalText": "פעילות מעיים תקינה",
+            "adaptedText": "נגד יתושים"
+          },
+          {
+            "id": "s7",
+            "label": "benefit-4",
+            "originalText": "תחושה קלילה",
+            "adaptedText": "נגד עכבישים"
+          },
+          {
+            "id": "s8",
+            "label": "benefit-5",
+            "originalText": "מיליארדי חיידקים טובים",
+            "adaptedText": "טכנולוגיה דו-גלית"
+          },
+          {
+            "id": "s9",
+            "label": "benefit-6",
+            "originalText": "באישור משרד הבריאות",
+            "adaptedText": "אחריות 30 יום"
+          }
+        ]
+      }
+    ],
+    "language": "he",
+    "id": "hist-1775910192787-pq9n",
+    "createdAt": "2026-04-11T12:23:12.787Z"
+  },
+  {
+    "referencePreviewUrl": "blob:http://localhost:3001/41ef7d8d-d982-4acb-989c-eea831b9df42",
+    "uploadedUrl": "/api/upload/file/1775910125545-8q69wh.jpg",
+    "analysis": {
+      "layout": "Clean product showcase layout with central product placement on white pedestals, orange slice accent on left, bullet points with heart icons on left side, orange badge on bottom right",
+      "copyFound": [
+        "FLOW BY GOOM",
+        "גומי 2 ביום ותגידו ביי ביי לבטן נפוחה!",
+        "ללא תוספת סוכר",
+        "גומי טעים",
+        "מיוצר בישראל",
+        "באישור משרד הבריאות!"
+      ],
+      "copySections": [
+        {
+          "label": "brand-header",
+          "text": "FLOW BY GOOM"
+        },
+        {
+          "label": "main-headline",
+          "text": "גומי 2 ביום ותגידו ביי ביי לבטן נפוחה!"
+        },
+        {
+          "label": "bullet-1",
+          "text": "ללא תוספת סוכר"
+        },
+        {
+          "label": "bullet-2",
+          "text": "גומי טעים"
+        },
+        {
+          "label": "bullet-3",
+          "text": "מיוצר בישראל"
+        },
+        {
+          "label": "approval-badge",
+          "text": "באישור משרד הבריאות!"
+        }
+      ],
+      "productPlacement": "Orange GOOM supplement bottle positioned center-right on white circular pedestals, with orange slice accent on left side",
+      "colorScheme": [
+        "#FF6B35",
+        "#FFFFFF",
+        "#F5F5F5",
+        "#333333",
+        "#FFA500"
+      ],
+      "angle": "Simple daily routine solution with health benefits and local credibility",
+      "niche": "other",
+      "nicheMapping": "Digestive health supplement → pest control device. '2 gummies daily, say bye bye to bloated stomach' maps to 'plug in device, say bye bye to pests'. Health benefits bullets map to pest control benefits. Ministry approval badge maps to safety/effectiveness credentials.",
+      "suggestedPrompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'FLOW BY GOOM' with 'Bugo' and (2) COMPLETELY REMOVE the orange supplement bottle and replace it with the Bugo ultrasonic pest repeller device. All other elements including layout, colors, typography, and composition must remain pixel-identical.\n\nBACKGROUND: Light beige/cream gradient background (#F5F5F0) fading from light cream at top to slightly warmer beige at bottom. Soft, subtle gradient with no texture or pattern.\n\nBRAND HEADER (top-center): Replace 'FLOW BY GOOM' with 'Bugo' - dark gray/charcoal text (#444444), bold rounded sans-serif font, same size and position. The 'GOOM' logo treatment should be replaced with 'Bugo' in the same style.\n\nMAIN HEADLINE (top-right, RTL Hebrew): 'מחברים למכשיר ותגידו ביי ביי למזיקים!' - black bold text (#000000), large friendly sans-serif font. Orange accent on 'מחברים' (#FF6B35), same styling as original orange '2 גומי' text.\n\nPRODUCT REPLACEMENT (center-right): COMPLETELY REMOVE the orange GOOM supplement bottle. In its exact position on the white circular pedestals, place the Bugo device: white oval/egg-shaped ultrasonic pest repeller with subtle blue LED glow from bottom rim (#2196F3), 'Bugo' text in gray on device face. Device should be angled slightly toward camera, same 3D perspective as original bottle.\n\nWHITE PEDESTALS (center): Keep identical - two white circular platforms/pedestals stacked, same shadows and lighting.\n\nBULLET POINTS (left side, RTL Hebrew alignment):\n- Bullet 1: 'ללא כימיקלים מזיקים' with orange heart icon (#FF6B35) to the left\n- Bullet 2: 'בטוח לכל המשפחה' with orange heart icon (#FF6B35) to the left  \n- Bullet 3: 'תוצלת בישראל' with orange heart icon (#FF6B35) to the left\nAll text in black (#000000), medium-weight sans-serif, right-aligned (RTL).\n\nORANGE SLICE ACCENT (bottom-left): Keep identical orange slice, same position, lighting, and shadows. This adds visual interest and maintains the fresh, natural feeling.\n\nAPPROVAL BADGE (bottom-right): Orange burst/starburst shape (#FF6B35) with white text 'בטוח ואמין לכל הבית!' in bold white font. Same jagged burst design as original, same position and size.\n\nTYPOGRAPHY: All Hebrew text must be right-to-left (RTL) aligned. Font weights and sizes should match the original proportions exactly.\n\nLIGHTING: Soft, even lighting from top-left creating gentle shadows on pedestals and product. No harsh shadows, clean product photography style.\n\nASPECT RATIO: 1:1 (square format)\n\nCRITICAL: The orange supplement bottle must be COMPLETELY REMOVED and replaced with the Bugo device. Do not overlay Bugo branding on the supplement bottle. The orange slice remains as a design element. All spacing, shadows, and lighting must match the reference exactly.\n\nDO NOT add any element not present in the reference. DO NOT remove any element except the product replacement. DO NOT reposition any element."
+    },
+    "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace 'FLOW BY GOOM' with 'Bugo' and (2) COMPLETELY REMOVE the orange supplement bottle and replace it with the Bugo ultrasonic pest repeller device. All other elements including layout, colors, typography, and composition must remain pixel-identical.\n\nBACKGROUND: Light beige/cream gradient background (#F5F5F0) fading from light cream at top to slightly warmer beige at bottom. Soft, subtle gradient with no texture or pattern.\n\nBRAND HEADER (top-center): Replace 'FLOW BY GOOM' with 'Bugo' - dark gray/charcoal text (#444444), bold rounded sans-serif font, same size and position. The 'GOOM' logo treatment should be replaced with 'Bugo' in the same style.\n\nMAIN HEADLINE (top-right, RTL Hebrew): 'מחברים למכשיר ותגידו ביי ביי למזיקים!' - black bold text (#000000), large friendly sans-serif font. Orange accent on 'מחברים' (#FF6B35), same styling as original orange '2 גומי' text.\n\nPRODUCT REPLACEMENT (center-right): COMPLETELY REMOVE the orange GOOM supplement bottle. In its exact position on the white circular pedestals, place the Bugo device: white oval/egg-shaped ultrasonic pest repeller with subtle blue LED glow from bottom rim (#2196F3), 'Bugo' text in gray on device face. Device should be angled slightly toward camera, same 3D perspective as original bottle.\n\nWHITE PEDESTALS (center): Keep identical - two white circular platforms/pedestals stacked, same shadows and lighting.\n\nBULLET POINTS (left side, RTL Hebrew alignment):\n- Bullet 1: 'ללא כימיקלים מזיקים' with orange heart icon (#FF6B35) to the left\n- Bullet 2: 'בטוח לכל המשפחה' with orange heart icon (#FF6B35) to the left  \n- Bullet 3: 'תוצלת בישראל' with orange heart icon (#FF6B35) to the left\nAll text in black (#000000), medium-weight sans-serif, right-aligned (RTL).\n\nORANGE SLICE ACCENT (bottom-left): Keep identical orange slice, same position, lighting, and shadows. This adds visual interest and maintains the fresh, natural feeling.\n\nAPPROVAL BADGE (bottom-right): Orange burst/starburst shape (#FF6B35) with white text 'בטוח ואמין לכל הבית!' in bold white font. Same jagged burst design as original, same position and size.\n\nTYPOGRAPHY: All Hebrew text must be right-to-left (RTL) aligned. Font weights and sizes should match the original proportions exactly.\n\nLIGHTING: Soft, even lighting from top-left creating gentle shadows on pedestals and product. No harsh shadows, clean product photography style.\n\nASPECT RATIO: 1:1 (square format)\n\nCRITICAL: The orange supplement bottle must be COMPLETELY REMOVED and replaced with the Bugo device. Do not overlay Bugo branding on the supplement bottle. The orange slice remains as a design element. All spacing, shadows, and lighting must match the reference exactly.\n\nDO NOT add any element not present in the reference. DO NOT remove any element except the product replacement. DO NOT reposition any element.",
+    "copyVariations": [
+      {
+        "id": "var-1",
+        "angle": "Simple daily routine - plug and forget solution",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "brand-header",
+            "originalText": "FLOW BY GOOM",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s2",
+            "label": "main-headline",
+            "originalText": "גומי 2 ביום ותגידו ביי ביי לבטן נפוחה!",
+            "adaptedText": "מחברים למכשיר ותגידו ביי ביי למזיקים!"
+          },
+          {
+            "id": "s3",
+            "label": "bullet-1",
+            "originalText": "ללא תוספת סוכר",
+            "adaptedText": "ללא כימיקלים מזיקים"
+          },
+          {
+            "id": "s4",
+            "label": "bullet-2",
+            "originalText": "גומי טעים",
+            "adaptedText": "בטוח לכל המשפחה"
+          },
+          {
+            "id": "s5",
+            "label": "bullet-3",
+            "originalText": "מיוצר בישראל",
+            "adaptedText": "מיוצר בישראל"
+          },
+          {
+            "id": "s6",
+            "label": "approval-badge",
+            "originalText": "באישור משרד הבריאות!",
+            "adaptedText": "בטוח ואמין לכל הבית!"
+          }
+        ]
+      },
+      {
+        "id": "var-2",
+        "angle": "Technology and effectiveness focus",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "brand-header",
+            "originalText": "FLOW BY GOOM",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s2",
+            "label": "main-headline",
+            "originalText": "גומי 2 ביום ותגידו ביי ביי לבטן נפוחה!",
+            "adaptedText": "טכנולוגיה דו-גלית למזיקים אפס!"
+          },
+          {
+            "id": "s3",
+            "label": "bullet-1",
+            "originalText": "ללא תוספת סוכר",
+            "adaptedText": "גלים אולטרסוניים"
+          },
+          {
+            "id": "s4",
+            "label": "bullet-2",
+            "originalText": "גומי טעים",
+            "adaptedText": "גלים אלקטרומגנטיים"
+          },
+          {
+            "id": "s5",
+            "label": "bullet-3",
+            "originalText": "מיוצר בישראל",
+            "adaptedText": "כיסוי עד 28 מ\"ר"
+          },
+          {
+            "id": "s6",
+            "label": "approval-badge",
+            "originalText": "באישור משרד הבריאות!",
+            "adaptedText": "טכנולוגיה מוכחת!"
+          }
+        ]
+      },
+      {
+        "id": "var-3",
+        "angle": "Long-term solution and value",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "brand-header",
+            "originalText": "FLOW BY GOOM",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s2",
+            "label": "main-headline",
+            "originalText": "גומי 2 ביום ותגידו ביי ביי לבטן נפוחה!",
+            "adaptedText": "פתרון אחד ל-5 שנים של הגנה!"
+          },
+          {
+            "id": "s3",
+            "label": "bullet-1",
+            "originalText": "ללא תוספת סוכר",
+            "adaptedText": "הגנה רציפה 24/7"
+          },
+          {
+            "id": "s4",
+            "label": "bullet-2",
+            "originalText": "גומי טעים",
+            "adaptedText": "חיסכון אלפי שקלים"
+          },
+          {
+            "id": "s5",
+            "label": "bullet-3",
+            "originalText": "מיוצר בישראל",
+            "adaptedText": "אחריות 30 יום"
+          },
+          {
+            "id": "s6",
+            "label": "approval-badge",
+            "originalText": "באישור משרד הבריאות!",
+            "adaptedText": "השקעה חכמה!"
+          }
+        ]
+      },
+      {
+        "id": "var-4",
+        "angle": "Family safety and peace of mind",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "brand-header",
+            "originalText": "FLOW BY GOOM",
+            "adaptedText": "Bugo"
+          },
+          {
+            "id": "s2",
+            "label": "main-headline",
+            "originalText": "גומי 2 ביום ותגידו ביי ביי לבטן נפוחה!",
+            "adaptedText": "הבית שלך, בלי מזיקים, בלי דאגות!"
+          },
+          {
+            "id": "s3",
+            "label": "bullet-1",
+            "originalText": "ללא תוספת סוכר",
+            "adaptedText": "בטוח לתינוקות"
+          },
+          {
+            "id": "s4",
+            "label": "bullet-2",
+            "originalText": "גומי טעים",
+            "adaptedText": "בטוח לחיות מחמד"
+          },
+          {
+            "id": "s5",
+            "label": "bullet-3",
+            "originalText": "מיוצר בישראל",
+            "adaptedText": "ללא רעלים וכימיקלים"
+          },
+          {
+            "id": "s6",
+            "label": "approval-badge",
+            "originalText": "באישור משרד הבריאות!",
+            "adaptedText": "שקט נפשי מובטח!"
+          }
+        ]
+      }
+    ],
+    "language": "he",
+    "id": "hist-1775910180306-j02n",
+    "createdAt": "2026-04-11T12:23:00.306Z"
+  },
+  {
+    "referencePreviewUrl": "blob:http://localhost:3001/063af1ec-1653-4037-b7f8-e6198531942f",
+    "uploadedUrl": "/api/upload/file/1775910125566-v7m3jt.jpg",
+    "analysis": {
+      "layout": "Clean product showcase on neutral gray gradient background with Hebrew text overlay. Four supplement bottles in a row, center-aligned, with main headline above, product description below, and CTA button at bottom.",
+      "copyFound": [
+        "מקסימום דאגה לגוף",
+        "אפס סוכר.",
+        "GOOM COMPLETE - כל הפורמולות במארז אחד מושלם",
+        "SHOP NOW",
+        "GOOM",
+        "Shine",
+        "Deep Sleep",
+        "Grow",
+        "Flow",
+        "Collagen + hyaluronic acid fibers gummies",
+        "Probiotics + Prebiotics fibers gummies"
+      ],
+      "copySections": [
+        {
+          "label": "headline-line1",
+          "text": "מקסימום דאגה לגוף"
+        },
+        {
+          "label": "headline-line2",
+          "text": "אפס סוכר."
+        },
+        {
+          "label": "product-description",
+          "text": "GOOM COMPLETE - כל הפורמולות במארז אחד מושלם"
+        },
+        {
+          "label": "cta",
+          "text": "SHOP NOW"
+        },
+        {
+          "label": "brand",
+          "text": "GOOM"
+        },
+        {
+          "label": "product1",
+          "text": "Shine"
+        },
+        {
+          "label": "product2",
+          "text": "Deep Sleep"
+        },
+        {
+          "label": "product3",
+          "text": "Grow"
+        },
+        {
+          "label": "product4",
+          "text": "Flow"
+        }
+      ],
+      "productPlacement": "Four supplement bottles arranged in a row at center, each with different colored caps and labels (red, purple, blue, orange)",
+      "colorScheme": [
+        "#A8D5A8",
+        "#4A4A4A",
+        "#E53E3E",
+        "#805AD5",
+        "#3182CE",
+        "#FF6B35",
+        "#2D3748"
+      ],
+      "angle": "Maximum care/protection with zero sugar - health-focused premium supplement bundle",
+      "niche": "other",
+      "nicheMapping": "Health supplement bundle → Pest protection bundle. 'Maximum care for body, zero sugar' maps to 'Maximum protection for home, zero chemicals'. Four different supplements → different pest protection coverage areas or multiple devices for complete home coverage.",
+      "suggestedPrompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace all supplement bottles with Bugo ultrasonic pest repeller devices and (2) replace all text with Hebrew pest control copy, maintaining right-to-left alignment.\n\nBACKGROUND: Smooth neutral gray gradient background (#F7FAFC at top fading to #E2E8F0 at bottom), professional studio lighting with subtle shadows beneath products.\n\nHEADLINE (top-center, two lines):\nLine 1: 'מקסימום הגנה לבית' - light green text (#A8D5A8), modern Hebrew sans-serif font, large size, right-aligned\nLine 2: 'אפס כימיקלים.' - dark green text on bright lime green rectangular background (#C6F6D5), bold font, same width as green banner in reference\n\nPRODUCT ROW (center): REMOVE all four supplement bottles completely. Replace with four Bugo ultrasonic pest repeller devices arranged in identical spacing and positioning. Each Bugo device should be white oval/egg-shaped with blue LED glow (#3182CE) from bottom rim, 'Bugo' text in gray on device face. Devices should have slight variations to show different coverage areas:\n- Device 1: Standard white with blue glow\n- Device 2: Same design, slight angle difference\n- Device 3: Same design, positioned slightly forward\n- Device 4: Same design, completing the row\nAll devices maintain the same 3D perspective and professional product photography lighting as the original bottles.\n\nPRODUCT DESCRIPTION (below devices):\n'BUGO COMPLETE - כיסוי מלא לכל הבית במארז אחד מושלם' - dark gray text (#4A4A4A), medium-sized Hebrew sans-serif, right-aligned, same positioning as original text\n\nCTA BUTTON (bottom-center): Bright lime green rounded pill button (#C6F6D5) with dark text 'קנו עכשיו' in bold Hebrew, identical size and positioning to original 'SHOP NOW' button\n\nLIGHTING: Maintain identical studio lighting with soft shadows beneath each device, professional product photography aesthetic\n\nASPECT RATIO: 1:1\n\nDO NOT add any element not present in the reference. DO NOT remove any design elements like gradients, shadows, or spacing. DO NOT reposition any element - only replace products and translate text while maintaining exact layout."
+    },
+    "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace all supplement bottles with Bugo ultrasonic pest repeller devices and (2) replace all text with Hebrew pest control copy, maintaining right-to-left alignment.\n\nBACKGROUND: Smooth neutral gray gradient background (#F7FAFC at top fading to #E2E8F0 at bottom), professional studio lighting with subtle shadows beneath products.\n\nHEADLINE (top-center, two lines):\nLine 1: 'מקסימום הגנה לבית' - light green text (#A8D5A8), modern Hebrew sans-serif font, large size, right-aligned\nLine 2: 'אפס כימיקלים.' - dark green text on bright lime green rectangular background (#C6F6D5), bold font, same width as green banner in reference\n\nPRODUCT ROW (center): REMOVE all four supplement bottles completely. Replace with four Bugo ultrasonic pest repeller devices arranged in identical spacing and positioning. Each Bugo device should be white oval/egg-shaped with blue LED glow (#3182CE) from bottom rim, 'Bugo' text in gray on device face. Devices should have slight variations to show different coverage areas:\n- Device 1: Standard white with blue glow\n- Device 2: Same design, slight angle difference\n- Device 3: Same design, positioned slightly forward\n- Device 4: Same design, completing the row\nAll devices maintain the same 3D perspective and professional product photography lighting as the original bottles.\n\nPRODUCT DESCRIPTION (below devices):\n'BUGO COMPLETE - כיסוי מלא לכל הבית במארז אחד מושלם' - dark gray text (#4A4A4A), medium-sized Hebrew sans-serif, right-aligned, same positioning as original text\n\nCTA BUTTON (bottom-center): Bright lime green rounded pill button (#C6F6D5) with dark text 'קנו עכשיו' in bold Hebrew, identical size and positioning to original 'SHOP NOW' button\n\nLIGHTING: Maintain identical studio lighting with soft shadows beneath each device, professional product photography aesthetic\n\nASPECT RATIO: 1:1\n\nDO NOT add any element not present in the reference. DO NOT remove any design elements like gradients, shadows, or spacing. DO NOT reposition any element - only replace products and translate text while maintaining exact layout.",
+    "copyVariations": [
+      {
+        "id": "var-1",
+        "angle": "Complete home protection - zero chemicals",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "headline-line1",
+            "originalText": "מקסימום דאגה לגוף",
+            "adaptedText": "מקסימום הגנה לבית"
+          },
+          {
+            "id": "s2",
+            "label": "headline-line2",
+            "originalText": "אפס סוכר.",
+            "adaptedText": "אפס כימיקלים."
+          },
+          {
+            "id": "s3",
+            "label": "product-description",
+            "originalText": "GOOM COMPLETE - כל הפורמולות במארז אחד מושלם",
+            "adaptedText": "BUGO COMPLETE - כיסוי מלא לכל הבית במארז אחד מושלם"
+          },
+          {
+            "id": "s4",
+            "label": "cta",
+            "originalText": "SHOP NOW",
+            "adaptedText": "קנו עכשיו"
+          }
+        ]
+      },
+      {
+        "id": "var-2",
+        "angle": "Multi-room coverage solution",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "headline-line1",
+            "originalText": "מקסימום דאגה לגוף",
+            "adaptedText": "הגנה לכל חדר"
+          },
+          {
+            "id": "s2",
+            "label": "headline-line2",
+            "originalText": "אפס סוכר.",
+            "adaptedText": "אפס מזיקים."
+          },
+          {
+            "id": "s3",
+            "label": "product-description",
+            "originalText": "GOOM COMPLETE - כל הפורמולות במארז אחד מושלם",
+            "adaptedText": "BUGO COMPLETE - 5 מכשירים לכיסוי מלא של הבית"
+          },
+          {
+            "id": "s4",
+            "label": "cta",
+            "originalText": "SHOP NOW",
+            "adaptedText": "הזמינו עכשיו"
+          }
+        ]
+      },
+      {
+        "id": "var-3",
+        "angle": "Safe technology for family homes",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "headline-line1",
+            "originalText": "מקסימום דאגה לגוף",
+            "adaptedText": "מקסימום ביטחון"
+          },
+          {
+            "id": "s2",
+            "label": "headline-line2",
+            "originalText": "אפס סוכר.",
+            "adaptedText": "אפס רעלים."
+          },
+          {
+            "id": "s3",
+            "label": "product-description",
+            "originalText": "GOOM COMPLETE - כל הפורמולות במארז אחד מושלם",
+            "adaptedText": "BUGO COMPLETE - בטוח לילדים ולחיות מחמד במארז מושלם"
+          },
+          {
+            "id": "s4",
+            "label": "cta",
+            "originalText": "SHOP NOW",
+            "adaptedText": "הגנו על הבית"
+          }
+        ]
+      },
+      {
+        "id": "var-4",
+        "angle": "Cost-effective bundle deal",
+        "sections": [
+          {
+            "id": "s1",
+            "label": "headline-line1",
+            "originalText": "מקסימום דאגה לגוף",
+            "adaptedText": "חיסכון מקסימלי"
+          },
+          {
+            "id": "s2",
+            "label": "headline-line2",
+            "originalText": "אפס סוכר.",
+            "adaptedText": "383 ש״ח בלבד."
+          },
+          {
+            "id": "s3",
+            "label": "product-description",
+            "originalText": "GOOM COMPLETE - כל הפורמולות במארז אחד מושלם",
+            "adaptedText": "BUGO COMPLETE - 5 מכשירים ב-83 ש״ח למכשיר במקום 139"
+          },
+          {
+            "id": "s4",
+            "label": "cta",
+            "originalText": "SHOP NOW",
+            "adaptedText": "חסכו עכשיו"
+          }
+        ]
+      }
+    ],
+    "language": "he",
+    "id": "hist-1775910170174-34xj",
+    "createdAt": "2026-04-11T12:22:50.174Z"
+  },
+  {
     "referencePreviewUrl": "blob:http://localhost:3001/7b8fd145-e0fe-4db0-b6a0-1f265a66f4e5",
     "uploadedUrl": "/api/upload/file/1775837292724-xv2ipw.jpg",
     "analysis": {
@@ -71,7 +1008,7 @@
       "nicheMapping": "Hair care supplement mapped to pest control: Left side shows the Bugo device solution, right side shows pest problem (cockroaches/pests in kitchen/home area). The before/after concept translates to pest-infested space vs. clean protected home.",
       "suggestedPrompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace the supplement bottle with the Bugo ultrasonic pest repeller device and (2) replace all text with Hebrew pest control copy, maintaining RTL alignment.\n\nBACKGROUND: Clean beige/cream background (#E8E0D5) split vertically down the middle. Left side same cream tone, right side identical cream tone. No gradients, patterns, or textures.\n\nLEFT SIDE - SOLUTION:\nTOP TEXT (right-aligned Hebrew RTL):\nLine 1: \"הכירו את\" - dark gray (#333333), medium sans-serif font, positioned top-right\nLine 2: \"BUGO\" - large white bold text with dark outline/shadow effect, prominent display font\nLine 3: Long red banner/pill shape (#DC143C) with white text inside: \"מכשיר הדברה אולטרסוני ואלקטרומגנטי להרחקת מזיקים מהבית\"\n\nPRODUCT IMAGE: REMOVE the blue supplement bottle completely. Replace with the Bugo device - white oval/egg-shaped ultrasonic pest repeller held in the same hand position, same angle. Device has blue LED glow from bottom rim, 'Bugo' text on face. Hand positioning identical to reference.\n\nBOTTOM LEFT FEATURES (red pill-shaped badges):\n- \"הפסו למזיקים\" (red pill #DC143C, white text)\n- \"טכנולוgia דו-גלית\" (red pill)\n- \"באישור מוסדות\" (red pill)\n- \"עד 28 מ״ר כיסוי\" (red pill)\n- \"חדש בישראל\" (red pill)\n- \"בטוח לילדים וחיות\" (red pill)\n\nRIGHT SIDE - PROBLEM:\nTOP QUESTION (right-aligned Hebrew RTL): \"שוב מברשת השיער נראית כך?\" BECOMES \"שוב המטבח מלא מזיקים?\"\n\nPROBLEM IMAGE: REMOVE the hair brush with hair strands. Replace with a hand holding a kitchen utensil (spatula or wooden spoon) with 3-4 realistic black cockroach silhouettes crawling on it, positioned exactly where the hair strands were in the reference. Maintain same hand position and angle.\n\nCIRCULAR LOGO: Bottom right corner - white 'G' logo becomes white 'B' (Bugo logo) in same circular design, same size and position.\n\nTYPOGRAPHY: All Hebrew text right-aligned (RTL), same font weights and hierarchy as original. Red elements maintain exact same red color (#DC143C). White text maintains same styling with shadows/outlines.\n\nSPACING AND PROPORTIONS: Maintain exact spacing between all elements, same margins, same text-to-image ratios as reference.\n\nASPECT RATIO: 1:1 (square format)\n\nDO NOT add any element not present in the reference. DO NOT remove layout elements. DO NOT change positioning, colors, or proportions."
     },
-    "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace the supplement bottle with the Bugo ultrasonic pest repeller device and (2) replace all text with Hebrew pest control copy, maintaining RTL alignment.\n\nBACKGROUND: Clean beige/cream background (#E8E0D5) split vertically down the middle. Left side same cream tone, right side identical cream tone. No gradients, patterns, or textures.\n\nLEFT SIDE - SOLUTION:\nTOP TEXT (right-aligned Hebrew RTL):\nLine 1: \"הכירו את\" - dark gray (#333333), medium sans-serif font, positioned top-right\nLine 2: \"BUGO\" - large white bold text with dark outline/shadow effect, prominent display font\nLine 3: Long red banner/pill shape (#DC143C) with white text inside: \"מכשיר הדברה אולטרסוני ואלקטרומגנטי להרחקת מזיקים מהבית\"\n\nPRODUCT IMAGE: REMOVE the blue supplement bottle completely. Replace with the Bugo device - white oval/egg-shaped ultrasonic pest repeller held in the same hand position, same angle. Device has blue LED glow from bottom rim, 'Bugo' text on face. Hand positioning identical to reference.\n\nBOTTOM LEFT FEATURES (red pill-shaped badges):\n- \"הפסו למזיקים\" (red pill #DC143C, white text)\n- \"טכנולוgia דו-גלית\" (red pill)\n- \"באישור מוסדות\" (red pill)\n- \"עד 28 מ״ר כיסוי\" (red pill)\n- \"חדש בישראל\" (red pill)\n- \"בטוח לילדים וחיות\" (red pill)\n\nRIGHT SIDE - PROBLEM:\nTOP QUESTION (right-aligned Hebrew RTL): \"שוב מברשת השיער נראית כך?\" BECOMES \"שוב המטבח מלא מזיקים?\"\n\nPROBLEM IMAGE: REMOVE the hair brush with hair strands. Replace with a hand holding a kitchen utensil (spatula or wooden spoon) with 3-4 realistic black cockroach silhouettes crawling on it, positioned exactly where the hair strands were in the reference. Maintain same hand position and angle.\n\nCIRCULAR LOGO: Bottom right corner - white 'G' logo becomes white 'B' (Bugo logo) in same circular design, same size and position.\n\nTYPOGRAPHY: All Hebrew text right-aligned (RTL), same font weights and hierarchy as original. Red elements maintain exact same red color (#DC143C). White text maintains same styling with shadows/outlines.\n\nSPACING AND PROPORTIONS: Maintain exact spacing between all elements, same margins, same text-to-image ratios as reference.\n\nASPECT RATIO: 1:1 (square format)\n\nDO NOT add any element not present in the reference. DO NOT remove layout elements. DO NOT change positioning, colors, or proportions.",
+    "prompt": "REPLICATE THE REFERENCE IMAGE EXACTLY. Only two types of changes are permitted: (1) replace the supplement bottle with the Bugo ultrasonic pest repeller device and (2) replace all text with Hebrew pest control copy, maintaining RTL alignment.\n\nBACKGROUND: Clean beige/cream background (#E8E0D5) split vertically down the middle. Left side same cream tone, right side identical cream tone. No gradients, patterns, or textures.\n\nLEFT SIDE - SOLUTION:\nTOP TEXT (right-aligned Hebrew RTL):\nLine 1: \"הכירו את\" - dark gray (#333333), medium sans-serif font, positioned top-right\nLine 2: \"BUGO\" - large white bold text with dark outline/shadow effect, prominent display font\nLine 3: Long red banner/pill shape (#DC143C) with white text inside: \"מכשיר הדברה אולטרסוני ואלקטרומגנטי להרחקת מזיקים מהבית\"\n\nPRODUCT IMAGE: REMOVE the blue supplement bottle completely. Replace with the Bugo device - white oval/egg-shaped ultrasonic pest repeller held in the same hand position, same angle. Device has blue LED glow from bottom rim, 'Bugo' text on face. Hand positioning identical to reference.\n\nBOTTOM LEFT FEATURES (red pill-shaped badges):\n- \"הפסו למזיקים\" (red pill #DC143C, white text)\n- \"טכנולוgia דו-גלית\" (red pill)\n- \"באישור מוסדות\" (red pill)\n- \"עד 28 מ״ר כיסוי\" (red pill)\n- \"חדש בישראל\" (red pill)\n- \"בטוח לילדים וחיות\" (red pill)\n\nRIGHT SIDE - PROBLEM:\nTOP QUESTION (right-aligned Hebrew RTL): \"שוב מברשת השיער נראית כך?\" BECOMES \"עוד פעם פשפשים במיטה??\"\n\nPROBLEM IMAGE: REMOVE the hair brush with hair strands. Replace with a bed with 6-8 bed bugs, positioned exactly where the hair strands were in the reference. Maintain same hand position and angle.\n\nCIRCULAR LOGO: Bottom right corner - white 'G' logo becomes white 'B' (Bugo logo) in same circular design, same size and position.\n\nTYPOGRAPHY: All Hebrew text right-aligned (RTL), same font weights and hierarchy as original. Red elements maintain exact same red color (#DC143C). White text maintains same styling with shadows/outlines.\n\nSPACING AND PROPORTIONS: Maintain exact spacing between all elements, same margins, same text-to-image ratios as reference.\n\nASPECT RATIO: 1:1 (square format)\n\nDO NOT add any element not present in the reference. DO NOT remove layout elements. DO NOT change positioning, colors, or proportions.",
     "copyVariations": [
       {
         "id": "var-1",
@@ -93,19 +1030,19 @@
             "id": "s3",
             "label": "product-description",
             "originalText": "תוסף תזונה בגומי טעים שימכיל כוח של מעבדה שלמה עבור השיער שלך",
-            "adaptedText": "מכשיר הדברה אולטרסוני ואלקטרומגנטי להרחקת מזיקים מהבית"
+            "adaptedText": "מכשיר הדברה אולטרסוני להרחקת מזיקים מהבית"
           },
           {
             "id": "s4",
             "label": "problem-headline",
             "originalText": "שוב מברשת השיער נראית כך?",
-            "adaptedText": "שוב המטבח מלא מזיקים?"
+            "adaptedText": "שוב המטבח מלא ג׳וקים?"
           },
           {
             "id": "s5",
             "label": "cta-primary",
             "originalText": "הפסו לשיער",
-            "adaptedText": "הפסו למזיקים"
+            "adaptedText": "שימו סוף לג׳וקים "
           },
           {
             "id": "s6",
@@ -117,13 +1054,13 @@
             "id": "s7",
             "label": "certification",
             "originalText": "באישור משרד הבריאות",
-            "adaptedText": "באישור מוסדות"
+            "adaptedText": "נבדק קלינית "
           },
           {
             "id": "s8",
             "label": "feature-2",
             "originalText": "16 רכיבים פעילים",
-            "adaptedText": "עד 28 מ״ר כיסוי"
+            "adaptedText": "עד 5 שנות פעילות מלאה "
           },
           {
             "id": "s9",
@@ -135,7 +1072,7 @@
             "id": "s10",
             "label": "flavor",
             "originalText": "גמי בטעם תות",
-            "adaptedText": "בטוח לילדים וחיות"
+            "adaptedText": "בטוח לילדים וחיות מחמד "
           }
         ]
       },
@@ -165,13 +1102,13 @@
             "id": "s4",
             "label": "problem-headline",
             "originalText": "שוב מברשת השיער נראית כך?",
-            "adaptedText": "עוד פעם ג'וקים במטבח?"
+            "adaptedText": "עוד פעם פשפשים במיטה?"
           },
           {
             "id": "s5",
             "label": "cta-primary",
             "originalText": "הפסו לשיער",
-            "adaptedText": "הגנו על הבית"
+            "adaptedText": "הגנו על הבית שלכם "
           },
           {
             "id": "s6",
@@ -183,13 +1120,13 @@
             "id": "s7",
             "label": "certification",
             "originalText": "באישור משרד הבריאות",
-            "adaptedText": "מוכח ובטוח"
+            "adaptedText": "מעל 1,000 לקוחות מרוצים "
           },
           {
             "id": "s8",
             "label": "feature-2",
             "originalText": "16 רכיבים פעילים",
-            "adaptedText": "8 סוגי מזיקים"
+            "adaptedText": "נבדק קלינית "
           },
           {
             "id": "s9",
@@ -225,19 +1162,19 @@
             "id": "s3",
             "label": "product-description",
             "originalText": "תוסף תזונה בגומי טעים שימכיל כוח של מעבדה שלמה עבור השיער שלך",
-            "adaptedText": "טכנולוגיה מתקדמת - גלים אולטרסוניים ואלקטרומגנטיים"
+            "adaptedText": "טכנולוגיה מתקדמת - גלים אולטרסוניים משתנים "
           },
           {
             "id": "s4",
             "label": "problem-headline",
             "originalText": "שוב מברשת השיער נראית כך?",
-            "adaptedText": "שוב נמלים בסלון?"
+            "adaptedText": "שוב נמלים ארונות? "
           },
           {
             "id": "s5",
             "label": "cta-primary",
             "originalText": "הפסו לשיער",
-            "adaptedText": "סלקו מזיקים עכשיו"
+            "adaptedText": "סלקו את המזיקים עכשיו"
           },
           {
             "id": "s6",
@@ -303,13 +1240,13 @@
             "id": "s5",
             "label": "cta-primary",
             "originalText": "הפסו לשיער",
-            "adaptedText": "הבית שלך, בלי מזיקים"
+            "adaptedText": "הבית שלכם בלי מזיקים! "
           },
           {
             "id": "s6",
             "label": "feature-1",
             "originalText": "כשהזקנים טעימים מכל",
-            "adaptedText": "מחברים ושוכחים"
+            "adaptedText": "מחברים לשקע ושוכחים"
           },
           {
             "id": "s7",
@@ -321,7 +1258,7 @@
             "id": "s8",
             "label": "feature-2",
             "originalText": "16 רכיבים פעילים",
-            "adaptedText": "כיסוי 28 מ״ר"
+            "adaptedText": "כיסוי עד 30 מ״ר"
           },
           {
             "id": "s9",
@@ -333,7 +1270,7 @@
             "id": "s10",
             "label": "flavor",
             "originalText": "גמי בטעם תות",
-            "adaptedText": "139 ש״ח בלבד"
+            "adaptedText": "עד 50% הנחה "
           }
         ]
       }
