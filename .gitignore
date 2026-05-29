@@ -22,6 +22,8 @@
 
 # misc
 .DS_Store
+._*
+Thumbs.db
 *.pem
 
 # debug
@@ -29,6 +31,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
+*.lcov
 
 # env files (can opt-in for committing if needed)
 .env*
@@ -39,6 +43,13 @@ yarn-error.log*
 /uploads/products/*.jpg
 /uploads/products/*.jpeg
 /uploads/products/*.webp
+/uploads/gallery/*.png
+/uploads/gallery/*.jpg
+/uploads/gallery/*.jpeg
+/uploads/gallery/*.webp
+/uploads/gallery/backups/
+/uploads/gallery/*.backup*
+/uploads/brand/*.pdf
 
 # vercel
 .vercel
@@ -46,3 +57,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDEs / editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# claude code working folders
+/claude
+.claude

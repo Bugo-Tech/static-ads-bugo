@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback } from "react";
-import { useAdWorkflow } from "@/hooks/useAdWorkflow";
-import { usePolling } from "@/hooks/usePolling";
-import { WorkflowStep } from "@/lib/types";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useWorkflow } from "@/context/WorkflowContext";
+import { WorkflowStep, needsHebrewCompanion } from "@/lib/types";
 import UploadZone from "./components/UploadZone";
 import ReferenceCard from "./components/ReferenceCard";
 import LanguageSelector from "./components/LanguageSelector";
@@ -13,6 +13,7 @@ import CopyEditor from "./components/CopyEditor";
 import PromptEditor from "./components/PromptEditor";
 import GenerationCard from "./components/GenerationCard";
 import BatchProgress from "./components/BatchProgress";
+import ProductSelector from "./components/ProductSelector";
 
 const steps: { key: WorkflowStep; label: string; number: number }[] = [
   { key: "upload", label: "Upload", number: 1 },
@@ -22,6 +23,7 @@ const steps: { key: WorkflowStep; label: string; number: number }[] = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const {
     state,
     addReferences,
@@ -31,57 +33,87 @@ export default function Home() {
     setLanguage,
     setSelectedProducts,
     updateCopySection,
+    updateCopySectionHebrew,
+    replaceCopyVariations,
     selectVariation,
     toggleVariationForGeneration,
-    updateGeneration,
+    addGeneration,
+    setSelectedProductId,
+    setEnhancedVariationMatching,
     reset,
-  } = useAdWorkflow();
+    confirmNavigation,
+  } = useWorkflow();
 
-  // Poll for generation status
-  const activeJobs = state.references.flatMap((r) =>
-    (r.generations || []).filter((g) => g.status === "queued" || g.status === "processing")
-  );
+  // Auto-translate to Hebrew when entering the review step with foreign-language
+  // variations that are missing hebrewText (handles restored localStorage state
+  // and any case where the fresh-analyze auto-translate failed silently).
+  useEffect(() => {
+    if (state.step !== "review") return;
+    if (!needsHebrewCompanion(state.language)) return;
+    const refsNeedingTranslation = state.references.filter((r) => {
+      if (!r.copyVariations || r.copyVariations.length === 0) return false;
+      return r.copyVariations.some((v) =>
+        v.sections.some((s) => !s.hebrewText || s.hebrewText.length === 0)
+      );
+    });
+    if (refsNeedingTranslation.length === 0) return;
 
-  const pollGenerations = useCallback(async () => {
-    for (const ref of state.references) {
-      for (const gen of ref.generations || []) {
-        if (gen.status !== "queued" && gen.status !== "processing") continue;
+    refsNeedingTranslation.forEach((ref) => {
+      if (!ref.copyVariations) return;
+      (async () => {
         try {
-          const res = await fetch(`/api/image-status?jobId=${gen.jobId}`);
-          const data = await res.json();
-          if (data.status !== gen.status || data.resultUrl) {
-            updateGeneration(ref.id, gen.jobId, {
-              status: data.status,
-              resultUrl: data.resultUrl,
-              error: data.error,
-            });
-            // Auto-save to gallery when completed
-            if (data.status === "completed" && data.resultUrl) {
-              fetch("/api/gallery", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  action: "add-image",
-                  sourceUrl: data.resultUrl,
-                  prompt: ref.prompt?.substring(0, 200) || "",
-                  size: gen.size,
-                  angle: ref.copyVariations?.find((v) => v.id === gen.variationId)?.angle || "",
-                  folderId: "root",
-                }),
-              }).catch(() => {}); // silently save
-            }
+          const tres = await fetch("/api/translate-copy", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              variations: ref.copyVariations,
+              language: state.language,
+              direction: "foreign-to-hebrew",
+            }),
+          });
+          if (!tres.ok) {
+            console.error("[translate-copy] backfill HTTP", tres.status, await tres.text());
+            return;
           }
-        } catch {
-          // silently retry on next poll
+          const tdata = await tres.json();
+          if (tdata?.variations) {
+            replaceCopyVariations(ref.id, tdata.variations);
+          }
+        } catch (err) {
+          console.error("[translate-copy] backfill failed:", err);
         }
-      }
-    }
-  }, [state.references, updateGeneration]);
+      })();
+    });
+    // We intentionally only depend on step + language; running once per step-entry
+    // is enough. The check above prevents re-runs for already-translated refs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.step, state.language]);
 
-  usePolling(pollGenerations, {
-    enabled: activeJobs.length > 0,
-    interval: 5000,
-  });
+  // Auto-sync copy edits back to history (debounced 1.5s after last change).
+  // Only refs that already have a server-side historyId get synced.
+  useEffect(() => {
+    if (state.references.length === 0) return;
+    const refsWithHistory = state.references.filter(
+      (r) => r.historyId && r.copyVariations,
+    );
+    if (refsWithHistory.length === 0) return;
+
+    const timeoutId = setTimeout(() => {
+      refsWithHistory.forEach((ref) => {
+        fetch("/api/history", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "update",
+            id: ref.historyId,
+            updates: { copyVariations: ref.copyVariations },
+          }),
+        }).catch(() => {});
+      });
+    }, 1500);
+
+    return () => clearTimeout(timeoutId);
+  }, [state.references]);
 
   // --- Upload & Analyze ---
   async function handleAnalyze() {
@@ -113,6 +145,9 @@ export default function Home() {
         const analyzeForm = new FormData();
         analyzeForm.append("file", ref.file);
         analyzeForm.append("language", state.language);
+        if (state.selectedProductId) {
+          analyzeForm.append("productId", state.selectedProductId);
+        }
 
         const res = await fetch("/api/analyze", {
           method: "POST",
@@ -128,7 +163,40 @@ export default function Home() {
           selectedVariationId: data.copyVariations?.[0]?.id,
         });
 
-        // Auto-save to history
+        // Auto-translate to Hebrew for foreign-language batches (ar/de/ru/fr only).
+        // Fire-and-forget — never blocks the review step; never affects adaptedText
+        // (image-generation source of truth) or the Hebrew/English flows.
+        if (needsHebrewCompanion(state.language) && data.copyVariations?.length) {
+          (async () => {
+            try {
+              const tres = await fetch("/api/translate-copy", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  variations: data.copyVariations,
+                  language: state.language,
+                  direction: "foreign-to-hebrew",
+                }),
+              });
+              if (!tres.ok) {
+                const errText = await tres.text();
+                console.error("[translate-copy] HTTP", tres.status, errText);
+                return;
+              }
+              const tdata = await tres.json();
+              if (tdata?.variations) {
+                console.log("[translate-copy] auto-translation applied for ref", ref.id);
+                replaceCopyVariations(ref.id, tdata.variations);
+              } else {
+                console.error("[translate-copy] unexpected response shape", tdata);
+              }
+            } catch (err) {
+              console.error("[translate-copy] auto-translate failed:", err);
+            }
+          })();
+        }
+
+        // Auto-save to history; capture the entry id so subsequent edits can sync.
         fetch("/api/history", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -141,7 +209,14 @@ export default function Home() {
             copyVariations: data.copyVariations,
             language: state.language,
           }),
-        }).catch(() => {}); // silently save
+        })
+          .then((r) => r.json())
+          .then((histData) => {
+            if (histData?.entry?.id) {
+              updateReference(ref.id, { historyId: histData.entry.id });
+            }
+          })
+          .catch(() => {}); // silently save
       } catch (err) {
         updateReference(ref.id, {
           status: "error",
@@ -151,8 +226,6 @@ export default function Home() {
     });
 
     await Promise.all(promises);
-    // Only move to review if at least one reference was analyzed successfully
-    // (state is async, so re-check isn't reliable — just move forward, the UI handles errors)
     setStep("review");
   }
 
@@ -160,12 +233,10 @@ export default function Home() {
   async function handleGenerate() {
     setStep("generate");
 
-    // Fire off all generations without awaiting — they run in background
     for (const ref of state.references) {
       if (ref.status === "error" || !ref.analysis) continue;
       updateReference(ref.id, { status: "generating" });
 
-      // Get all selected variations (multi-select)
       const variationIds = ref.selectedVariationIds?.length
         ? ref.selectedVariationIds
         : [ref.selectedVariationId || ref.copyVariations?.[0]?.id || ""];
@@ -176,45 +247,61 @@ export default function Home() {
 
       const sizes: ("1:1" | "9:16")[] = ["1:1", "9:16"];
 
-      // Generate for each selected variation x each size
       (async () => {
         try {
           const jobs = await Promise.all(
             selectedVariations.flatMap((variation) =>
               sizes.map(async (size) => {
-                const res = await fetch("/api/generate-image", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    prompt: ref.prompt,
-                    referenceImageUrl: ref.uploadedUrl,
-                    productImageIds: state.selectedProductImageIds,
-                    size,
-                    copyVariation: variation,
-                  }),
-                });
-                const data = await res.json();
-                if (!res.ok || !data.jobId) {
+                try {
+                  const res = await fetch("/api/generate-image", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      prompt: ref.prompt,
+                      referenceImageUrl: ref.uploadedUrl,
+                      productImageIds: state.selectedProductImageIds,
+                      size,
+                      copyVariation: variation,
+                      enhancedVariationMatching: state.enhancedVariationMatching,
+                      enforceCleanLayout: true,
+                    }),
+                  });
+                  const data = await res.json().catch(() => ({}));
+                  if (!res.ok || !data.jobId) {
+                    return {
+                      jobId: `failed-${size}-${variation?.id}-${Date.now()}`,
+                      size,
+                      variationId: variation?.id || "",
+                      status: "failed" as const,
+                      error: data.error || `HTTP ${res.status}: failed to submit`,
+                    };
+                  }
                   return {
-                    jobId: `failed-${size}-${variation?.id}-${Date.now()}`,
+                    jobId: data.jobId,
+                    size,
+                    variationId: variation?.id || "",
+                    status: "queued" as const,
+                  };
+                } catch (err) {
+                  // Per-job catch — keeps Promise.all from rejecting and losing
+                  // sibling jobs that succeeded.
+                  return {
+                    jobId: `error-${size}-${variation?.id}-${Date.now()}`,
                     size,
                     variationId: variation?.id || "",
                     status: "failed" as const,
-                    error: data.error || "Failed to submit generation",
+                    error: err instanceof Error ? err.message : "Network error",
                   };
                 }
-                return {
-                  jobId: data.jobId,
-                  size,
-                  variationId: variation?.id || "",
-                  status: "queued" as const,
-                };
               })
             )
           );
           updateReference(ref.id, { generations: jobs });
-        } catch {
-          updateReference(ref.id, { status: "error", error: "Generation failed" });
+        } catch (err) {
+          updateReference(ref.id, {
+            status: "error",
+            error: err instanceof Error ? err.message : "Generation failed",
+          });
         }
       })();
     }
@@ -223,11 +310,10 @@ export default function Home() {
   const canAnalyze = state.references.length > 0 && state.references.some((r) => r.status === "idle");
   const canGenerate = state.references.some((r) => r.status === "analyzed");
 
-  // Count total images that will be generated
   const totalToGenerate = state.references.reduce((sum, ref) => {
     if (ref.status !== "analyzed") return sum;
     const varCount = ref.selectedVariationIds?.length || 1;
-    return sum + varCount * 2; // 2 sizes per variation
+    return sum + varCount * 2;
   }, 0);
   const allDone = state.step === "generate" && state.references.every(
     (r) => r.status === "done" || r.status === "error" ||
@@ -249,26 +335,38 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <a
-              href="/history"
+            <button
+              onClick={() => router.push("/history")}
               className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
               Previous Ads
-            </a>
-            <a
-              href="/gallery"
+            </button>
+            <button
+              onClick={() => router.push("/auto-pull")}
+              className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100 transition-colors"
+            >
+              Auto Pull
+            </button>
+            <button
+              onClick={() => router.push("/replicator")}
+              className="rounded-lg border border-purple-200 bg-purple-50 px-3 py-1.5 text-sm font-medium text-purple-700 hover:bg-purple-100 transition-colors"
+            >
+              Replicator
+            </button>
+            <button
+              onClick={() => router.push("/gallery")}
               className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
               Gallery
-            </a>
-            <a
-              href="/brand"
+            </button>
+            <button
+              onClick={() => router.push("/brand")}
               className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
               Brand Settings
-            </a>
+            </button>
             <button
-              onClick={reset}
+              onClick={() => confirmNavigation(reset)}
               className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
               New Batch
@@ -354,6 +452,11 @@ export default function Home() {
                   ))}
                 </div>
 
+                <ProductSelector
+                  selectedProductId={state.selectedProductId}
+                  onSelect={setSelectedProductId}
+                />
+
                 <ProductLibrary
                   selectedIds={state.selectedProductImageIds}
                   onSelectionChange={setSelectedProducts}
@@ -438,6 +541,67 @@ export default function Home() {
                         onUpdateSection={(vId, sId, text) =>
                           updateCopySection(ref.id, vId, sId, text)
                         }
+                        onUpdateSectionHebrew={(vId, sId, text) =>
+                          updateCopySectionHebrew(ref.id, vId, sId, text)
+                        }
+                        onSyncHebrewToForeign={async (vId) => {
+                          console.log("[page] onSyncHebrewToForeign called for variation", vId);
+                          if (!needsHebrewCompanion(state.language)) throw new Error(`Language ${state.language} not supported`);
+                          const variation = ref.copyVariations?.find((v) => v.id === vId);
+                          if (!variation) throw new Error(`Variation ${vId} not found`);
+                          const res = await fetch("/api/translate-copy", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              variations: [variation],
+                              language: state.language,
+                              direction: "hebrew-to-foreign",
+                            }),
+                          });
+                          console.log("[page] translate-copy response status:", res.status);
+                          if (!res.ok) {
+                            const errText = await res.text();
+                            throw new Error(`HTTP ${res.status}: ${errText.slice(0, 200)}`);
+                          }
+                          const tdata = await res.json();
+                          if (tdata?.variations?.length && ref.copyVariations) {
+                            const updated = ref.copyVariations.map((v) =>
+                              v.id === vId ? tdata.variations[0] : v
+                            );
+                            replaceCopyVariations(ref.id, updated);
+                          } else {
+                            throw new Error("Unexpected response shape");
+                          }
+                        }}
+                        onSyncForeignToHebrew={async (vId) => {
+                          console.log("[page] onSyncForeignToHebrew called for variation", vId);
+                          if (!needsHebrewCompanion(state.language)) throw new Error(`Language ${state.language} not supported`);
+                          const variation = ref.copyVariations?.find((v) => v.id === vId);
+                          if (!variation) throw new Error(`Variation ${vId} not found`);
+                          const res = await fetch("/api/translate-copy", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              variations: [variation],
+                              language: state.language,
+                              direction: "foreign-to-hebrew",
+                            }),
+                          });
+                          console.log("[page] translate-copy response status:", res.status);
+                          if (!res.ok) {
+                            const errText = await res.text();
+                            throw new Error(`HTTP ${res.status}: ${errText.slice(0, 200)}`);
+                          }
+                          const tdata = await res.json();
+                          if (tdata?.variations?.length && ref.copyVariations) {
+                            const updated = ref.copyVariations.map((v) =>
+                              v.id === vId ? tdata.variations[0] : v
+                            );
+                            replaceCopyVariations(ref.id, updated);
+                          } else {
+                            throw new Error("Unexpected response shape");
+                          }
+                        }}
                         language={state.language}
                       />
                     )}
@@ -446,7 +610,23 @@ export default function Home() {
               </div>
             ))}
 
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <div
+                  className={`relative h-5 w-9 rounded-full transition-colors ${
+                    state.enhancedVariationMatching ? "bg-primary" : "bg-gray-300"
+                  }`}
+                  onClick={() => setEnhancedVariationMatching(!state.enhancedVariationMatching)}
+                >
+                  <div
+                    className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${
+                      state.enhancedVariationMatching ? "translate-x-4" : "translate-x-0.5"
+                    }`}
+                  />
+                </div>
+                <span className="text-sm text-gray-600">Enhanced variation matching</span>
+                <span className="text-xs text-gray-400">(match visuals to each variation&apos;s text)</span>
+              </label>
               <button
                 onClick={handleGenerate}
                 disabled={!canGenerate}
@@ -482,7 +662,12 @@ export default function Home() {
 
             <div className="space-y-4">
               {state.references.map((ref) => (
-                <GenerationCard key={ref.id} reference={ref} />
+                <GenerationCard
+                  key={ref.id}
+                  reference={ref}
+                  onAddGeneration={addGeneration}
+                  selectedProductImageIds={state.selectedProductImageIds}
+                />
               ))}
             </div>
           </div>

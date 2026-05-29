@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { BrandConfig } from "@/lib/types";
 import ProductLibrary from "../components/ProductLibrary";
 
@@ -67,11 +68,11 @@ export default function BrandSettingsPage() {
       <header className="border-b border-border bg-white">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
-            <a href="/" className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+            <Link href="/" className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </a>
+            </Link>
             <h1 className="text-lg font-bold text-gray-900">Brand Settings</h1>
           </div>
           <button
@@ -154,13 +155,25 @@ export default function BrandSettingsPage() {
           />
         </Section>
 
-        {/* Brand Book Content */}
-        <Section title="Brand Book Content" description="Paste the full brand book text here. This will be used as context for Claude.">
+        {/* Brand Book Content — Israel */}
+        <Section title="Brand Book — Israel / Hebrew" description="Brand book for Hebrew and Arabic ads. Upload a PDF or paste text manually.">
+          <PdfUploader market="il" onUploaded={(text) => updateField("brandBookContent", text)} />
           <TextArea
             value={config.brandBookContent}
             onChange={(v) => updateField("brandBookContent", v)}
             rows={12}
-            placeholder="Paste your brand book content here..."
+            placeholder="Paste your Israeli brand book content here, or upload a PDF above..."
+          />
+        </Section>
+
+        {/* Brand Book Content — US */}
+        <Section title="Brand Book — US / English" description="Brand book for English and German ads. Upload a PDF or paste text manually.">
+          <PdfUploader market="us" onUploaded={(text) => updateField("brandBookContentUS", text)} />
+          <TextArea
+            value={config.brandBookContentUS || ""}
+            onChange={(v) => updateField("brandBookContentUS", v)}
+            rows={12}
+            placeholder="Paste your US brand book content here, or upload a PDF above..."
           />
         </Section>
 
@@ -195,6 +208,65 @@ export default function BrandSettingsPage() {
 }
 
 // --- Reusable sub-components ---
+
+function PdfUploader({ market, onUploaded }: { market: "il" | "us"; onUploaded: (text: string) => void }) {
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState<{ pages: number; chars: number } | null>(null);
+
+  async function handleUpload(file: File) {
+    setUploading(true);
+    setResult(null);
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("market", market);
+    try {
+      const res = await fetch("/api/brand/upload-pdf", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) {
+        setResult({ pages: data.pages, chars: data.chars });
+        // Reload the config to get the extracted text
+        const configRes = await fetch("/api/brand");
+        const configData = await configRes.json();
+        const field = market === "us" ? "brandBookContentUS" : "brandBookContent";
+        if (configData.config?.[field]) {
+          onUploaded(configData.config[field]);
+        }
+      } else {
+        alert(data.error || "Upload failed");
+      }
+    } catch {
+      alert("Upload failed");
+    }
+    setUploading(false);
+  }
+
+  return (
+    <div className="mb-3">
+      <label className="flex items-center gap-3 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+        <input
+          type="file"
+          accept=".pdf"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) handleUpload(f);
+          }}
+        />
+        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        <span className="text-sm text-gray-600">
+          {uploading ? "Uploading & extracting text..." : "Upload Brand Book PDF"}
+        </span>
+      </label>
+      {result && (
+        <p className="mt-1.5 text-xs text-green-600">
+          Extracted {result.chars.toLocaleString()} characters from {result.pages} pages. Content loaded below — review and save.
+        </p>
+      )}
+    </div>
+  );
+}
 
 function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (

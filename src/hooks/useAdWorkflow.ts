@@ -1,10 +1,11 @@
 "use client";
 
-import { useReducer, useCallback } from "react";
+import { useReducer, useCallback, useEffect, useRef } from "react";
 import {
   WorkflowState,
   WorkflowAction,
   ReferenceAd,
+  CopyVariation,
 } from "@/lib/types";
 
 function generateId(): string {
@@ -16,7 +17,54 @@ const initialState: WorkflowState = {
   references: [],
   selectedProductImageIds: [],
   language: "he",
+  enhancedVariationMatching: true,
 };
+
+const STORAGE_KEY = "bugo-static-ads-state-v1";
+
+function loadPersistedState(): Partial<WorkflowState> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    if (Array.isArray(parsed.references)) {
+      // Only restore refs whose binary already lives on the server (uploadedUrl set).
+      // Without it, the ref is unusable since we can't restore the File object.
+      parsed.references = parsed.references
+        .filter((r: ReferenceAd) => r && r.uploadedUrl)
+        .map((r: ReferenceAd) => ({
+          ...r,
+          previewUrl: r.uploadedUrl || r.previewUrl,
+          generations: undefined,
+          status: r.status === "generating" || r.status === "uploading" || r.status === "analyzing"
+            ? "analyzed"
+            : r.status,
+        }));
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function persistState(state: WorkflowState): void {
+  if (typeof window === "undefined") return;
+  try {
+    const toSave = {
+      ...state,
+      references: state.references.map((r) => ({
+        ...r,
+        file: undefined,
+        previewUrl: r.uploadedUrl || r.previewUrl,
+      })),
+    };
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  } catch {
+    // quota exceeded or storage disabled — silently skip
+  }
+}
 
 function workflowReducer(state: WorkflowState, action: WorkflowAction): WorkflowState {
   switch (action.type) {
@@ -79,6 +127,38 @@ function workflowReducer(state: WorkflowState, action: WorkflowAction): Workflow
         }),
       };
 
+    case "UPDATE_COPY_SECTION_HEBREW":
+      return {
+        ...state,
+        references: state.references.map((r) => {
+          if (r.id !== action.refId) return r;
+          return {
+            ...r,
+            copyVariations: r.copyVariations?.map((v) => {
+              if (v.id !== action.variationId) return v;
+              return {
+                ...v,
+                sections: v.sections.map((s) =>
+                  s.id === action.sectionId
+                    ? { ...s, hebrewText: action.text }
+                    : s
+                ),
+              };
+            }),
+          };
+        }),
+      };
+
+    case "REPLACE_COPY_VARIATIONS":
+      return {
+        ...state,
+        references: state.references.map((r) =>
+          r.id === action.refId
+            ? { ...r, copyVariations: action.variations }
+            : r
+        ),
+      };
+
     case "SELECT_VARIATION":
       return {
         ...state,
@@ -117,8 +197,29 @@ function workflowReducer(state: WorkflowState, action: WorkflowAction): Workflow
         }),
       };
 
+    case "ADD_GENERATION":
+      return {
+        ...state,
+        references: state.references.map((r) => {
+          if (r.id !== action.refId) return r;
+          return {
+            ...r,
+            generations: [...(r.generations || []), action.job],
+          };
+        }),
+      };
+
+    case "SET_ENHANCED_VARIATION_MATCHING":
+      return { ...state, enhancedVariationMatching: action.enabled };
+
+    case "SET_SELECTED_PRODUCT_ID":
+      return { ...state, selectedProductId: action.productId };
+
     case "RESET":
       return initialState;
+
+    case "HYDRATE":
+      return { ...state, ...action.state };
 
     default:
       return state;
@@ -127,6 +228,25 @@ function workflowReducer(state: WorkflowState, action: WorkflowAction): Workflow
 
 export function useAdWorkflow() {
   const [state, dispatch] = useReducer(workflowReducer, initialState);
+  const hydratedRef = useRef(false);
+
+  // Load any persisted state from localStorage on first mount (client only).
+  // Doing it in useEffect (not in useReducer's lazy init) avoids hydration
+  // mismatches between server-rendered and client-rendered HTML.
+  useEffect(() => {
+    const persisted = loadPersistedState();
+    if (persisted) {
+      dispatch({ type: "HYDRATE", state: persisted });
+    }
+    hydratedRef.current = true;
+  }, []);
+
+  // Persist on every state change, but only after the initial hydration step
+  // (otherwise the empty initial state would overwrite any saved state).
+  useEffect(() => {
+    if (!hydratedRef.current) return;
+    persistState(state);
+  }, [state]);
 
   const addReferences = useCallback(
     (files: File[]) => dispatch({ type: "ADD_REFERENCES", files }),
@@ -166,6 +286,18 @@ export function useAdWorkflow() {
     []
   );
 
+  const updateCopySectionHebrew = useCallback(
+    (refId: string, variationId: string, sectionId: string, text: string) =>
+      dispatch({ type: "UPDATE_COPY_SECTION_HEBREW", refId, variationId, sectionId, text }),
+    []
+  );
+
+  const replaceCopyVariations = useCallback(
+    (refId: string, variations: CopyVariation[]) =>
+      dispatch({ type: "REPLACE_COPY_VARIATIONS", refId, variations }),
+    []
+  );
+
   const selectVariation = useCallback(
     (refId: string, variationId: string) =>
       dispatch({ type: "SELECT_VARIATION", refId, variationId }),
@@ -184,6 +316,24 @@ export function useAdWorkflow() {
     []
   );
 
+  const addGeneration = useCallback(
+    (refId: string, job: import("@/lib/types").GenerationJob) =>
+      dispatch({ type: "ADD_GENERATION", refId, job }),
+    []
+  );
+
+  const setSelectedProductId = useCallback(
+    (productId: string | undefined) =>
+      dispatch({ type: "SET_SELECTED_PRODUCT_ID", productId }),
+    []
+  );
+
+  const setEnhancedVariationMatching = useCallback(
+    (enabled: boolean) =>
+      dispatch({ type: "SET_ENHANCED_VARIATION_MATCHING", enabled }),
+    []
+  );
+
   const reset = useCallback(() => dispatch({ type: "RESET" }), []);
 
   return {
@@ -196,9 +346,14 @@ export function useAdWorkflow() {
     setLanguage,
     setSelectedProducts,
     updateCopySection,
+    updateCopySectionHebrew,
+    replaceCopyVariations,
     selectVariation,
     toggleVariationForGeneration,
     updateGeneration,
+    addGeneration,
+    setSelectedProductId,
+    setEnhancedVariationMatching,
     reset,
   };
 }

@@ -28,6 +28,12 @@ export async function POST(request: NextRequest) {
         angle: body.angle || "",
         referencePreview: body.referencePreview,
         folderId: body.folderId || "root",
+        originalPrompt: body.originalPrompt,
+        referenceImageUrl: body.referenceImageUrl,
+        productImageIds: body.productImageIds,
+        copyVariation: body.copyVariation,
+        sourceImageId: body.sourceImageId,
+        isQcFix: body.isQcFix,
       });
       return NextResponse.json({ image });
     }

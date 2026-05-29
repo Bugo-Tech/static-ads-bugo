@@ -27,12 +27,14 @@ export async function POST(request: NextRequest) {
     let imageBase64: string;
     let mimeType: string;
     let language: Language = "he";
+    let productId: string | undefined;
 
     if (contentType.includes("multipart/form-data")) {
       // File uploaded directly
       const formData = await request.formData();
       const file = formData.get("file") as File | null;
       language = (formData.get("language") as Language) || "he";
+      productId = (formData.get("productId") as string) || undefined;
 
       if (!file) {
         return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -61,11 +63,13 @@ export async function POST(request: NextRequest) {
     } else {
       // JSON body with imageUrl (local file path)
       const body = await request.json();
-      const { imageUrl, language: lang = "he" } = body as {
+      const { imageUrl, language: lang = "he", productId: pid } = body as {
         imageUrl: string;
         language?: Language;
+        productId?: string;
       };
       language = lang;
+      productId = pid;
 
       if (!imageUrl) {
         return NextResponse.json({ error: "No image provided" }, { status: 400 });
@@ -91,7 +95,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const result = await analyzeReference(imageBase64, mimeType, language);
+    const result = await analyzeReference(imageBase64, mimeType, language, productId);
 
     return NextResponse.json(result);
   } catch (error) {
