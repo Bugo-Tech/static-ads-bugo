@@ -2,7 +2,7 @@
 
 import { useState, useEffect, DragEvent } from "react";
 import Link from "next/link";
-import { GalleryImage, GalleryFolder } from "@/lib/gallery";
+import { GalleryImage, GalleryFolder } from "@/lib/types";
 import RegenerateModal from "../components/RegenerateModal";
 import { useAuth } from "@/context/AuthContext";
 

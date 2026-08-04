@@ -8,7 +8,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { NativeAdsGalleryImage } from "@/lib/native-ads-gallery";
+import type { NativeAdsGalleryImage } from "@/lib/types";
 import { SIZES } from "@/lib/native-ads-defaults";
 
 type SizeFilter = "all" | "1:1" | "9:16";

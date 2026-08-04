@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { HistoryEntry } from "@/lib/adHistory";
+import { HistoryEntry } from "@/lib/types";
 import { useAuth } from "@/context/AuthContext";
 import CopyEditor from "../components/CopyEditor";
 import PromptEditor from "../components/PromptEditor";
