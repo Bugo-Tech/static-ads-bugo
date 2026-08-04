@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { BrandConfig } from "@/lib/types";
 import ProductLibrary from "../components/ProductLibrary";
+import { useAuth } from "@/context/AuthContext";
 
 export default function BrandSettingsPage() {
+  const { isAdmin } = useAuth();
   const [config, setConfig] = useState<BrandConfig | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -77,7 +79,7 @@ export default function BrandSettingsPage() {
           </div>
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || !isAdmin}
             className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-primary-dark disabled:opacity-50 transition-all"
           >
             {saving ? "Saving..." : saved ? "Saved!" : "Save Changes"}
@@ -89,33 +91,33 @@ export default function BrandSettingsPage() {
         {/* Basic Info */}
         <Section title="Basic Info">
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Product Name" value={config.productName} onChange={(v) => updateField("productName", v)} />
-            <Field label="Tagline" value={config.tagline} onChange={(v) => updateField("tagline", v)} />
-            <Field label="Website" value={config.website} onChange={(v) => updateField("website", v)} />
+            <Field label="Product Name" value={config.productName} onChange={(v) => updateField("productName", v)} disabled={!isAdmin} />
+            <Field label="Tagline" value={config.tagline} onChange={(v) => updateField("tagline", v)} disabled={!isAdmin} />
+            <Field label="Website" value={config.website} onChange={(v) => updateField("website", v)} disabled={!isAdmin} />
           </div>
         </Section>
 
         {/* Product Specs */}
         <Section title="Product Specs">
           <div className="space-y-3">
-            <TextArea label="Technology" value={config.productSpecs.technology} onChange={(v) => updateSpec("technology", v)} rows={2} />
+            <TextArea label="Technology" value={config.productSpecs.technology} onChange={(v) => updateSpec("technology", v)} rows={2} disabled={!isAdmin} />
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Coverage" value={config.productSpecs.coverage} onChange={(v) => updateSpec("coverage", v)} />
-              <Field label="Lifespan" value={config.productSpecs.lifespan} onChange={(v) => updateSpec("lifespan", v)} />
-              <Field label="Plug Type" value={config.productSpecs.plug} onChange={(v) => updateSpec("plug", v)} />
-              <Field label="Noise Level" value={config.productSpecs.noise} onChange={(v) => updateSpec("noise", v)} />
+              <Field label="Coverage" value={config.productSpecs.coverage} onChange={(v) => updateSpec("coverage", v)} disabled={!isAdmin} />
+              <Field label="Lifespan" value={config.productSpecs.lifespan} onChange={(v) => updateSpec("lifespan", v)} disabled={!isAdmin} />
+              <Field label="Plug Type" value={config.productSpecs.plug} onChange={(v) => updateSpec("plug", v)} disabled={!isAdmin} />
+              <Field label="Noise Level" value={config.productSpecs.noise} onChange={(v) => updateSpec("noise", v)} disabled={!isAdmin} />
             </div>
-            <TextArea label="Safety" value={config.productSpecs.safety} onChange={(v) => updateSpec("safety", v)} rows={2} />
-            <Field label="Maintenance" value={config.productSpecs.maintenance} onChange={(v) => updateSpec("maintenance", v)} />
+            <TextArea label="Safety" value={config.productSpecs.safety} onChange={(v) => updateSpec("safety", v)} rows={2} disabled={!isAdmin} />
+            <Field label="Maintenance" value={config.productSpecs.maintenance} onChange={(v) => updateSpec("maintenance", v)} disabled={!isAdmin} />
           </div>
         </Section>
 
         {/* Pricing */}
         <Section title="Pricing">
           <div className="grid grid-cols-3 gap-4">
-            <Field label="Single" value={config.pricing.single} onChange={(v) => updatePricing("single", v)} />
-            <Field label="2+1 Bundle" value={config.pricing.bundle2plus1} onChange={(v) => updatePricing("bundle2plus1", v)} />
-            <Field label="3+2 Bundle" value={config.pricing.bundle3plus2} onChange={(v) => updatePricing("bundle3plus2", v)} />
+            <Field label="Single" value={config.pricing.single} onChange={(v) => updatePricing("single", v)} disabled={!isAdmin} />
+            <Field label="2+1 Bundle" value={config.pricing.bundle2plus1} onChange={(v) => updatePricing("bundle2plus1", v)} disabled={!isAdmin} />
+            <Field label="3+2 Bundle" value={config.pricing.bundle3plus2} onChange={(v) => updatePricing("bundle3plus2", v)} disabled={!isAdmin} />
           </div>
         </Section>
 
@@ -125,6 +127,7 @@ export default function BrandSettingsPage() {
             items={config.painPoints}
             onChange={(items) => updateField("painPoints", items)}
             placeholder="Add a pain point..."
+            disabled={!isAdmin}
           />
         </Section>
 
@@ -134,6 +137,7 @@ export default function BrandSettingsPage() {
             items={config.marketingAngles}
             onChange={(items) => updateField("marketingAngles", items)}
             placeholder="Add a marketing angle..."
+            disabled={!isAdmin}
           />
         </Section>
 
@@ -143,6 +147,7 @@ export default function BrandSettingsPage() {
             value={config.voiceAndTone}
             onChange={(v) => updateField("voiceAndTone", v)}
             rows={6}
+            disabled={!isAdmin}
           />
         </Section>
 
@@ -152,28 +157,31 @@ export default function BrandSettingsPage() {
             items={config.pestTypes}
             onChange={(items) => updateField("pestTypes", items)}
             placeholder="Add a pest type..."
+            disabled={!isAdmin}
           />
         </Section>
 
         {/* Brand Book Content — Israel */}
         <Section title="Brand Book — Israel / Hebrew" description="Brand book for Hebrew and Arabic ads. Upload a PDF or paste text manually.">
-          <PdfUploader market="il" onUploaded={(text) => updateField("brandBookContent", text)} />
+          {isAdmin && <PdfUploader market="il" onUploaded={(text) => updateField("brandBookContent", text)} />}
           <TextArea
             value={config.brandBookContent}
             onChange={(v) => updateField("brandBookContent", v)}
             rows={12}
             placeholder="Paste your Israeli brand book content here, or upload a PDF above..."
+            disabled={!isAdmin}
           />
         </Section>
 
         {/* Brand Book Content — US */}
         <Section title="Brand Book — US / English" description="Brand book for English and German ads. Upload a PDF or paste text manually.">
-          <PdfUploader market="us" onUploaded={(text) => updateField("brandBookContentUS", text)} />
+          {isAdmin && <PdfUploader market="us" onUploaded={(text) => updateField("brandBookContentUS", text)} />}
           <TextArea
             value={config.brandBookContentUS || ""}
             onChange={(v) => updateField("brandBookContentUS", v)}
             rows={12}
             placeholder="Paste your US brand book content here, or upload a PDF above..."
+            disabled={!isAdmin}
           />
         </Section>
 
@@ -184,6 +192,7 @@ export default function BrandSettingsPage() {
             onChange={(v) => updateField("customNotes", v)}
             rows={4}
             placeholder="Extra instructions or context..."
+            disabled={!isAdmin}
           />
         </Section>
 
@@ -196,7 +205,7 @@ export default function BrandSettingsPage() {
         <div className="flex justify-end pb-8">
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || !isAdmin}
             className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-primary-dark disabled:opacity-50 transition-all"
           >
             {saving ? "Saving..." : saved ? "Saved!" : "Save All Changes"}
@@ -279,7 +288,7 @@ function Section({ title, description, children }: { title: string; description?
   );
 }
 
-function Field({ label, value, onChange }: { label?: string; value: string; onChange: (v: string) => void }) {
+function Field({ label, value, onChange, disabled }: { label?: string; value: string; onChange: (v: string) => void; disabled?: boolean }) {
   return (
     <div>
       {label && <label className="mb-1 block text-xs font-medium text-gray-600">{label}</label>}
@@ -287,7 +296,8 @@ function Field({ label, value, onChange }: { label?: string; value: string; onCh
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-border px-3 py-2 text-sm text-gray-800 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        disabled={disabled}
+        className="w-full rounded-lg border border-border px-3 py-2 text-sm text-gray-800 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60 disabled:cursor-not-allowed"
       />
     </div>
   );
@@ -299,12 +309,14 @@ function TextArea({
   onChange,
   rows = 3,
   placeholder,
+  disabled,
 }: {
   label?: string;
   value: string;
   onChange: (v: string) => void;
   rows?: number;
   placeholder?: string;
+  disabled?: boolean;
 }) {
   return (
     <div>
@@ -314,7 +326,8 @@ function TextArea({
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-border px-3 py-2 text-sm text-gray-800 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        disabled={disabled}
+        className="w-full rounded-lg border border-border px-3 py-2 text-sm text-gray-800 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60 disabled:cursor-not-allowed"
       />
     </div>
   );
@@ -324,10 +337,12 @@ function ListEditor({
   items,
   onChange,
   placeholder,
+  disabled,
 }: {
   items: string[];
   onChange: (items: string[]) => void;
   placeholder?: string;
+  disabled?: boolean;
 }) {
   const [newItem, setNewItem] = useState("");
 
@@ -355,11 +370,13 @@ function ListEditor({
             type="text"
             value={item}
             onChange={(e) => updateItem(i, e.target.value)}
-            className="flex-1 rounded-lg border border-border px-3 py-1.5 text-sm text-gray-800 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            disabled={disabled}
+            className="flex-1 rounded-lg border border-border px-3 py-1.5 text-sm text-gray-800 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60 disabled:cursor-not-allowed"
           />
           <button
             onClick={() => removeItem(i)}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+            disabled={disabled}
+            className="rounded-lg p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -374,11 +391,13 @@ function ListEditor({
           onChange={(e) => setNewItem(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addItem()}
           placeholder={placeholder}
-          className="flex-1 rounded-lg border border-dashed border-border px-3 py-1.5 text-sm text-gray-600 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          disabled={disabled}
+          className="flex-1 rounded-lg border border-dashed border-border px-3 py-1.5 text-sm text-gray-600 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60 disabled:cursor-not-allowed"
         />
         <button
           onClick={addItem}
-          className="rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200 transition-colors"
+          disabled={disabled}
+          className="rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Add
         </button>
