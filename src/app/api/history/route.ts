@@ -1,51 +1,84 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getHistory, addToHistory, deleteHistoryEntry, updateHistoryEntry } from "@/lib/adHistory";
+import {
+  getHistory,
+  addToHistory,
+  updateHistoryEntry,
+  deleteHistoryEntry,
+} from "@/lib/supabase-db";
+import { createClient } from "@/lib/supabase/server";
 
-// GET — list all history entries
 export async function GET() {
-  const entries = await getHistory();
-  return NextResponse.json({ entries });
+  try {
+    const entries = await getHistory();
+    return NextResponse.json({ entries });
+  } catch (e) {
+    return NextResponse.json(
+      { error: (e as Error).message },
+      { status: 500 }
+    );
+  }
 }
 
-// POST — add to history or update entry
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (body.action === "add") {
+    const body = await req.json();
+    const { action } = body;
+
+    if (action === "add") {
       const entry = await addToHistory({
-        referencePreviewUrl: body.referencePreviewUrl,
-        uploadedUrl: body.uploadedUrl,
+        reference_filename: body.referencePreviewUrl,
+        reference_url: body.uploadedUrl,
+        language: body.language || "he",
+        product_id: body.productId,
         analysis: body.analysis,
         prompt: body.prompt,
-        copyVariations: body.copyVariations,
-        language: body.language,
+        copy_variations: body.copyVariations,
+        created_by: user?.id,
       });
       return NextResponse.json({ entry });
     }
 
-    if (body.action === "update") {
-      await updateHistoryEntry(body.id, body.updates);
+    if (action === "update") {
+      const dbUpdates: Record<string, unknown> = {};
+      if (body.updates.copyVariations !== undefined) {
+        dbUpdates.copy_variations = body.updates.copyVariations;
+      }
+      if (body.updates.prompt !== undefined) {
+        dbUpdates.prompt = body.updates.prompt;
+      }
+      if (body.updates.analysis !== undefined) {
+        dbUpdates.analysis = body.updates.analysis;
+      }
+
+      await updateHistoryEntry(body.id, dbUpdates);
       return NextResponse.json({ success: true });
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
-  } catch (error) {
-    console.error("History error:", error);
-    return NextResponse.json({ error: "Operation failed" }, { status: 500 });
+  } catch (e) {
+    return NextResponse.json(
+      { error: (e as Error).message },
+      { status: 500 }
+    );
   }
 }
 
-// DELETE — remove entry
-export async function DELETE(request: NextRequest) {
+export async function DELETE(req: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    if (!id) return NextResponse.json({ error: "No id" }, { status: 400 });
+    const id = req.nextUrl.searchParams.get("id");
+    if (!id) {
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    }
+
     await deleteHistoryEntry(id);
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("History delete error:", error);
-    return NextResponse.json({ error: "Delete failed" }, { status: 500 });
+  } catch (e) {
+    return NextResponse.json(
+      { error: (e as Error).message },
+      { status: 500 }
+    );
   }
 }

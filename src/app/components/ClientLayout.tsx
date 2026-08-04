@@ -2,13 +2,16 @@
 
 import { ReactNode } from "react";
 import { WorkflowProvider } from "@/context/WorkflowContext";
+import { AuthProvider } from "@/context/AuthContext";
 import FloatingProgress from "./FloatingProgress";
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   return (
-    <WorkflowProvider>
-      {children}
-      <FloatingProgress />
-    </WorkflowProvider>
+    <AuthProvider>
+      <WorkflowProvider>
+        {children}
+        <FloatingProgress />
+      </WorkflowProvider>
+    </AuthProvider>
   );
 }

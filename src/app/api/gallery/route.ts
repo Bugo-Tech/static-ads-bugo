@@ -1,85 +1,148 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  getGallery,
-  addImageToGallery,
+  getGalleryImages,
+  addGalleryImage,
+  updateGalleryImage,
   deleteGalleryImage,
-  moveImageToFolder,
-  createFolder,
-  deleteFolder,
-  renameFolder,
-} from "@/lib/gallery";
+  getGalleryFolders,
+  createGalleryFolder,
+  renameGalleryFolder,
+  deleteGalleryFolder,
+} from "@/lib/supabase-db";
+import { downloadAndStore, getSignedUrl, deleteFile } from "@/lib/supabase-storage";
+import { createClient } from "@/lib/supabase/server";
+import crypto from "crypto";
 
-// GET — list all gallery images and folders
 export async function GET() {
-  const gallery = await getGallery();
-  return NextResponse.json(gallery);
+  try {
+    const [images, folders] = await Promise.all([
+      getGalleryImages(),
+      getGalleryFolders(),
+    ]);
+
+    // Generate signed URLs for each image
+    const imagesWithUrls = await Promise.all(
+      images.map(async (img) => {
+        try {
+          const signedUrl = await getSignedUrl("gallery", img.storage_path);
+          return { ...img, url: signedUrl };
+        } catch {
+          return img;
+        }
+      })
+    );
+
+    return NextResponse.json({ images: imagesWithUrls, folders });
+  } catch (e) {
+    return NextResponse.json(
+      { error: (e as Error).message },
+      { status: 500 }
+    );
+  }
 }
 
-// POST — add image to gallery OR create folder OR move image
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (body.action === "add-image") {
-      const image = await addImageToGallery({
-        sourceUrl: body.sourceUrl,
-        prompt: body.prompt || "",
-        size: body.size || "",
-        angle: body.angle || "",
-        referencePreview: body.referencePreview,
-        folderId: body.folderId || "root",
-        originalPrompt: body.originalPrompt,
-        referenceImageUrl: body.referenceImageUrl,
-        productImageIds: body.productImageIds,
-        copyVariation: body.copyVariation,
-        sourceImageId: body.sourceImageId,
-        isQcFix: body.isQcFix,
+    const body = await req.json();
+    const { action } = body;
+
+    if (action === "add-image") {
+      const id = crypto.randomUUID();
+      const ext = "png";
+      const filename = `${id}.${ext}`;
+      const storagePath = filename;
+
+      // Download from Nano Banana and upload to Supabase Storage
+      await downloadAndStore(body.sourceUrl, "gallery", storagePath);
+      const signedUrl = await getSignedUrl("gallery", storagePath);
+
+      const image = await addGalleryImage({
+        filename,
+        storage_path: storagePath,
+        url: signedUrl,
+        size: body.size || "1:1",
+        angle: body.angle,
+        prompt: body.prompt,
+        reference_url: body.referencePreview,
+        product_scope: body.productScope,
+        folder: body.folderId || "root",
+        source_image_id: body.sourceImageId,
+        history_id: body.historyId,
+        metadata: {
+          originalPrompt: body.originalPrompt,
+          referenceImageUrl: body.referenceImageUrl,
+          productImageIds: body.productImageIds,
+          copyVariation: body.copyVariation,
+          isQcFix: body.isQcFix,
+        },
+        created_by: user?.id,
       });
+
       return NextResponse.json({ image });
     }
 
-    if (body.action === "create-folder") {
-      const folder = await createFolder(body.name);
+    if (action === "create-folder") {
+      const folder = await createGalleryFolder(body.name);
       return NextResponse.json({ folder });
     }
 
-    if (body.action === "move-image") {
-      await moveImageToFolder(body.imageId, body.folderId);
+    if (action === "move-image") {
+      await updateGalleryImage(body.imageId, { folder: body.folderId });
       return NextResponse.json({ success: true });
     }
 
-    if (body.action === "rename-folder") {
-      await renameFolder(body.folderId, body.name);
+    if (action === "rename-folder") {
+      await renameGalleryFolder(body.folderId, body.name);
       return NextResponse.json({ success: true });
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
-  } catch (error) {
-    console.error("Gallery error:", error);
-    return NextResponse.json({ error: "Operation failed" }, { status: 500 });
+  } catch (e) {
+    return NextResponse.json(
+      { error: (e as Error).message },
+      { status: 500 }
+    );
   }
 }
 
-// DELETE — delete image or folder
-export async function DELETE(request: NextRequest) {
+export async function DELETE(req: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const imageId = searchParams.get("imageId");
-    const folderId = searchParams.get("folderId");
+    const imageId = req.nextUrl.searchParams.get("imageId");
+    const folderId = req.nextUrl.searchParams.get("folderId");
 
     if (imageId) {
+      const supabase = await createClient();
+      const { data: image } = await supabase
+        .from("gallery_images")
+        .select("storage_path")
+        .eq("id", imageId)
+        .single();
+
+      if (image?.storage_path) {
+        try {
+          await deleteFile("gallery", image.storage_path);
+        } catch {
+          // File may already be deleted — continue with DB cleanup
+        }
+      }
+
       await deleteGalleryImage(imageId);
       return NextResponse.json({ success: true });
     }
 
     if (folderId) {
-      await deleteFolder(folderId);
+      await deleteGalleryFolder(folderId);
       return NextResponse.json({ success: true });
     }
 
-    return NextResponse.json({ error: "No id provided" }, { status: 400 });
-  } catch (error) {
-    console.error("Gallery delete error:", error);
-    return NextResponse.json({ error: "Delete failed" }, { status: 500 });
+    return NextResponse.json({ error: "Missing imageId or folderId" }, { status: 400 });
+  } catch (e) {
+    return NextResponse.json(
+      { error: (e as Error).message },
+      { status: 500 }
+    );
   }
 }

@@ -1,61 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, readFile, mkdir } from "fs/promises";
-import path from "path";
 import { extractText, getDocumentProxy } from "unpdf";
-import { defaultBrandConfig } from "@/lib/brand-defaults";
-import { BrandConfig } from "@/lib/types";
+import { getBrandConfig, updateBrandConfig } from "@/lib/supabase-db";
+import { uploadFile } from "@/lib/supabase-storage";
+import { createClient } from "@/lib/supabase/server";
 
-const BRAND_DIR = path.join(process.cwd(), "uploads", "brand");
-const CONFIG_FILE = path.join(BRAND_DIR, "brand-config.json");
-
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const formData = await request.formData();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const formData = await req.formData();
     const file = formData.get("file") as File | null;
-    const market = formData.get("market") as string | null;
+    const market = (formData.get("market") as string) || "il";
 
-    if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
-    if (!file.name.endsWith(".pdf")) return NextResponse.json({ error: "Only PDF files" }, { status: 400 });
-
-    await mkdir(BRAND_DIR, { recursive: true });
-
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const doc = await getDocumentProxy(new Uint8Array(buffer));
-    const result = await extractText(doc, { mergePages: true });
-    const extractedText = result.text.trim();
-    const numPages = result.totalPages;
-
-    if (!extractedText) {
-      return NextResponse.json({ error: "Could not extract text from PDF" }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    let config: BrandConfig;
-    try {
-      const data = await readFile(CONFIG_FILE, "utf-8");
-      config = { ...defaultBrandConfig, ...JSON.parse(data) };
-    } catch {
-      config = { ...defaultBrandConfig };
-    }
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    if (market === "us") {
-      config.brandBookContentUS = extractedText;
-    } else {
-      config.brandBookContent = extractedText;
-    }
+    // Extract text from PDF
+    const pdf = await getDocumentProxy(new Uint8Array(arrayBuffer));
+    const { text } = await extractText(pdf, { mergePages: true });
 
-    await writeFile(CONFIG_FILE, JSON.stringify(config, null, 2));
+    // Upload PDF to Supabase Storage
+    const storagePath = `brand/brand-book-${market === "us" ? "us" : "il"}.pdf`;
+    await uploadFile("references", storagePath, buffer, "application/pdf");
 
-    const pdfFilename = market === "us" ? "brand-book-us.pdf" : "brand-book-il.pdf";
-    await writeFile(path.join(BRAND_DIR, pdfFilename), buffer);
+    // Update brand config with extracted text
+    const configKey = market === "us" ? "brandBookContentUS" : "brandBookContent";
+    await updateBrandConfig({ [configKey]: text } as Record<string, string>, user.id);
 
     return NextResponse.json({
       success: true,
-      pages: numPages,
-      chars: extractedText.length,
-      preview: extractedText.substring(0, 500),
+      pages: pdf.numPages,
+      chars: text.length,
+      preview: text.slice(0, 500),
     });
-  } catch (error) {
-    console.error("PDF upload error:", error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "PDF processing failed" }, { status: 500 });
+  } catch (e) {
+    return NextResponse.json(
+      { error: (e as Error).message },
+      { status: 500 }
+    );
   }
 }
