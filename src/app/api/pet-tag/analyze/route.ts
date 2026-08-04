@@ -3,6 +3,9 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { analyzePetTagReference } from "@/lib/pet-tag-claude";
 import type { Language } from "@/lib/types";
+import { readProductFile, type ProductScope } from "@/lib/productImages";
+
+const PRODUCT_SCOPE: ProductScope = "pet-tag";
 
 function detectMimeType(buffer: Buffer): string | null {
   if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) return "image/png";
@@ -73,8 +76,7 @@ export async function POST(request: NextRequest) {
       // Pet-tag-aware: route through pet-tag namespace folders only.
       if (imageUrl.startsWith("/api/pet-tag/products/file/")) {
         const filename = imageUrl.split("/").pop()!;
-        const filepath = path.join(process.cwd(), "uploads", "pet-tag-products", filename);
-        const buffer = await readFile(filepath);
+        const buffer = await readProductFile(PRODUCT_SCOPE, filename);
         imageBase64 = buffer.toString("base64");
         const ext = path.extname(filename).toLowerCase();
         mimeType = MIME_MAP[ext] || "image/png";

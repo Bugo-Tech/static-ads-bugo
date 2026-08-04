@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { submitGeneration } from "@/lib/nanoBanana";
 import { uploadToPublicHost } from "@/lib/imageHost";
-import { readFile } from "fs/promises";
 import path from "path";
+import {
+  resolveProductFile,
+  resolveProductFileById,
+  type ProductScope,
+} from "@/lib/productImages";
+
+const PRODUCT_SCOPE: ProductScope = "main";
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,11 +45,10 @@ export async function POST(request: NextRequest) {
     let publicRefUrl: string | undefined;
     if (referenceImageUrl?.startsWith("/api/upload/file/") || referenceImageUrl?.startsWith("/api/products/file/")) {
       const filename = referenceImageUrl.split("/").pop()!;
-      const dir = referenceImageUrl.includes("/products/")
-        ? path.join(process.cwd(), "uploads", "products")
-        : path.join(process.cwd(), "uploads", "references");
-      const filepath = path.join(dir, filename);
-      publicRefUrl = await uploadToPublicHost(filepath);
+      const filepath = referenceImageUrl.includes("/products/")
+        ? await resolveProductFile(PRODUCT_SCOPE, filename)
+        : path.join(process.cwd(), "uploads", "references", filename);
+      if (filepath) publicRefUrl = await uploadToPublicHost(filepath);
     } else if (referenceImageUrl?.startsWith("http")) {
       publicRefUrl = referenceImageUrl;
     }
@@ -52,11 +57,8 @@ export async function POST(request: NextRequest) {
     let publicProductUrl: string | undefined;
     if (!isCrossSize && includeProduct && productImageIds && productImageIds.length > 0) {
       try {
-        const indexPath = path.join(process.cwd(), "uploads", "products", "index.json");
-        const indexData = JSON.parse(await readFile(indexPath, "utf-8"));
-        const product = indexData.find((p: { id: string }) => p.id === productImageIds[0]);
-        if (product) {
-          const filepath = path.join(process.cwd(), "uploads", "products", product.filename);
+        const filepath = await resolveProductFileById(PRODUCT_SCOPE, productImageIds[0]);
+        if (filepath) {
           publicProductUrl = await uploadToPublicHost(filepath);
         }
       } catch {

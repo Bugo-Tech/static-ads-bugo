@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFile } from "fs/promises";
 import path from "path";
+import { readProductFile } from "@/lib/productImages";
 
-const PRODUCTS_DIR = path.join(process.cwd(), "uploads", "birds-products");
+const SCOPE = "birds" as const;
 
 const MIME_TYPES: Record<string, string> = {
   ".png": "image/png",
@@ -19,8 +19,8 @@ export async function GET(
   try {
     const { filename } = await params;
     const sanitized = path.basename(filename);
-    const filepath = path.join(PRODUCTS_DIR, sanitized);
-    const buffer = await readFile(filepath);
+    // Resolves against local uploads first, then the committed seed store.
+    const buffer = await readProductFile(SCOPE, sanitized);
     const ext = path.extname(sanitized).toLowerCase();
     const contentType = MIME_TYPES[ext] || "application/octet-stream";
 

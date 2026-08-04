@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import path from "path";
+import { readProductFile, type ProductScope } from "@/lib/productImages";
 import { analyzeReference } from "@/lib/claude";
 import { Language } from "@/lib/types";
+
+const PRODUCT_SCOPE: ProductScope = "main";
 
 function detectMimeType(buffer: Buffer): string | null {
   if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) return "image/png";
@@ -77,11 +80,9 @@ export async function POST(request: NextRequest) {
 
       if (imageUrl.startsWith("/api/upload/file/") || imageUrl.startsWith("/api/products/file/")) {
         const filename = imageUrl.split("/").pop()!;
-        const dir = imageUrl.includes("/products/")
-          ? path.join(process.cwd(), "uploads", "products")
-          : path.join(process.cwd(), "uploads", "references");
-        const filepath = path.join(dir, filename);
-        const buffer = await readFile(filepath);
+        const buffer = imageUrl.includes("/products/")
+          ? await readProductFile(PRODUCT_SCOPE, filename)
+          : await readFile(path.join(process.cwd(), "uploads", "references", filename));
         imageBase64 = buffer.toString("base64");
         const ext = path.extname(filename).toLowerCase();
         mimeType = MIME_MAP[ext] || "image/png";
