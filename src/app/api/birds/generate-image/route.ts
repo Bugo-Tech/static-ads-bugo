@@ -7,11 +7,11 @@ import {
   resolveProductFileById,
   type ProductScope,
 } from "@/lib/productImages";
-
-const PRODUCT_SCOPE: ProductScope = "birds";
 import { loadBirdsBrandConfig } from "@/lib/birds-claude";
 import { getBirdsProductRules } from "@/lib/birds-prompts";
 import type { Language } from "@/lib/types";
+
+const PRODUCT_SCOPE: ProductScope = "birds";
 
 const HEBREW_MONTHS = "ינו, פבר, מרץ, אפר, מאי, יוני, יולי, אוג, ספט, אוק, נוב, דצמ";
 

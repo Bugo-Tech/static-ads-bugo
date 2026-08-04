@@ -179,3 +179,12 @@ export type WorkflowAction =
   | { type: "SET_SELECTED_PRODUCT_ID"; productId: string | undefined }
   | { type: "RESET" }
   | { type: "HYDRATE"; state: Partial<WorkflowState> };
+
+export interface Profile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: "admin" | "member";
+  created_at: string;
+  updated_at: string;
+}
