@@ -1,66 +1,108 @@
-/**
- * Native Ads gallery API.
- *
- * GET    /api/native-ads/gallery        → { images: NativeAdsGalleryImage[] }
- * POST   /api/native-ads/gallery        → action-based:
- *           { action: "add-image", sourceUrl, prompt, size, description?, pestId?, vibe?, batchId? }
- * DELETE /api/native-ads/gallery?imageId=X
- */
-
 import { NextRequest, NextResponse } from "next/server";
 import {
-  addImageToNativeAdsGallery,
-  deleteNativeAdsGalleryImage,
   getNativeAdsGallery,
-} from "@/lib/native-ads-gallery";
+  addNativeAdsImage,
+  deleteNativeAdsImage,
+} from "@/lib/supabase-db";
+import { downloadAndStore, getSignedUrl, deleteFile } from "@/lib/supabase-storage";
+import { createClient } from "@/lib/supabase/server";
+import crypto from "crypto";
 
 export async function GET() {
-  const gallery = await getNativeAdsGallery();
-  return NextResponse.json(gallery);
-}
-
-export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const images = await getNativeAdsGallery();
 
-    if (body.action === "add-image") {
-      if (!body.sourceUrl || typeof body.sourceUrl !== "string") {
-        return NextResponse.json({ error: "sourceUrl is required" }, { status: 400 });
-      }
-      const image = await addImageToNativeAdsGallery({
-        sourceUrl: body.sourceUrl,
-        prompt: body.prompt || "",
-        size: body.size || "",
-        description: body.description,
-        pestId: body.pestId,
-        vibe: body.vibe,
-        batchId: body.batchId,
-      });
-      return NextResponse.json({ image });
-    }
+    const imagesWithUrls = await Promise.all(
+      images.map(async (img) => {
+        try {
+          const signedUrl = await getSignedUrl("gallery", img.storage_path);
+          return { ...img, url: signedUrl };
+        } catch {
+          return img;
+        }
+      })
+    );
 
-    return NextResponse.json({ error: "Unknown action" }, { status: 400 });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("Native ads gallery POST error:", message);
+    return NextResponse.json({ images: imagesWithUrls });
+  } catch (e) {
     return NextResponse.json(
-      { error: message, where: "POST /api/native-ads/gallery" },
+      { error: (e as Error).message },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const imageId = searchParams.get("imageId");
-    if (!imageId) {
-      return NextResponse.json({ error: "imageId query param required" }, { status: 400 });
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const body = await req.json();
+    const { action } = body;
+
+    if (action === "add-image") {
+      const id = crypto.randomUUID();
+      const filename = `native-${id}.png`;
+      const storagePath = `native/${filename}`;
+
+      await downloadAndStore(body.sourceUrl, "gallery", storagePath);
+      const signedUrl = await getSignedUrl("gallery", storagePath);
+
+      const image = await addNativeAdsImage({
+        filename,
+        storage_path: storagePath,
+        url: signedUrl,
+        size: body.size || "1:1",
+        prompt: body.prompt,
+        metadata: {
+          description: body.description,
+          pestId: body.pestId,
+          vibe: body.vibe,
+          batchId: body.batchId,
+        },
+        created_by: user?.id,
+      });
+
+      return NextResponse.json({ image });
     }
-    await deleteNativeAdsGalleryImage(imageId);
+
+    return NextResponse.json({ error: "Unknown action" }, { status: 400 });
+  } catch (e) {
+    return NextResponse.json(
+      { error: (e as Error).message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const imageId = req.nextUrl.searchParams.get("imageId");
+    if (!imageId) {
+      return NextResponse.json({ error: "Missing imageId" }, { status: 400 });
+    }
+
+    const supabase = await createClient();
+    const { data: image } = await supabase
+      .from("native_ads_gallery")
+      .select("storage_path")
+      .eq("id", imageId)
+      .single();
+
+    if (image?.storage_path) {
+      try {
+        await deleteFile("gallery", image.storage_path);
+      } catch {
+        // Continue with DB cleanup
+      }
+    }
+
+    await deleteNativeAdsImage(imageId);
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Native ads gallery delete error:", error);
-    return NextResponse.json({ error: "Delete failed" }, { status: 500 });
+  } catch (e) {
+    return NextResponse.json(
+      { error: (e as Error).message },
+      { status: 500 }
+    );
   }
 }
