@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     const systemPrompt = getReplicatorAnalysisPrompt(language);
 
     const response = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 4000,
       system: systemPrompt,
       messages: [
@@ -54,15 +54,50 @@ export async function POST(request: NextRequest) {
     }
 
     let jsonStr = textContent.text.trim();
-    const match = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (match) jsonStr = match[1].trim();
+    // Strip markdown code fences if present.
+    const fence = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (fence) jsonStr = fence[1].trim();
+
+    // Strip any preamble / postamble: extract the first balanced JSON object
+    // or array. Sonnet 4.6 sometimes wraps JSON in prose like "Here is the
+    // analysis: {...}" — the older 4.0 model behaved differently.
+    const startObj = jsonStr.indexOf("{");
+    const startArr = jsonStr.indexOf("[");
+    let start = -1;
+    if (startObj >= 0 && startArr >= 0) start = Math.min(startObj, startArr);
+    else if (startObj >= 0) start = startObj;
+    else if (startArr >= 0) start = startArr;
+    if (start > 0) jsonStr = jsonStr.slice(start);
+
+    if (jsonStr.length > 0) {
+      const opener = jsonStr[0];
+      const closer = opener === "[" ? "]" : "}";
+      let depth = 0;
+      let end = -1;
+      for (let i = 0; i < jsonStr.length; i++) {
+        if (jsonStr[i] === opener) depth++;
+        if (jsonStr[i] === closer) depth--;
+        if (depth === 0) {
+          end = i + 1;
+          break;
+        }
+      }
+      if (end > 0) jsonStr = jsonStr.slice(0, end);
+    }
+
+    // Tolerate trailing commas.
+    jsonStr = jsonStr.replace(/,\s*([}\]])/g, "$1");
 
     let analysis: ReplicatorAnalysis;
     try {
       analysis = JSON.parse(jsonStr);
     } catch (err) {
       return NextResponse.json(
-        { error: "Failed to parse analysis JSON", raw: jsonStr.substring(0, 500), parseError: err instanceof Error ? err.message : "unknown" },
+        {
+          error: "Failed to parse analysis JSON",
+          raw: jsonStr.substring(0, 500),
+          parseError: err instanceof Error ? err.message : "unknown",
+        },
         { status: 500 }
       );
     }

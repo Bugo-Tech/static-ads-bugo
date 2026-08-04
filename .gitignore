@@ -37,19 +37,37 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
-# uploads (local file storage)
-/uploads/references/
-/uploads/products/*.png
-/uploads/products/*.jpg
-/uploads/products/*.jpeg
-/uploads/products/*.webp
-/uploads/gallery/*.png
-/uploads/gallery/*.jpg
-/uploads/gallery/*.jpeg
-/uploads/gallery/*.webp
-/uploads/gallery/backups/
-/uploads/gallery/*.backup*
-/uploads/brand/*.pdf
+# uploads (local file storage) — everything here is generated at runtime:
+# generated images, gallery/product index files, backups, brand configs.
+/uploads/
+
+# generated media anywhere else in the repo
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.avif
+*.bmp
+*.tiff
+*.mp4
+*.webm
+
+# ...except real app assets under public/ and src/.
+# Scoped per-extension on purpose: a blanket `!/public/**` would also
+# un-ignore .DS_Store, .env*, *.log etc. under those directories.
+!/public/**/*.png
+!/public/**/*.jpg
+!/public/**/*.jpeg
+!/public/**/*.webp
+!/public/**/*.gif
+!/public/**/*.avif
+!/src/**/*.png
+!/src/**/*.jpg
+!/src/**/*.jpeg
+!/src/**/*.webp
+!/src/**/*.gif
+!/src/**/*.avif
 
 # vercel
 .vercel

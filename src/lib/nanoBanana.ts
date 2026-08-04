@@ -58,14 +58,31 @@ export async function submitGeneration(params: GenerateImageParams): Promise<Gen
   console.log("Full body keys:", JSON.stringify({ model: body.model, inputKeys: Object.keys(input), imageCount: imageInputs.length }));
   console.log("=== END ===");
 
-  const res = await fetch(`${API_BASE}/jobs/createTask`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(body),
-  });
+  const bodyJson = JSON.stringify(body);
+
+  // Wrap the fetch so a network-level failure (timeout, DNS, body-too-large,
+  // upstream reset) surfaces with the actual cause instead of a generic
+  // "fetch failed". 60s cap so we never hang the whole pipeline on a stuck
+  // kie.ai request.
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/jobs/createTask`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: bodyJson,
+      signal: AbortSignal.timeout(60_000),
+    });
+  } catch (fetchErr) {
+    const sizeKb = Math.round(bodyJson.length / 1024);
+    const cause =
+      fetchErr instanceof Error
+        ? String(fetchErr.cause ?? fetchErr.message)
+        : String(fetchErr);
+    throw new Error(`kie.ai fetch failed (request was ${sizeKb}KB): ${cause}`);
+  }
 
   if (!res.ok) {
     const text = await res.text();

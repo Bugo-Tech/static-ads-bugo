@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { extractJsonFromClaudeText } from "@/lib/claude-json";
 
 /**
  * QC Agent — compares a generated ad image against the original reference + product photo.
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     const imageLabels = labelParts.join("\n");
 
     const response = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 2000,
       messages: [
         {
@@ -99,14 +100,12 @@ Does the generated ad's layout (element positions, text hierarchy, composition) 
       return NextResponse.json({ passed: true, issues: [], fixInstruction: "", severity: "none" });
     }
 
-    let jsonStr = textContent.text.trim();
-    const match = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (match) jsonStr = match[1].trim();
-
+    // Robust JSON extraction (Sonnet 4.6 may add fences, preamble, postamble).
     try {
-      const result = JSON.parse(jsonStr);
+      const result = JSON.parse(extractJsonFromClaudeText(textContent.text));
       return NextResponse.json(result);
     } catch {
+      // QC failure is non-fatal — treat as a "pass" so generation isn't blocked.
       return NextResponse.json({ passed: true, issues: [], fixInstruction: "", severity: "none" });
     }
   } catch (error) {

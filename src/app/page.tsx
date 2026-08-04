@@ -354,6 +354,36 @@ export default function Home() {
               Replicator
             </button>
             <button
+              onClick={() => router.push("/pet-tag")}
+              className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100 transition-colors"
+            >
+              Pet Tag
+            </button>
+            <button
+              onClick={() => router.push("/fly")}
+              className="rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-sm font-medium text-cyan-700 hover:bg-cyan-100 transition-colors"
+            >
+              Bugo Fly
+            </button>
+            <button
+              onClick={() => router.push("/birds")}
+              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-100 transition-colors"
+            >
+              Bugo Birds
+            </button>
+            <button
+              onClick={() => router.push("/ants")}
+              className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-1.5 text-sm font-medium text-orange-700 hover:bg-orange-100 transition-colors"
+            >
+              Bugo Ants
+            </button>
+            <button
+              onClick={() => router.push("/native-ads")}
+              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-sm font-medium text-rose-700 hover:bg-rose-100 transition-colors"
+            >
+              Native Ads
+            </button>
+            <button
               onClick={() => router.push("/gallery")}
               className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >

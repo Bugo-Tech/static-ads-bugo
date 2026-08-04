@@ -4,6 +4,7 @@ import path from "path";
 import { AnalysisResult, CopyVariation, BrandConfig, Language } from "./types";
 import { getAnalysisPrompt, getCopyGenerationPrompt } from "./prompts";
 import { defaultBrandConfig } from "./brand-defaults";
+import { extractJsonFromClaudeText } from "./claude-json";
 
 const BRAND_CONFIG_PATH = path.join(process.cwd(), "uploads", "brand", "brand-config.json");
 
@@ -48,7 +49,7 @@ export async function analyzeReference(
   const systemPrompt = getAnalysisPrompt(effectiveBrand, language, selectedProduct?.name);
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 8192,
     system: systemPrompt,
     messages: [
@@ -77,14 +78,9 @@ export async function analyzeReference(
     throw new Error("No text response from Claude");
   }
 
-  // Extract JSON from response (handle markdown code blocks)
-  let jsonStr = textContent.text;
-  const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (jsonMatch) {
-    jsonStr = jsonMatch[1];
-  }
-
-  const parsed = JSON.parse(jsonStr.trim());
+  // Robust JSON extraction (Sonnet 4.6 may add fences, preamble, postamble,
+  // or trailing commas — see claude-json.ts).
+  const parsed = JSON.parse(extractJsonFromClaudeText(textContent.text));
 
   return {
     analysis: parsed.analysis,
@@ -168,7 +164,7 @@ Example input:  {"v1::s1": "Save up to 50%", "v1::s2": "Free shipping"}
 Example output: {"v1::s1": "חסוך עד 50%", "v1::s2": "משלוח חינם"}`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 4096,
     system: systemPrompt,
     messages: [
@@ -186,16 +182,13 @@ Example output: {"v1::s1": "חסוך עד 50%", "v1::s2": "משלוח חינם"}
     throw new Error("Claude returned no text content");
   }
 
-  // Re-add the prefilled "{" and isolate the JSON object.
-  let raw = "{" + textContent.text;
-  const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (fence) raw = fence[1];
-  const firstBrace = raw.indexOf("{");
-  const lastBrace = raw.lastIndexOf("}");
-  if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) {
+  // Prefill ("{" in the previous assistant turn) forces Claude to continue
+  // with JSON. The helper handles fences/preamble/postamble/trailing commas.
+  const raw = "{" + textContent.text;
+  const jsonStr = extractJsonFromClaudeText(raw);
+  if (!jsonStr.startsWith("{") && !jsonStr.startsWith("[")) {
     throw new Error(`Claude response had no JSON object. Raw: ${raw.slice(0, 200)}`);
   }
-  const jsonStr = raw.slice(firstBrace, lastBrace + 1);
 
   let outputMap: Record<string, string>;
   try {
@@ -241,7 +234,7 @@ export async function generateCopy(
   const systemPrompt = getCopyGenerationPrompt(brandConfig, language);
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 8192,
     system: systemPrompt,
     messages: [
@@ -257,12 +250,7 @@ export async function generateCopy(
     throw new Error("No text response from Claude");
   }
 
-  let jsonStr = textContent.text;
-  const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (jsonMatch) {
-    jsonStr = jsonMatch[1];
-  }
-
-  const parsed = JSON.parse(jsonStr.trim());
+  // Robust JSON extraction (see claude-json.ts).
+  const parsed = JSON.parse(extractJsonFromClaudeText(textContent.text));
   return parsed.copyVariations || parsed;
 }
