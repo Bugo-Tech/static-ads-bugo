@@ -1,53 +1,98 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  getBirdsGallery,
-  addImageToBirdsGallery,
-  deleteBirdsGalleryImage,
-  moveImageToBirdsFolder,
-  createBirdsFolder,
-  deleteBirdsFolder,
-  renameBirdsFolder,
-} from "@/lib/birds-gallery";
+  getGalleryImages,
+  addGalleryImage,
+  updateGalleryImage,
+  deleteGalleryImage,
+  getGalleryFolders,
+  createGalleryFolder,
+  renameGalleryFolder,
+  deleteGalleryFolder,
+} from "@/lib/supabase-db";
+import { downloadAndStore, getSignedUrl, deleteFile } from "@/lib/supabase-storage";
+import { createClient } from "@/lib/supabase/server";
+import crypto from "crypto";
+
+const PRODUCT_SCOPE = "birds";
 
 export async function GET() {
-  const gallery = await getBirdsGallery();
-  return NextResponse.json(gallery);
+  try {
+    const [images, folders] = await Promise.all([
+      getGalleryImages(PRODUCT_SCOPE),
+      getGalleryFolders(),
+    ]);
+
+    const imagesWithUrls = await Promise.all(
+      images.map(async (img) => {
+        try {
+          const signedUrl = await getSignedUrl("gallery", img.storage_path);
+          return { ...img, url: signedUrl };
+        } catch {
+          return img;
+        }
+      })
+    );
+
+    return NextResponse.json({ images: imagesWithUrls, folders });
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (body.action === "add-image") {
-      const image = await addImageToBirdsGallery({
-        sourceUrl: body.sourceUrl,
-        prompt: body.prompt || "",
-        size: body.size || "",
-        angle: body.angle || "",
-        referencePreview: body.referencePreview,
-        folderId: body.folderId || "root",
-        originalPrompt: body.originalPrompt,
-        referenceImageUrl: body.referenceImageUrl,
-        productImageIds: body.productImageIds,
-        copyVariation: body.copyVariation,
-        sourceImageId: body.sourceImageId,
-        isQcFix: body.isQcFix,
+    const body = await request.json();
+    const { action } = body;
+
+    if (action === "add-image") {
+      const id = crypto.randomUUID();
+      const ext = "png";
+      const filename = `${id}.${ext}`;
+      const storagePath = filename;
+
+      await downloadAndStore(body.sourceUrl, "gallery", storagePath);
+      const signedUrl = await getSignedUrl("gallery", storagePath);
+
+      const image = await addGalleryImage({
+        filename,
+        storage_path: storagePath,
+        url: signedUrl,
+        size: body.size || "1:1",
+        angle: body.angle,
+        prompt: body.prompt,
+        reference_url: body.referencePreview,
+        product_scope: PRODUCT_SCOPE,
+        folder: body.folderId || "root",
+        source_image_id: body.sourceImageId,
+        history_id: body.historyId,
+        metadata: {
+          originalPrompt: body.originalPrompt,
+          referenceImageUrl: body.referenceImageUrl,
+          productImageIds: body.productImageIds,
+          copyVariation: body.copyVariation,
+          isQcFix: body.isQcFix,
+        },
+        created_by: user?.id,
       });
+
       return NextResponse.json({ image });
     }
 
-    if (body.action === "create-folder") {
-      const folder = await createBirdsFolder(body.name);
+    if (action === "create-folder") {
+      const folder = await createGalleryFolder(body.name);
       return NextResponse.json({ folder });
     }
 
-    if (body.action === "move-image") {
-      await moveImageToBirdsFolder(body.imageId, body.folderId);
+    if (action === "move-image") {
+      await updateGalleryImage(body.imageId, { folder: body.folderId });
       return NextResponse.json({ success: true });
     }
 
-    if (body.action === "rename-folder") {
-      await renameBirdsFolder(body.folderId, body.name);
+    if (action === "rename-folder") {
+      await renameGalleryFolder(body.folderId, body.name);
       return NextResponse.json({ success: true });
     }
 
@@ -65,17 +110,31 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const imageId = searchParams.get("imageId");
-    const folderId = searchParams.get("folderId");
+    const imageId = request.nextUrl.searchParams.get("imageId");
+    const folderId = request.nextUrl.searchParams.get("folderId");
 
     if (imageId) {
-      await deleteBirdsGalleryImage(imageId);
+      const supabase = await createClient();
+      const { data: image } = await supabase
+        .from("gallery_images")
+        .select("storage_path")
+        .eq("id", imageId)
+        .single();
+
+      if (image?.storage_path) {
+        try {
+          await deleteFile("gallery", image.storage_path);
+        } catch {
+          // File may already be deleted — continue with DB cleanup
+        }
+      }
+
+      await deleteGalleryImage(imageId);
       return NextResponse.json({ success: true });
     }
 
     if (folderId) {
-      await deleteBirdsFolder(folderId);
+      await deleteGalleryFolder(folderId);
       return NextResponse.json({ success: true });
     }
 

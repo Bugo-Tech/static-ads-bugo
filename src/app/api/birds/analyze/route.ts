@@ -4,6 +4,7 @@ import path from "path";
 import { analyzeBirdsReference } from "@/lib/birds-claude";
 import type { Language } from "@/lib/types";
 import { readProductFile, type ProductScope } from "@/lib/productImages";
+import { downloadFile } from "@/lib/supabase-storage";
 
 const PRODUCT_SCOPE: ProductScope = "birds";
 
@@ -62,17 +63,23 @@ export async function POST(request: NextRequest) {
       imageBase64 = buffer.toString("base64");
     } else {
       const body = await request.json();
-      const { imageUrl, language: lang = "he" } = body as {
+      const { imageUrl, language: lang = "he", storagePath, storageBucket } = body as {
         imageUrl: string;
         language?: Language;
+        storagePath?: string;
+        storageBucket?: string;
       };
       language = lang;
 
-      if (!imageUrl) {
+      if (storagePath && storageBucket) {
+        const bucket = storageBucket as "references" | "gallery" | "products";
+        const buffer = await downloadFile(bucket, storagePath);
+        imageBase64 = buffer.toString("base64");
+        const ext = path.extname(storagePath).toLowerCase();
+        mimeType = MIME_MAP[ext] || detectMimeType(buffer) || "image/png";
+      } else if (!imageUrl) {
         return NextResponse.json({ error: "No image provided" }, { status: 400 });
-      }
-
-      if (imageUrl.startsWith("/api/birds/products/file/")) {
+      } else if (imageUrl.startsWith("/api/birds/products/file/")) {
         const filename = imageUrl.split("/").pop()!;
         const buffer = await readProductFile(PRODUCT_SCOPE, filename);
         imageBase64 = buffer.toString("base64");
@@ -95,7 +102,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const result = await analyzeBirdsReference(imageBase64, mimeType, language);
+    const result = await analyzeBirdsReference(imageBase64!, mimeType!, language);
     return NextResponse.json(result);
   } catch (error) {
     console.error("Birds analyze error:", error);

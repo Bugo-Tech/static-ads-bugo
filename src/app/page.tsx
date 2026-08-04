@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useWorkflow } from "@/context/WorkflowContext";
+import { useAuth } from "@/context/AuthContext";
+import { createClient } from "@/lib/supabase/client";
 import { WorkflowStep, needsHebrewCompanion } from "@/lib/types";
 import UploadZone from "./components/UploadZone";
 import ReferenceCard from "./components/ReferenceCard";
@@ -24,6 +26,7 @@ const steps: { key: WorkflowStep; label: string; number: number }[] = [
 
 export default function Home() {
   const router = useRouter();
+  const { isAdmin, profile, signOut } = useAuth();
   const {
     state,
     addReferences,
@@ -122,36 +125,42 @@ export default function Home() {
 
     // Upload + Analyze each reference (upload first, then analyze with the uploaded URL)
     const promises = state.references.map(async (ref) => {
-      // Step 1: Upload
+      // Step 1: Upload to Supabase Storage
       let uploadedUrl = ref.uploadedUrl;
+      let storagePath = "";
       if (!uploadedUrl) {
         updateReference(ref.id, { status: "uploading" });
         try {
-          const uploadForm = new FormData();
-          uploadForm.append("file", ref.file);
-          const uploadRes = await fetch("/api/upload", { method: "POST", body: uploadForm });
-          const uploadData = await uploadRes.json();
-          uploadedUrl = uploadData.url;
+          const supabase = createClient();
+          const ext = ref.file.name.split(".").pop() || "png";
+          storagePath = `${crypto.randomUUID()}.${ext}`;
+          const { error: uploadError } = await supabase.storage
+            .from("references")
+            .upload(storagePath, ref.file);
+          if (uploadError) throw new Error(uploadError.message);
+          const { data: urlData } = await supabase.storage
+            .from("references")
+            .createSignedUrl(storagePath, 3600);
+          uploadedUrl = urlData?.signedUrl || "";
           updateReference(ref.id, { uploadedUrl });
-        } catch {
-          updateReference(ref.id, { status: "error", error: "Upload failed" });
+        } catch (err) {
+          updateReference(ref.id, { status: "error", error: err instanceof Error ? err.message : "Upload failed" });
           return;
         }
       }
 
-      // Step 2: Analyze — send the file directly to avoid stale state issues
+      // Step 2: Analyze — send storagePath/storageBucket so the server fetches from Supabase
       updateReference(ref.id, { status: "analyzing" });
       try {
-        const analyzeForm = new FormData();
-        analyzeForm.append("file", ref.file);
-        analyzeForm.append("language", state.language);
-        if (state.selectedProductId) {
-          analyzeForm.append("productId", state.selectedProductId);
-        }
-
         const res = await fetch("/api/analyze", {
           method: "POST",
-          body: analyzeForm,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            storagePath,
+            storageBucket: "references",
+            language: state.language,
+            productId: state.selectedProductId,
+          }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Analysis failed");
@@ -401,6 +410,27 @@ export default function Home() {
             >
               New Batch
             </button>
+            {isAdmin && (
+              <button
+                onClick={() => router.push("/settings")}
+                className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Settings
+              </button>
+            )}
+            {profile && (
+              <span className="text-sm text-gray-500 hidden lg:inline">
+                {profile.email}
+              </span>
+            )}
+            {signOut && (
+              <button
+                onClick={() => signOut()}
+                className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Sign Out
+              </button>
+            )}
           </div>
         </div>
       </header>

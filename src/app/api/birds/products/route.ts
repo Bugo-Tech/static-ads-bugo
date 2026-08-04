@@ -1,79 +1,99 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path";
-import type { BirdsProductImage } from "@/lib/birds-defaults";
-import {
-  addProduct,
-  deleteProduct,
-  ensureUploadsDir,
-  productUrl,
-  readProductIndex,
-  uploadsDir,
-} from "@/lib/productImages";
+import { getProductImages, addProductImage, deleteProductImage } from "@/lib/supabase-db";
+import { uploadFile, deleteFile, getSignedUrl } from "@/lib/supabase-storage";
+import { createClient } from "@/lib/supabase/server";
+import { readProductIndex, type ProductScope } from "@/lib/productImages";
+import crypto from "crypto";
 
-const SCOPE = "birds" as const;
+const SCOPE: ProductScope = "birds";
 
-// GET — list Birds product images (committed seed + local uploads)
 export async function GET() {
-  await ensureUploadsDir(SCOPE);
-  const products = await readProductIndex<BirdsProductImage>(SCOPE);
-  return NextResponse.json({ products });
+  try {
+    const [seedProducts, dbProducts] = await Promise.all([
+      readProductIndex(SCOPE),
+      getProductImages(SCOPE),
+    ]);
+
+    const dbWithUrls = await Promise.all(
+      dbProducts
+        .filter((p) => !p.is_seed)
+        .map(async (p) => {
+          if (p.storage_path) {
+            try {
+              const signedUrl = await getSignedUrl("products", p.storage_path);
+              return { ...p, url: signedUrl };
+            } catch {
+              return p;
+            }
+          }
+          return p;
+        })
+    );
+
+    const allProducts = [...seedProducts, ...dbWithUrls];
+    return NextResponse.json({ products: allProducts });
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
+  }
 }
 
-// POST — upload a new Birds product image
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    await ensureUploadsDir(SCOPE);
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    const formData = await request.formData();
+    const formData = await req.formData();
     const file = formData.get("file") as File | null;
-    const labelOverride = (formData.get("label") as string | null)?.trim();
-
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const id = crypto.randomUUID();
+    const ext = file.name.split(".").pop() || "png";
+    const filename = `${id}.${ext}`;
+    const storagePath = `${SCOPE}/${filename}`;
 
-    const ext = path.extname(file.name) || ".png";
-    const id = `birds-prod-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-    const filename = `${id}${ext}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    await uploadFile("products", storagePath, buffer, file.type);
+    const signedUrl = await getSignedUrl("products", storagePath);
 
-    await writeFile(path.join(uploadsDir(SCOPE), filename), buffer);
-
-    const product: BirdsProductImage = {
-      id,
+    const product = await addProductImage({
       filename,
-      url: productUrl(SCOPE, filename),
-      label: labelOverride || file.name.replace(/\.[^.]+$/, ""),
-      uploadedAt: new Date().toISOString(),
-    };
-
-    await addProduct(SCOPE, product);
+      storage_path: storagePath,
+      url: signedUrl,
+      label: file.name.replace(/\.[^/.]+$/, ""),
+      scope: SCOPE,
+      is_seed: false,
+      created_by: user?.id,
+    });
 
     return NextResponse.json({ product });
-  } catch (error) {
-    console.error("Birds product upload error:", error);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
 }
 
-// DELETE — remove a Birds product image
-export async function DELETE(request: NextRequest) {
+export async function DELETE(req: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-
+    const id = req.nextUrl.searchParams.get("id");
     if (!id) {
-      return NextResponse.json({ error: "No id provided" }, { status: 400 });
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
     }
 
-    await deleteProduct(SCOPE, id);
+    const supabase = await createClient();
+    const { data: product } = await supabase
+      .from("product_images")
+      .select("storage_path, is_seed")
+      .eq("id", id)
+      .single();
 
+    if (product?.storage_path && !product.is_seed) {
+      try { await deleteFile("products", product.storage_path); } catch {}
+    }
+
+    await deleteProductImage(id);
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Birds product delete error:", error);
-    return NextResponse.json({ error: "Delete failed" }, { status: 500 });
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
 }

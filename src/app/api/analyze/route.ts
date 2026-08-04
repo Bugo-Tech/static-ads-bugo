@@ -4,6 +4,7 @@ import path from "path";
 import { readProductFile, type ProductScope } from "@/lib/productImages";
 import { analyzeReference } from "@/lib/claude";
 import { Language } from "@/lib/types";
+import { downloadFile } from "@/lib/supabase-storage";
 
 const PRODUCT_SCOPE: ProductScope = "main";
 
@@ -74,11 +75,26 @@ export async function POST(request: NextRequest) {
       language = lang;
       productId = pid;
 
-      if (!imageUrl) {
+      // Handle Supabase Storage path
+      if (body.storagePath && body.storageBucket) {
+        const fileBuffer = await downloadFile(body.storageBucket as "references" | "gallery" | "products", body.storagePath);
+        // Detect MIME type from magic bytes (reuse existing logic)
+        const magicBytes = fileBuffer.slice(0, 4);
+        if (magicBytes[0] === 0x89 && magicBytes[1] === 0x50) {
+          mimeType = "image/png";
+        } else if (magicBytes[0] === 0xff && magicBytes[1] === 0xd8) {
+          mimeType = "image/jpeg";
+        } else if (magicBytes[0] === 0x52 && magicBytes[1] === 0x49) {
+          mimeType = "image/webp";
+        } else if (magicBytes[0] === 0x47 && magicBytes[1] === 0x49) {
+          mimeType = "image/gif";
+        } else {
+          mimeType = "image/png";
+        }
+        imageBase64 = fileBuffer.toString("base64");
+      } else if (!imageUrl) {
         return NextResponse.json({ error: "No image provided" }, { status: 400 });
-      }
-
-      if (imageUrl.startsWith("/api/upload/file/") || imageUrl.startsWith("/api/products/file/")) {
+      } else if (imageUrl.startsWith("/api/upload/file/") || imageUrl.startsWith("/api/products/file/")) {
         const filename = imageUrl.split("/").pop()!;
         const buffer = imageUrl.includes("/products/")
           ? await readProductFile(PRODUCT_SCOPE, filename)
