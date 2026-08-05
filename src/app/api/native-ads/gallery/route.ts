@@ -16,9 +16,36 @@ export async function GET() {
       images.map(async (img) => {
         try {
           const signedUrl = await getSignedUrl("gallery", img.storage_path);
-          return { ...img, url: signedUrl };
+          // Map snake_case DB fields to camelCase expected by the frontend
+          const meta = (img.metadata ?? {}) as Record<string, unknown>;
+          return {
+            id: img.id,
+            filename: img.filename,
+            url: signedUrl,
+            sourceUrl: img.url,
+            prompt: img.prompt ?? meta.prompt ?? "",
+            size: img.size ?? "1:1",
+            createdAt: img.created_at,
+            description: meta.description as string | undefined,
+            pestId: meta.pestId as string | undefined,
+            vibe: meta.vibe as string | undefined,
+            batchId: meta.batchId as string | undefined,
+          };
         } catch {
-          return img;
+          const meta = (img.metadata ?? {}) as Record<string, unknown>;
+          return {
+            id: img.id,
+            filename: img.filename,
+            url: img.url,
+            sourceUrl: img.url,
+            prompt: img.prompt ?? meta.prompt ?? "",
+            size: img.size ?? "1:1",
+            createdAt: img.created_at,
+            description: meta.description as string | undefined,
+            pestId: meta.pestId as string | undefined,
+            vibe: meta.vibe as string | undefined,
+            batchId: meta.batchId as string | undefined,
+          };
         }
       })
     );

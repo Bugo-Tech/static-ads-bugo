@@ -39,7 +39,7 @@ export default function NativeAdsGalleryPage() {
       const data = await res.json();
       const arr: NativeAdsGalleryImage[] = Array.isArray(data?.images) ? data.images : [];
       // Newest first.
-      arr.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      arr.sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
       setImages(arr);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
