@@ -8,6 +8,7 @@ import {
   createGalleryFolder,
   renameGalleryFolder,
   deleteGalleryFolder,
+  mapGalleryRow,
 } from "@/lib/supabase-db";
 import { downloadAndStore, getSignedUrl, deleteFile } from "@/lib/supabase-storage";
 import { createClient } from "@/lib/supabase/server";
@@ -25,9 +26,9 @@ export async function GET() {
       images.map(async (img) => {
         try {
           const signedUrl = await getSignedUrl("gallery", img.storage_path);
-          return { ...img, url: signedUrl };
+          return mapGalleryRow(img, signedUrl);
         } catch {
-          return img;
+          return mapGalleryRow(img);
         }
       })
     );

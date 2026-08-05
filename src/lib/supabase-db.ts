@@ -107,6 +107,32 @@ export async function deleteHistoryEntry(id: string) {
 // GALLERY IMAGES
 // ============================================
 
+/**
+ * Maps a raw Supabase gallery_images row (snake_case) to the camelCase
+ * shape expected by all frontend gallery pages.
+ */
+export function mapGalleryRow(row: Record<string, unknown>, signedUrl?: string) {
+  const meta = (row.metadata ?? {}) as Record<string, unknown>;
+  return {
+    id: row.id,
+    filename: row.filename,
+    url: signedUrl ?? row.url,
+    sourceUrl: row.url,
+    prompt: row.prompt ?? "",
+    size: row.size ?? "1:1",
+    angle: row.angle ?? "",
+    referencePreview: row.reference_url,
+    folderId: row.folder ?? "root",
+    createdAt: row.created_at,
+    originalPrompt: meta.originalPrompt as string | undefined,
+    referenceImageUrl: meta.referenceImageUrl as string | undefined,
+    productImageIds: meta.productImageIds as string[] | undefined,
+    copyVariation: meta.copyVariation as unknown,
+    sourceImageId: row.source_image_id,
+    isQcFix: meta.isQcFix as boolean | undefined,
+  };
+}
+
 export async function getGalleryImages(productScope?: string) {
   const supabase = createServiceClient();
   let query = supabase
