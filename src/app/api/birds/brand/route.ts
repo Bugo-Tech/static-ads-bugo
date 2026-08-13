@@ -1,41 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, readFile, mkdir } from "fs/promises";
-import path from "path";
 import { defaultBirdsBrandConfig, type BirdsBrandConfig } from "@/lib/birds-defaults";
+import {
+  readBrandConfigFile,
+  readBrandConfigFileForUpdate,
+  writeBrandConfigFile,
+} from "@/lib/brand-config-store";
 
-const BRAND_DIR = path.join(process.cwd(), "uploads", "birds");
-const CONFIG_FILE = path.join(BRAND_DIR, "brand-config.json");
-
-async function ensureDir() {
-  await mkdir(BRAND_DIR, { recursive: true });
-}
-
-async function readConfig(): Promise<BirdsBrandConfig> {
-  try {
-    const data = await readFile(CONFIG_FILE, "utf-8");
-    return { ...defaultBirdsBrandConfig, ...JSON.parse(data) };
-  } catch {
-    return defaultBirdsBrandConfig;
-  }
-}
-
-async function writeConfig(config: BirdsBrandConfig) {
-  await ensureDir();
-  await writeFile(CONFIG_FILE, JSON.stringify(config, null, 2));
-}
+const SCOPE = "birds";
 
 export async function GET() {
-  await ensureDir();
-  const config = await readConfig();
+  const config = await readBrandConfigFile(SCOPE, defaultBirdsBrandConfig);
   return NextResponse.json({ config });
 }
 
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const current = await readConfig();
-    const updated = { ...current, ...body };
-    await writeConfig(updated);
+    const current = await readBrandConfigFileForUpdate(SCOPE, defaultBirdsBrandConfig);
+    const updated: BirdsBrandConfig = { ...current, ...body };
+    await writeBrandConfigFile(SCOPE, updated);
     return NextResponse.json({ config: updated });
   } catch (error) {
     console.error("Birds brand config update error:", error);

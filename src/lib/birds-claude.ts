@@ -5,25 +5,17 @@
  */
 
 import Anthropic from "@anthropic-ai/sdk";
-import { readFile } from "fs/promises";
-import path from "path";
 import type { AnalysisResult, CopyVariation, Language } from "./types";
 import { getBirdsAnalysisPrompt } from "./birds-prompts";
 import { defaultBirdsBrandConfig, type BirdsBrandConfig } from "./birds-defaults";
-
-const BIRDS_BRAND_CONFIG_PATH = path.join(process.cwd(), "uploads", "birds", "brand-config.json");
+import { readBrandConfigFile } from "./brand-config-store";
 
 function getClient() {
   return new Anthropic();
 }
 
 export async function loadBirdsBrandConfig(): Promise<BirdsBrandConfig> {
-  try {
-    const data = await readFile(BIRDS_BRAND_CONFIG_PATH, "utf-8");
-    return { ...defaultBirdsBrandConfig, ...JSON.parse(data) };
-  } catch {
-    return defaultBirdsBrandConfig;
-  }
+  return readBrandConfigFile("birds", defaultBirdsBrandConfig);
 }
 
 export async function analyzeBirdsReference(

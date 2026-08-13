@@ -1,21 +1,33 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { readFile } from "fs/promises";
-import path from "path";
 import { AnalysisResult, CopyVariation, BrandConfig, Language } from "./types";
 import { getAnalysisPrompt, getCopyGenerationPrompt } from "./prompts";
 import { defaultBrandConfig } from "./brand-defaults";
 import { extractJsonFromClaudeText } from "./claude-json";
-
-const BRAND_CONFIG_PATH = path.join(process.cwd(), "uploads", "brand", "brand-config.json");
+import { getBrandConfig } from "./supabase-db";
 
 function getClient() {
   return new Anthropic();
 }
 
+// Brand config lives in the Supabase brand_config table (saved by /api/brand).
+// The old filesystem path was never populated on Vercel, so prompts silently
+// ran on defaults. Cached briefly to avoid a DB query per analyze/generate.
+let brandConfigCache: { config: BrandConfig; at: number } | null = null;
+const BRAND_CONFIG_TTL_MS = 60_000;
+
+/** Call after writing brand config so this instance picks it up immediately. */
+export function invalidateBrandConfigCache() {
+  brandConfigCache = null;
+}
+
 async function loadBrandConfig(): Promise<BrandConfig> {
+  if (brandConfigCache && Date.now() - brandConfigCache.at < BRAND_CONFIG_TTL_MS) {
+    return brandConfigCache.config;
+  }
   try {
-    const data = await readFile(BRAND_CONFIG_PATH, "utf-8");
-    return { ...defaultBrandConfig, ...JSON.parse(data) };
+    const config = await getBrandConfig();
+    brandConfigCache = { config, at: Date.now() };
+    return config;
   } catch {
     return defaultBrandConfig;
   }

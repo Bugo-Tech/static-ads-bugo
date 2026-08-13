@@ -5,25 +5,17 @@
  */
 
 import Anthropic from "@anthropic-ai/sdk";
-import { readFile } from "fs/promises";
-import path from "path";
 import type { AnalysisResult, CopyVariation, Language } from "./types";
 import { getFlyAnalysisPrompt } from "./fly-prompts";
 import { defaultFlyBrandConfig, type FlyBrandConfig } from "./fly-defaults";
-
-const FLY_BRAND_CONFIG_PATH = path.join(process.cwd(), "uploads", "fly", "brand-config.json");
+import { readBrandConfigFile } from "./brand-config-store";
 
 function getClient() {
   return new Anthropic();
 }
 
 export async function loadFlyBrandConfig(): Promise<FlyBrandConfig> {
-  try {
-    const data = await readFile(FLY_BRAND_CONFIG_PATH, "utf-8");
-    return { ...defaultFlyBrandConfig, ...JSON.parse(data) };
-  } catch {
-    return defaultFlyBrandConfig;
-  }
+  return readBrandConfigFile("fly", defaultFlyBrandConfig);
 }
 
 export async function analyzeFlyReference(

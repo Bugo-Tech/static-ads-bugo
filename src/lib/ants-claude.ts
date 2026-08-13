@@ -5,25 +5,17 @@
  */
 
 import Anthropic from "@anthropic-ai/sdk";
-import { readFile } from "fs/promises";
-import path from "path";
 import type { AnalysisResult, CopyVariation, Language } from "./types";
 import { getAntsAnalysisPrompt } from "./ants-prompts";
 import { defaultAntsBrandConfig, type AntsBrandConfig } from "./ants-defaults";
-
-const ANTS_BRAND_CONFIG_PATH = path.join(process.cwd(), "uploads", "ants", "brand-config.json");
+import { readBrandConfigFile } from "./brand-config-store";
 
 function getClient() {
   return new Anthropic();
 }
 
 export async function loadAntsBrandConfig(): Promise<AntsBrandConfig> {
-  try {
-    const data = await readFile(ANTS_BRAND_CONFIG_PATH, "utf-8");
-    return { ...defaultAntsBrandConfig, ...JSON.parse(data) };
-  } catch {
-    return defaultAntsBrandConfig;
-  }
+  return readBrandConfigFile("ants", defaultAntsBrandConfig);
 }
 
 export async function analyzeAntsReference(

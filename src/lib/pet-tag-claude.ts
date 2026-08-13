@@ -5,25 +5,17 @@
  */
 
 import Anthropic from "@anthropic-ai/sdk";
-import { readFile } from "fs/promises";
-import path from "path";
 import type { AnalysisResult, CopyVariation, Language } from "./types";
 import { getPetTagAnalysisPrompt } from "./pet-tag-prompts";
 import { defaultPetTagBrandConfig, type PetTagBrandConfig } from "./pet-tag-defaults";
-
-const PET_TAG_BRAND_CONFIG_PATH = path.join(process.cwd(), "uploads", "pet-tag", "brand-config.json");
+import { readBrandConfigFile } from "./brand-config-store";
 
 function getClient() {
   return new Anthropic();
 }
 
 export async function loadPetTagBrandConfig(): Promise<PetTagBrandConfig> {
-  try {
-    const data = await readFile(PET_TAG_BRAND_CONFIG_PATH, "utf-8");
-    return { ...defaultPetTagBrandConfig, ...JSON.parse(data) };
-  } catch {
-    return defaultPetTagBrandConfig;
-  }
+  return readBrandConfigFile("pet-tag", defaultPetTagBrandConfig);
 }
 
 export async function analyzePetTagReference(

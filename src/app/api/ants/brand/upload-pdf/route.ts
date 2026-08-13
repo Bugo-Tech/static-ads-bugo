@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, readFile, mkdir } from "fs/promises";
-import path from "path";
 import { extractText, getDocumentProxy } from "unpdf";
 import { defaultAntsBrandConfig, type AntsBrandConfig } from "@/lib/ants-defaults";
+import { readBrandConfigFileForUpdate, writeBrandConfigFile } from "@/lib/brand-config-store";
+import { uploadFile } from "@/lib/supabase-storage";
 
-const BRAND_DIR = path.join(process.cwd(), "uploads", "ants");
-const CONFIG_FILE = path.join(BRAND_DIR, "brand-config.json");
+const SCOPE = "ants";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,8 +14,6 @@ export async function POST(request: NextRequest) {
 
     if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
     if (!file.name.endsWith(".pdf")) return NextResponse.json({ error: "Only PDF files" }, { status: 400 });
-
-    await mkdir(BRAND_DIR, { recursive: true });
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const doc = await getDocumentProxy(new Uint8Array(buffer));
@@ -28,13 +25,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Could not extract text from PDF" }, { status: 400 });
     }
 
-    let config: AntsBrandConfig;
-    try {
-      const data = await readFile(CONFIG_FILE, "utf-8");
-      config = { ...defaultAntsBrandConfig, ...JSON.parse(data) };
-    } catch {
-      config = { ...defaultAntsBrandConfig };
-    }
+    const config: AntsBrandConfig = await readBrandConfigFileForUpdate(SCOPE, defaultAntsBrandConfig);
 
     if (market === "us") {
       config.brandBookContentUS = extractedText;
@@ -42,10 +33,10 @@ export async function POST(request: NextRequest) {
       config.brandBookContent = extractedText;
     }
 
-    await writeFile(CONFIG_FILE, JSON.stringify(config, null, 2));
+    await writeBrandConfigFile(SCOPE, config);
 
     const pdfFilename = market === "us" ? "brand-book-us.pdf" : "brand-book-il.pdf";
-    await writeFile(path.join(BRAND_DIR, pdfFilename), buffer);
+    await uploadFile("references", `brand-config/${SCOPE}-${pdfFilename}`, buffer, "application/pdf");
 
     return NextResponse.json({
       success: true,

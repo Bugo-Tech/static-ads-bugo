@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { extractText, getDocumentProxy } from "unpdf";
 import { getBrandConfig, updateBrandConfig } from "@/lib/supabase-db";
+import { invalidateBrandConfigCache } from "@/lib/claude";
 import { uploadFile } from "@/lib/supabase-storage";
 import { createClient } from "@/lib/supabase/server";
 
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
     // Update brand config with extracted text
     const configKey = market === "us" ? "brandBookContentUS" : "brandBookContent";
     await updateBrandConfig({ [configKey]: text } as Record<string, string>, user.id);
+    invalidateBrandConfigCache();
 
     return NextResponse.json({
       success: true,

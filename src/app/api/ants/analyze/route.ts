@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { resizeForClaudeIfNeeded } from "@/lib/resizeImage";
 import { readFile } from "fs/promises";
 import path from "path";
 import { analyzeAntsReference } from "@/lib/ants-claude";
@@ -42,23 +43,11 @@ export async function POST(request: NextRequest) {
       }
 
       const bytes = await file.arrayBuffer();
-      let buffer = Buffer.from(bytes);
+      let buffer: Buffer = Buffer.from(bytes);
       mimeType = detectMimeType(buffer) || file.type || "image/png";
 
-      if (buffer.length > 4 * 1024 * 1024) {
-        const { execSync } = await import("child_process");
-        const tmpIn = `/tmp/ants-analyze-in-${Date.now()}.${mimeType.includes("png") ? "png" : "jpg"}`;
-        const tmpOut = `/tmp/ants-analyze-out-${Date.now()}.jpg`;
-        const { writeFileSync, readFileSync } = await import("fs");
-        writeFileSync(tmpIn, buffer);
-        execSync(
-          `sips -Z 1024 --setProperty format jpeg --setProperty formatOptions 80 "${tmpIn}" --out "${tmpOut}"`,
-          { stdio: "ignore" }
-        );
-        buffer = readFileSync(tmpOut);
-        mimeType = "image/jpeg";
-        try { execSync(`rm "${tmpIn}" "${tmpOut}"`, { stdio: "ignore" }); } catch {}
-      }
+      // Resize if over 4MB (Claude limit is 5MB, leave margin)
+      ({ buffer, mimeType } = await resizeForClaudeIfNeeded(buffer, mimeType));
 
       imageBase64 = buffer.toString("base64");
     } else {

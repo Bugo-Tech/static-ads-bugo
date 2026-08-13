@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBrandConfig, updateBrandConfig } from "@/lib/supabase-db";
+import { invalidateBrandConfigCache } from "@/lib/claude";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
@@ -24,6 +25,7 @@ export async function PUT(req: NextRequest) {
 
     const body = await req.json();
     const config = await updateBrandConfig(body, user.id);
+    invalidateBrandConfigCache();
     return NextResponse.json({ config });
   } catch (e) {
     return NextResponse.json(
