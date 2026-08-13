@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { createClient as createJsClient } from "@supabase/supabase-js";
+import { createClient as createJsClient, type SupabaseClient } from "@supabase/supabase-js";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -27,9 +27,17 @@ export async function createClient() {
   );
 }
 
+// The service client is stateless (no user session), so one instance can be
+// shared across all requests handled by a warm function instance.
+let serviceClient: SupabaseClient | null = null;
+
 export function createServiceClient() {
-  return createJsClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  if (!serviceClient) {
+    serviceClient = createJsClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { persistSession: false } }
+    );
+  }
+  return serviceClient;
 }

@@ -10,7 +10,7 @@ import {
   deleteGalleryFolder,
   mapGalleryRow,
 } from "@/lib/supabase-db";
-import { downloadAndStore, getSignedUrl, deleteFile } from "@/lib/supabase-storage";
+import { downloadAndStore, getSignedUrl, getSignedUrls, deleteFile } from "@/lib/supabase-storage";
 import { createClient } from "@/lib/supabase/server";
 import crypto from "crypto";
 
@@ -21,16 +21,18 @@ export async function GET() {
       getGalleryFolders(),
     ]);
 
-    // Generate signed URLs for each image
-    const imagesWithUrls = await Promise.all(
-      images.map(async (img) => {
-        try {
-          const signedUrl = await getSignedUrl("gallery", img.storage_path);
-          return mapGalleryRow(img, signedUrl);
-        } catch {
-          return mapGalleryRow(img);
-        }
-      })
+    // Generate signed URLs for all images in a single batch call
+    let signedUrls = new Map<string, string>();
+    try {
+      signedUrls = await getSignedUrls(
+        "gallery",
+        images.map((img) => img.storage_path).filter(Boolean)
+      );
+    } catch {
+      // Fall back to stored URLs below
+    }
+    const imagesWithUrls = images.map((img) =>
+      mapGalleryRow(img, signedUrls.get(img.storage_path))
     );
 
     return NextResponse.json({ images: imagesWithUrls, folders });

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProductImages, addProductImage, deleteProductImage } from "@/lib/supabase-db";
-import { uploadFile, deleteFile, getSignedUrl } from "@/lib/supabase-storage";
+import { uploadFile, deleteFile, getSignedUrl, getSignedUrls } from "@/lib/supabase-storage";
 import { createClient } from "@/lib/supabase/server";
 import { readProductIndex, type ProductScope } from "@/lib/productImages";
 import crypto from "crypto";
@@ -15,21 +15,21 @@ export async function GET() {
       getProductImages(SCOPE),
     ]);
 
-    // DB products with signed URLs
-    const dbWithUrls = await Promise.all(
-      dbProducts
-        .filter((p) => !p.is_seed)
-        .map(async (p) => {
-          if (p.storage_path) {
-            try {
-              const signedUrl = await getSignedUrl("products", p.storage_path);
-              return { ...p, url: signedUrl };
-            } catch {
-              return p;
-            }
-          }
-          return p;
-        })
+    // DB products with signed URLs (one batch call)
+    const nonSeed = dbProducts.filter((p) => !p.is_seed);
+    let signedUrls = new Map<string, string>();
+    try {
+      signedUrls = await getSignedUrls(
+        "products",
+        nonSeed.map((p) => p.storage_path).filter(Boolean)
+      );
+    } catch {
+      // Fall back to stored URLs
+    }
+    const dbWithUrls = nonSeed.map((p) =>
+      p.storage_path && signedUrls.has(p.storage_path)
+        ? { ...p, url: signedUrls.get(p.storage_path) }
+        : p
     );
 
     // Seed products keep their /product-images/ URLs

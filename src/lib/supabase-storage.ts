@@ -35,21 +35,91 @@ export async function downloadFile(
   return Buffer.from(await data.arrayBuffer());
 }
 
+// Signed URLs are cached per warm server instance and reused until close to
+// expiry. Reuse matters beyond saving the storage round-trip: minting a fresh
+// token on every request gives the browser a different URL each time, which
+// defeats its image cache entirely.
+const SIGNED_URL_TTL_SECONDS = 7 * 24 * 3600;
+const SIGNED_URL_REUSE_MARGIN_MS = 24 * 3600 * 1000;
+const signedUrlCache = new Map<string, { url: string; expiresAtMs: number }>();
+
+function getCachedSignedUrl(key: string): string | null {
+  const hit = signedUrlCache.get(key);
+  if (hit && hit.expiresAtMs - Date.now() > SIGNED_URL_REUSE_MARGIN_MS) {
+    return hit.url;
+  }
+  if (hit) signedUrlCache.delete(key);
+  return null;
+}
+
 /**
- * Get a signed URL for a storage file (1 hour validity).
+ * Get a signed URL for a storage file (7 days validity, cached).
  */
 export async function getSignedUrl(
   bucket: Bucket,
   path: string,
-  expiresIn = 3600
+  expiresIn = SIGNED_URL_TTL_SECONDS
 ): Promise<string> {
+  const cacheKey = `${bucket}/${path}`;
+  const cached = getCachedSignedUrl(cacheKey);
+  if (cached) return cached;
+
   const supabase = createServiceClient();
   const { data, error } = await supabase.storage
     .from(bucket)
     .createSignedUrl(path, expiresIn);
 
   if (error) throw new Error(`Signed URL failed: ${error.message}`);
+  signedUrlCache.set(cacheKey, {
+    url: data.signedUrl,
+    expiresAtMs: Date.now() + expiresIn * 1000,
+  });
   return data.signedUrl;
+}
+
+/**
+ * Get signed URLs for many storage files in one API call (7 days validity,
+ * cached). Returns a map of storage path → signed URL; paths that failed to
+ * sign are absent from the map.
+ */
+export async function getSignedUrls(
+  bucket: Bucket,
+  paths: string[],
+  expiresIn = SIGNED_URL_TTL_SECONDS
+): Promise<Map<string, string>> {
+  const result = new Map<string, string>();
+  const missing: string[] = [];
+
+  for (const path of paths) {
+    const cached = getCachedSignedUrl(`${bucket}/${path}`);
+    if (cached) {
+      result.set(path, cached);
+    } else {
+      missing.push(path);
+    }
+  }
+
+  if (missing.length > 0) {
+    const supabase = createServiceClient();
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .createSignedUrls(missing, expiresIn);
+
+    if (error) throw new Error(`Signed URLs failed: ${error.message}`);
+
+    const expiresAtMs = Date.now() + expiresIn * 1000;
+    for (const item of data ?? []) {
+      if (item.path && item.signedUrl && !item.error) {
+        result.set(item.path, item.signedUrl);
+        signedUrlCache.set(`${bucket}/${item.path}`, {
+          url: item.signedUrl,
+          expiresAtMs,
+        });
+      }
+    }
+  }
+
+  return result;
 }
 
 /**

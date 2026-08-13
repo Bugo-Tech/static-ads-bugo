@@ -25,9 +25,12 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims() verifies the session JWT locally (against cached JWKS keys)
+  // instead of a network round-trip to Supabase Auth on every request. On
+  // projects still using symmetric JWT secrets it transparently falls back to
+  // the server-side check, so behavior is unchanged there.
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (
     !user &&

@@ -3,8 +3,9 @@ import {
   getNativeAdsGallery,
   addNativeAdsImage,
   deleteNativeAdsImage,
+  mapGalleryRow,
 } from "@/lib/supabase-db";
-import { downloadAndStore, getSignedUrl, deleteFile } from "@/lib/supabase-storage";
+import { downloadAndStore, getSignedUrl, getSignedUrls, deleteFile } from "@/lib/supabase-storage";
 import { createClient } from "@/lib/supabase/server";
 import crypto from "crypto";
 
@@ -12,43 +13,28 @@ export async function GET() {
   try {
     const images = await getNativeAdsGallery();
 
-    const imagesWithUrls = await Promise.all(
-      images.map(async (img) => {
-        try {
-          const signedUrl = await getSignedUrl("gallery", img.storage_path);
-          // Map snake_case DB fields to camelCase expected by the frontend
-          const meta = (img.metadata ?? {}) as Record<string, unknown>;
-          return {
-            id: img.id,
-            filename: img.filename,
-            url: signedUrl,
-            sourceUrl: img.url,
-            prompt: img.prompt ?? meta.prompt ?? "",
-            size: img.size ?? "1:1",
-            createdAt: img.created_at,
-            description: meta.description as string | undefined,
-            pestId: meta.pestId as string | undefined,
-            vibe: meta.vibe as string | undefined,
-            batchId: meta.batchId as string | undefined,
-          };
-        } catch {
-          const meta = (img.metadata ?? {}) as Record<string, unknown>;
-          return {
-            id: img.id,
-            filename: img.filename,
-            url: img.url,
-            sourceUrl: img.url,
-            prompt: img.prompt ?? meta.prompt ?? "",
-            size: img.size ?? "1:1",
-            createdAt: img.created_at,
-            description: meta.description as string | undefined,
-            pestId: meta.pestId as string | undefined,
-            vibe: meta.vibe as string | undefined,
-            batchId: meta.batchId as string | undefined,
-          };
-        }
-      })
-    );
+    // Generate signed URLs for all images in a single batch call
+    let signedUrls = new Map<string, string>();
+    try {
+      signedUrls = await getSignedUrls(
+        "gallery",
+        images.map((img) => img.storage_path).filter(Boolean)
+      );
+    } catch {
+      // Fall back to stored URLs below
+    }
+    const imagesWithUrls = images.map((img) => {
+      // Shared snake_case→camelCase mapping + native-ads-specific extras
+      const meta = (img.metadata ?? {}) as Record<string, unknown>;
+      return {
+        ...mapGalleryRow(img, signedUrls.get(img.storage_path)),
+        prompt: img.prompt ?? meta.prompt ?? "",
+        description: meta.description as string | undefined,
+        pestId: meta.pestId as string | undefined,
+        vibe: meta.vibe as string | undefined,
+        batchId: meta.batchId as string | undefined,
+      };
+    });
 
     return NextResponse.json({ images: imagesWithUrls });
   } catch (e) {
