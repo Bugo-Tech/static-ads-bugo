@@ -12,7 +12,7 @@
  * detection, same parent-child grouping, same RegenerateModal.
  */
 
-import { useState, useEffect, DragEvent } from "react";
+import { useState, useEffect, useRef, DragEvent } from "react";
 import Link from "next/link";
 import type { PetTagGalleryImage, PetTagGalleryFolder } from "@/lib/pet-tag-gallery";
 import RegenerateModal from "../../components/RegenerateModal";
@@ -66,9 +66,11 @@ export default function PetTagGalleryPage() {
   }
 
   async function handleDeleteSelected() {
-    for (const id of selectedImages) {
-      await fetch(`/api/pet-tag/gallery?imageId=${id}`, { method: "DELETE" });
-    }
+    await Promise.all(
+      [...selectedImages].map((id) =>
+        fetch(`/api/pet-tag/gallery?imageId=${id}`, { method: "DELETE" })
+      )
+    );
     setImages((prev) => prev.filter((img) => !selectedImages.has(img.id)));
     setSelectedImages(new Set());
   }
@@ -159,9 +161,11 @@ export default function PetTagGalleryPage() {
 
   async function handleBatchFix(params: { fixInstruction?: string }) {
     const selectedImgs = images.filter((img) => selectedImages.has(img.id));
-    for (const img of selectedImgs) {
-      await handleRegenerate(img, { fixInstruction: params.fixInstruction, targetSize: img.size });
-    }
+    await Promise.all(
+      selectedImgs.map((img) =>
+        handleRegenerate(img, { fixInstruction: params.fixInstruction, targetSize: img.size })
+      )
+    );
   }
 
   function imageHasMetadata(img: PetTagGalleryImage) {
@@ -208,58 +212,94 @@ ${basePrompt}`;
     setPendingJobs((prev) => [...prev, { jobId: data.jobId, size: params.targetSize, sourceImageId: image.id }]);
   }
 
-  // Poll pending jobs
+  // Poll pending jobs. Refs keep the interval stable across state updates
+  // (recreating it on every tick reset the timer), one batched status request
+  // covers all jobs, and the gallery reloads at most once per tick.
+  const pendingJobsRef = useRef(pendingJobs);
+  pendingJobsRef.current = pendingJobs;
+  const imagesRef = useRef(images);
+  imagesRef.current = images;
+  const hasPendingJobs = pendingJobs.length > 0;
+
   useEffect(() => {
-    if (pendingJobs.length === 0) return;
+    if (!hasPendingJobs) return;
+    let inFlight = false;
     const interval = setInterval(async () => {
-      const stillPending: PendingJob[] = [];
-      for (const job of pendingJobs) {
-        try {
-          const res = await fetch(`/api/image-status?jobId=${job.jobId}`);
-          const data = await res.json();
+      if (inFlight || document.hidden) return;
+      const jobs = pendingJobsRef.current;
+      if (jobs.length === 0) return;
+      inFlight = true;
+      try {
+        const jobIds = jobs.map((j) => j.jobId).join(",");
+        const res = await fetch(`/api/image-status?jobIds=${encodeURIComponent(jobIds)}`);
+        const batch = await res.json();
+        const statuses = batch.statuses || {};
+
+        const resolved = new Set<string>();
+        let completedAny = false;
+        for (const job of jobs) {
+          const data = statuses[job.jobId];
+          if (!data) continue;
           if (data.status === "completed" && data.resultUrl) {
-            const source = images.find((img) => img.id === job.sourceImageId);
-            await fetch("/api/pet-tag/gallery", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                action: "add-image",
-                sourceUrl: data.resultUrl,
-                prompt: source?.prompt || "",
-                size: job.size,
-                angle: source?.angle || "",
-                folderId: source?.folderId || "root",
-                originalPrompt: source?.originalPrompt || source?.prompt || "",
-                referenceImageUrl: source?.referenceImageUrl || "",
-                productImageId: source?.productImageId,
-                productImageLabel: source?.productImageLabel,
-                productImageIds: source?.productImageIds || (source?.productImageId ? [source.productImageId] : []),
-                copyVariation: source?.copyVariation,
-                sourceImageId: job.sourceImageId,
-              }),
-            });
-            await loadGallery();
+            // Per-job try/catch: one failed save must not block the others
+            // from resolving (a shared failure would re-save them next tick,
+            // duplicating gallery entries).
+            try {
+              // Find the source image to copy metadata
+              const source = imagesRef.current.find((img) => img.id === job.sourceImageId);
+              await fetch("/api/pet-tag/gallery", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  action: "add-image",
+                  sourceUrl: data.resultUrl,
+                  prompt: source?.prompt || "",
+                  size: job.size,
+                  angle: source?.angle || "",
+                  folderId: source?.folderId || "root",
+                  originalPrompt: source?.originalPrompt || source?.prompt || "",
+                  referenceImageUrl: source?.referenceImageUrl || "",
+                  productImageId: source?.productImageId,
+                  productImageLabel: source?.productImageLabel,
+                  productImageIds: source?.productImageIds || (source?.productImageId ? [source.productImageId] : []),
+                  copyVariation: source?.copyVariation,
+                  sourceImageId: job.sourceImageId,
+                }),
+              });
+              resolved.add(job.jobId);
+              completedAny = true;
+            } catch {
+              // Save failed — keep this job pending and retry next tick
+            }
           } else if (data.status === "failed") {
             // Drop failed jobs silently
-          } else {
-            stillPending.push(job);
+            resolved.add(job.jobId);
           }
-        } catch {
-          stillPending.push(job);
         }
+        if (completedAny) {
+          try {
+            await loadGallery();
+          } catch {
+            // Reload failure must not prevent resolved jobs from clearing
+          }
+        }
+        if (resolved.size > 0) {
+          setPendingJobs((prev) => prev.filter((j) => !resolved.has(j.jobId)));
+        }
+      } catch {
+        // retry on next tick
+      } finally {
+        inFlight = false;
       }
-      setPendingJobs(stillPending);
     }, 5000);
     return () => clearInterval(interval);
-  }, [pendingJobs, images]);
+  }, [hasPendingJobs]);
 
   async function handleDownloadSelected() {
-    for (const id of selectedImages) {
-      const img = images.find((i) => i.id === id);
-      if (img) {
-        await handleDownload(img.url, img.filename);
-      }
-    }
+    const selected = [...selectedImages]
+      .map((id) => images.find((i) => i.id === id))
+      .filter((img): img is PetTagGalleryImage => !!img);
+    await Promise.all(selected.map((img) => handleDownload(img.url, img.filename)));
   }
 
   return (

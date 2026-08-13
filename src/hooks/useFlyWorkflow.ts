@@ -263,10 +263,37 @@ export function useFlyWorkflow() {
     hydratedRef.current = true;
   }, []);
 
+  // Persist on state change, but only after the initial hydration step
+  // (otherwise the empty initial state would overwrite any saved state).
+  // Debounced: stringifying the whole workflow synchronously on every
+  // keystroke/poll update blocks the main thread.
+  const persistTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const latestStateRef = useRef(state);
   useEffect(() => {
+    latestStateRef.current = state;
     if (!hydratedRef.current) return;
-    persistState(state);
+    if (persistTimerRef.current) clearTimeout(persistTimerRef.current);
+    persistTimerRef.current = setTimeout(() => {
+      persistTimerRef.current = null;
+      persistState(latestStateRef.current);
+    }, 500);
   }, [state]);
+
+  // Flush any pending write when the page is left or the hook unmounts.
+  useEffect(() => {
+    const flush = () => {
+      if (persistTimerRef.current && hydratedRef.current) {
+        clearTimeout(persistTimerRef.current);
+        persistTimerRef.current = null;
+        persistState(latestStateRef.current);
+      }
+    };
+    window.addEventListener("pagehide", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      flush();
+    };
+  }, []);
 
   const addReferences = useCallback(
     (files: File[]) => dispatch({ type: "ADD_REFERENCES", files }),
