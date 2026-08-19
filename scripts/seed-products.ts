@@ -33,6 +33,7 @@ const SCOPES = [
   { scope: "birds", dir: "birds-products" },
   { scope: "fly", dir: "fly-products" },
   { scope: "pet-tag", dir: "pet-tag-products" },
+  { scope: "guard", dir: "guard-products" },
 ] as const;
 
 async function main() {

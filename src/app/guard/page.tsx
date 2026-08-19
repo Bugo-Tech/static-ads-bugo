@@ -1,21 +1,23 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useWorkflow } from "@/context/WorkflowContext";
-import { useAuth } from "@/context/AuthContext";
-import { createClient } from "@/lib/supabase/client";
+import { useGuardWorkflowContext } from "@/context/GuardWorkflowContext";
 import { WorkflowStep, needsHebrewCompanion } from "@/lib/types";
-import UploadZone from "./components/UploadZone";
-import ReferenceCard from "./components/ReferenceCard";
-import LanguageSelector from "./components/LanguageSelector";
-import ProductLibrary from "./components/ProductLibrary";
-import AnalysisPanel from "./components/AnalysisPanel";
-import CopyEditor from "./components/CopyEditor";
-import PromptEditor from "./components/PromptEditor";
-import GenerationCard from "./components/GenerationCard";
-import BatchProgress from "./components/BatchProgress";
-import ProductSelector from "./components/ProductSelector";
+import UploadZone from "../components/UploadZone";
+import ReferenceCard from "../components/ReferenceCard";
+import LanguageSelector from "../components/LanguageSelector";
+import AnalysisPanel from "../components/AnalysisPanel";
+import CopyEditor from "../components/CopyEditor";
+import PromptEditor from "../components/PromptEditor";
+import BatchProgress from "../components/BatchProgress";
+
+interface GuardProductImage {
+  id: string;
+  filename: string;
+  url: string;
+  label: string;
+}
 
 const steps: { key: WorkflowStep; label: string; number: number }[] = [
   { key: "upload", label: "Upload", number: 1 },
@@ -24,9 +26,8 @@ const steps: { key: WorkflowStep; label: string; number: number }[] = [
   { key: "generate", label: "Generate", number: 4 },
 ];
 
-export default function Home() {
+export default function GuardHome() {
   const router = useRouter();
-  const { isAdmin, profile, signOut } = useAuth();
   const {
     state,
     addReferences,
@@ -40,16 +41,30 @@ export default function Home() {
     replaceCopyVariations,
     selectVariation,
     toggleVariationForGeneration,
-    addGeneration,
-    setSelectedProductId,
     setEnhancedVariationMatching,
     reset,
     confirmNavigation,
-  } = useWorkflow();
+  } = useGuardWorkflowContext();
 
-  // Auto-translate to Hebrew when entering the review step with foreign-language
-  // variations that are missing hebrewText (handles restored localStorage state
-  // and any case where the fresh-analyze auto-translate failed silently).
+  const [productImages, setProductImages] = useState<GuardProductImage[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/guard/products")
+      .then((r) => r.json())
+      .then((data) => {
+        setProductImages(data.products || []);
+        // If exactly one product image exists and nothing's selected yet, auto-select it.
+        if ((data.products?.length || 0) === 1 && state.selectedProductImageIds.length === 0) {
+          setSelectedProducts([data.products[0].id]);
+        }
+      })
+      .catch(() => setProductImages([]))
+      .finally(() => setProductsLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-translate to Hebrew when entering review step with foreign-language variations
   useEffect(() => {
     if (state.step !== "review") return;
     if (!needsHebrewCompanion(state.language)) return;
@@ -74,93 +89,47 @@ export default function Home() {
               direction: "foreign-to-hebrew",
             }),
           });
-          if (!tres.ok) {
-            console.error("[translate-copy] backfill HTTP", tres.status, await tres.text());
-            return;
-          }
+          if (!tres.ok) return;
           const tdata = await tres.json();
           if (tdata?.variations) {
             replaceCopyVariations(ref.id, tdata.variations);
           }
-        } catch (err) {
-          console.error("[translate-copy] backfill failed:", err);
-        }
+        } catch {}
       })();
     });
-    // We intentionally only depend on step + language; running once per step-entry
-    // is enough. The check above prevents re-runs for already-translated refs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.step, state.language]);
 
-  // Auto-sync copy edits back to history (debounced 1.5s after last change).
-  // Only refs that already have a server-side historyId get synced.
-  useEffect(() => {
-    if (state.references.length === 0) return;
-    const refsWithHistory = state.references.filter(
-      (r) => r.historyId && r.copyVariations,
-    );
-    if (refsWithHistory.length === 0) return;
-
-    const timeoutId = setTimeout(() => {
-      refsWithHistory.forEach((ref) => {
-        fetch("/api/history", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "update",
-            id: ref.historyId,
-            updates: { copyVariations: ref.copyVariations },
-          }),
-        }).catch(() => {});
-      });
-    }, 1500);
-
-    return () => clearTimeout(timeoutId);
-  }, [state.references]);
-
-  // --- Upload & Analyze ---
   async function handleAnalyze() {
     if (state.references.length === 0) return;
     setStep("analyze");
 
-    // Upload + Analyze each reference (upload first, then analyze with the uploaded URL)
     const promises = state.references.map(async (ref) => {
-      // Step 1: Upload to Supabase Storage
       let uploadedUrl = ref.uploadedUrl;
-      let storagePath = "";
       if (!uploadedUrl) {
         updateReference(ref.id, { status: "uploading" });
         try {
-          const supabase = createClient();
-          const ext = ref.file.name.split(".").pop() || "png";
-          storagePath = `${crypto.randomUUID()}.${ext}`;
-          const { error: uploadError } = await supabase.storage
-            .from("references")
-            .upload(storagePath, ref.file);
-          if (uploadError) throw new Error(uploadError.message);
-          const { data: urlData } = await supabase.storage
-            .from("references")
-            .createSignedUrl(storagePath, 3600);
-          uploadedUrl = urlData?.signedUrl || "";
+          const uploadForm = new FormData();
+          uploadForm.append("file", ref.file);
+          const uploadRes = await fetch("/api/upload", { method: "POST", body: uploadForm });
+          const uploadData = await uploadRes.json();
+          uploadedUrl = uploadData.url;
           updateReference(ref.id, { uploadedUrl });
-        } catch (err) {
-          updateReference(ref.id, { status: "error", error: err instanceof Error ? err.message : "Upload failed" });
+        } catch {
+          updateReference(ref.id, { status: "error", error: "Upload failed" });
           return;
         }
       }
 
-      // Step 2: Analyze — send storagePath/storageBucket so the server fetches from Supabase
       updateReference(ref.id, { status: "analyzing" });
       try {
-        const res = await fetch("/api/analyze", {
+        const analyzeForm = new FormData();
+        analyzeForm.append("file", ref.file);
+        analyzeForm.append("language", state.language);
+
+        const res = await fetch("/api/guard/analyze", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            storagePath,
-            storageBucket: "references",
-            language: state.language,
-            productId: state.selectedProductId,
-          }),
+          body: analyzeForm,
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Analysis failed");
@@ -172,9 +141,6 @@ export default function Home() {
           selectedVariationId: data.copyVariations?.[0]?.id,
         });
 
-        // Auto-translate to Hebrew for foreign-language batches (ar/de/ru/fr only).
-        // Fire-and-forget — never blocks the review step; never affects adaptedText
-        // (image-generation source of truth) or the Hebrew/English flows.
         if (needsHebrewCompanion(state.language) && data.copyVariations?.length) {
           (async () => {
             try {
@@ -187,45 +153,12 @@ export default function Home() {
                   direction: "foreign-to-hebrew",
                 }),
               });
-              if (!tres.ok) {
-                const errText = await tres.text();
-                console.error("[translate-copy] HTTP", tres.status, errText);
-                return;
-              }
+              if (!tres.ok) return;
               const tdata = await tres.json();
-              if (tdata?.variations) {
-                console.log("[translate-copy] auto-translation applied for ref", ref.id);
-                replaceCopyVariations(ref.id, tdata.variations);
-              } else {
-                console.error("[translate-copy] unexpected response shape", tdata);
-              }
-            } catch (err) {
-              console.error("[translate-copy] auto-translate failed:", err);
-            }
+              if (tdata?.variations) replaceCopyVariations(ref.id, tdata.variations);
+            } catch {}
           })();
         }
-
-        // Auto-save to history; capture the entry id so subsequent edits can sync.
-        fetch("/api/history", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "add",
-            referencePreviewUrl: ref.previewUrl,
-            uploadedUrl: uploadedUrl || "",
-            analysis: data.analysis,
-            prompt: data.analysis.suggestedPrompt,
-            copyVariations: data.copyVariations,
-            language: state.language,
-          }),
-        })
-          .then((r) => r.json())
-          .then((histData) => {
-            if (histData?.entry?.id) {
-              updateReference(ref.id, { historyId: histData.entry.id });
-            }
-          })
-          .catch(() => {}); // silently save
       } catch (err) {
         updateReference(ref.id, {
           status: "error",
@@ -238,7 +171,6 @@ export default function Home() {
     setStep("review");
   }
 
-  // --- Generate (runs in background, doesn't block UI) ---
   async function handleGenerate() {
     setStep("generate");
 
@@ -262,7 +194,7 @@ export default function Home() {
             selectedVariations.flatMap((variation) =>
               sizes.map(async (size) => {
                 try {
-                  const res = await fetch("/api/generate-image", {
+                  const res = await fetch("/api/guard/generate-image", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -273,6 +205,7 @@ export default function Home() {
                       copyVariation: variation,
                       enhancedVariationMatching: state.enhancedVariationMatching,
                       enforceCleanLayout: true,
+                      language: state.language,
                     }),
                   });
                   const data = await res.json().catch(() => ({}));
@@ -282,7 +215,7 @@ export default function Home() {
                       size,
                       variationId: variation?.id || "",
                       status: "failed" as const,
-                      error: data.error || `HTTP ${res.status}: failed to submit`,
+                      error: data.error || `HTTP ${res.status}`,
                     };
                   }
                   return {
@@ -292,8 +225,6 @@ export default function Home() {
                     status: "queued" as const,
                   };
                 } catch (err) {
-                  // Per-job catch — keeps Promise.all from rejecting and losing
-                  // sibling jobs that succeeded.
                   return {
                     jobId: `error-${size}-${variation?.id}-${Date.now()}`,
                     size,
@@ -329,114 +260,52 @@ export default function Home() {
     (r.generations || []).every((g) => g.status === "completed" || g.status === "failed")
   );
 
+  function toggleProductSelect(id: string) {
+    const current = new Set(state.selectedProductImageIds);
+    if (current.has(id)) current.delete(id);
+    else current.add(id);
+    setSelectedProducts(Array.from(current));
+  }
+
   return (
     <div className="min-h-screen bg-surface">
       {/* Header */}
       <header className="border-b border-border bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-sm font-bold text-white">
-              B
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-600 text-sm font-bold text-white">
+              🦟
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900">Bugo Ad Generator</h1>
-              <p className="text-xs text-gray-500">Batch static ad creation</p>
+              <h1 className="text-lg font-bold text-gray-900">Bugo Guard Ad Generator</h1>
+              <p className="text-xs text-gray-500">Bugo Guard — essential-oil rodent repellent sachets</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => router.push("/history")}
+              onClick={() => router.push("/")}
               className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              Previous Ads
+              ← Main App (Bugo)
             </button>
             <button
-              onClick={() => router.push("/auto-pull")}
-              className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100 transition-colors"
-            >
-              Auto Pull
-            </button>
-            <button
-              onClick={() => router.push("/replicator")}
-              className="rounded-lg border border-purple-200 bg-purple-50 px-3 py-1.5 text-sm font-medium text-purple-700 hover:bg-purple-100 transition-colors"
-            >
-              Replicator
-            </button>
-            <button
-              onClick={() => router.push("/pet-tag")}
-              className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100 transition-colors"
-            >
-              Pet Tag
-            </button>
-            <button
-              onClick={() => router.push("/fly")}
-              className="rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-sm font-medium text-cyan-700 hover:bg-cyan-100 transition-colors"
-            >
-              Bugo Fly
-            </button>
-            <button
-              onClick={() => router.push("/birds")}
-              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-100 transition-colors"
-            >
-              Bugo Birds
-            </button>
-            <button
-              onClick={() => router.push("/ants")}
-              className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-1.5 text-sm font-medium text-orange-700 hover:bg-orange-100 transition-colors"
-            >
-              Bugo Ants
-            </button>
-            <button
-              onClick={() => router.push("/guard")}
-              className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-sm font-medium text-violet-700 hover:bg-violet-100 transition-colors"
-            >
-              Bugo Guard
-            </button>
-            <button
-              onClick={() => router.push("/native-ads")}
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-sm font-medium text-rose-700 hover:bg-rose-100 transition-colors"
-            >
-              Native Ads
-            </button>
-            <button
-              onClick={() => router.push("/gallery")}
+              onClick={() => router.push("/guard/gallery")}
               className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              Gallery
+              Bugo Guard Gallery
             </button>
             <button
-              onClick={() => router.push("/brand")}
+              onClick={() => router.push("/guard/brand")}
               className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              Brand Settings
+              Bugo Guard Brand
             </button>
             <button
               onClick={() => confirmNavigation(reset)}
-              className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-sm font-medium text-violet-700 hover:bg-violet-100 transition-colors"
             >
               New Batch
             </button>
-            {isAdmin && (
-              <button
-                onClick={() => router.push("/settings")}
-                className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-              >
-                Settings
-              </button>
-            )}
-            {profile && (
-              <span className="text-sm text-gray-500 hidden lg:inline">
-                {profile.email}
-              </span>
-            )}
-            {signOut && (
-              <button
-                onClick={() => signOut()}
-                className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-              >
-                Sign Out
-              </button>
-            )}
           </div>
         </div>
       </header>
@@ -451,29 +320,23 @@ export default function Home() {
               return (
                 <div key={s.key} className="flex items-center gap-2">
                   {i > 0 && (
-                    <div className={`h-px w-8 ${isPast ? "bg-primary" : "bg-border"}`} />
+                    <div className={`h-px w-8 ${isPast ? "bg-violet-600" : "bg-border"}`} />
                   )}
                   <div className="flex items-center gap-1.5">
                     <div
                       className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
                         isActive
-                          ? "bg-primary text-white"
+                          ? "bg-violet-600 text-white"
                           : isPast
-                          ? "bg-primary/20 text-primary"
+                          ? "bg-violet-100 text-violet-700"
                           : "bg-gray-100 text-gray-400"
                       }`}
                     >
-                      {isPast ? (
-                        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      ) : (
-                        s.number
-                      )}
+                      {isPast ? "✓" : s.number}
                     </div>
                     <span
                       className={`text-sm font-medium ${
-                        isActive ? "text-gray-900" : isPast ? "text-primary" : "text-gray-400"
+                        isActive ? "text-gray-900" : isPast ? "text-violet-700" : "text-gray-400"
                       }`}
                     >
                       {s.label}
@@ -486,7 +349,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Main content */}
       <main className="mx-auto max-w-7xl px-6 py-8">
         {/* Step 1: Upload */}
         {(state.step === "upload" || state.step === "analyze") && (
@@ -495,7 +357,7 @@ export default function Home() {
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Upload Reference Ads</h2>
                 <p className="text-sm text-gray-500">
-                  Upload competitor ads or ads from other niches as references
+                  Upload competitor rodent/mouse-repellent ads as references.
                 </p>
               </div>
               <LanguageSelector value={state.language} onChange={setLanguage} />
@@ -508,31 +370,70 @@ export default function Home() {
 
             {state.references.length > 0 && (
               <>
+                {/* References */}
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                   {state.references.map((ref) => (
-                    <ReferenceCard
-                      key={ref.id}
-                      reference={ref}
-                      onRemove={removeReference}
-                    />
+                    <ReferenceCard key={ref.id} reference={ref} onRemove={removeReference} />
                   ))}
                 </div>
 
-                <ProductSelector
-                  selectedProductId={state.selectedProductId}
-                  onSelect={setSelectedProductId}
-                />
-
-                <ProductLibrary
-                  selectedIds={state.selectedProductImageIds}
-                  onSelectionChange={setSelectedProducts}
-                />
+                {/* Product image selector — GLOBAL (applies to all references). */}
+                <div className="rounded-xl border border-border bg-white p-4">
+                  <h3 className="mb-2 text-sm font-bold text-gray-700">
+                    Bugo Guard product image (used in all references)
+                  </h3>
+                  {!productsLoading && productImages.length === 0 && (
+                    <div className="rounded-lg border border-violet-200 bg-violet-50 p-3">
+                      <p className="text-sm text-violet-800">
+                        ⚠️ No Bugo Guard product images uploaded yet.{" "}
+                        <button
+                          onClick={() => router.push("/guard/brand")}
+                          className="underline font-medium"
+                        >
+                          Upload on the brand page
+                        </button>{" "}
+                        before generating, or leave empty to keep reference imagery as-is.
+                      </p>
+                    </div>
+                  )}
+                  {productImages.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {productImages.map((prod) => {
+                        const selected = state.selectedProductImageIds.includes(prod.id);
+                        return (
+                          <button
+                            key={prod.id}
+                            onClick={() => toggleProductSelect(prod.id)}
+                            className={`flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition-all ${
+                              selected
+                                ? "border-violet-600 bg-violet-50"
+                                : "border-border bg-white hover:border-violet-300"
+                            }`}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={prod.url}
+                              alt={prod.label}
+                              className="h-16 w-16 rounded object-contain"
+                            />
+                            <span className="text-xs font-medium text-gray-700 max-w-[80px] truncate">
+                              {prod.label}
+                            </span>
+                            {selected && (
+                              <span className="text-xs font-bold text-violet-700">✓ in use</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
 
                 <div className="flex justify-end">
                   <button
                     onClick={handleAnalyze}
                     disabled={!canAnalyze}
-                    className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="rounded-xl bg-violet-600 px-6 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Analyze {state.references.length} Reference{state.references.length !== 1 ? "s" : ""}
                   </button>
@@ -542,15 +443,13 @@ export default function Home() {
           </div>
         )}
 
-        {/* Step 3: Review Copy */}
+        {/* Step 3: Review */}
         {state.step === "review" && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Review & Edit Copy</h2>
-                <p className="text-sm text-gray-500">
-                  Review the generated copy variations and edit as needed
-                </p>
+                <p className="text-sm text-gray-500">Review the generated copy variations and edit as needed</p>
               </div>
               <div className="flex items-center gap-3">
                 <LanguageSelector value={state.language} onChange={setLanguage} />
@@ -566,8 +465,8 @@ export default function Home() {
             {state.references.map((ref) => (
               <div key={ref.id} className="space-y-4 rounded-2xl border border-border bg-white p-6">
                 <div className="flex gap-6">
-                  {/* Reference image thumbnail */}
                   <div className="w-48 flex-shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={ref.previewUrl}
                       alt="Reference"
@@ -576,17 +475,16 @@ export default function Home() {
                     {ref.analysis && (
                       <div className="mt-2">
                         <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                          ref.analysis.niche === "pest-control"
-                            ? "bg-green-100 text-green-700"
+                          (ref.analysis.niche as string) === "rodent"
+                            ? "bg-violet-100 text-violet-700"
                             : "bg-blue-100 text-blue-700"
                         }`}>
-                          {ref.analysis.niche === "pest-control" ? "Same Niche" : "Cross-Niche"}
+                          {(ref.analysis.niche as string) === "rodent" ? "Same Niche" : "Cross-Niche"}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  {/* Analysis + Prompt + Copy */}
                   <div className="flex-1 space-y-4">
                     {ref.analysis && <AnalysisPanel analysis={ref.analysis} />}
 
@@ -611,7 +509,6 @@ export default function Home() {
                           updateCopySectionHebrew(ref.id, vId, sId, text)
                         }
                         onSyncHebrewToForeign={async (vId) => {
-                          console.log("[page] onSyncHebrewToForeign called for variation", vId);
                           if (!needsHebrewCompanion(state.language)) throw new Error(`Language ${state.language} not supported`);
                           const variation = ref.copyVariations?.find((v) => v.id === vId);
                           if (!variation) throw new Error(`Variation ${vId} not found`);
@@ -624,23 +521,16 @@ export default function Home() {
                               direction: "hebrew-to-foreign",
                             }),
                           });
-                          console.log("[page] translate-copy response status:", res.status);
-                          if (!res.ok) {
-                            const errText = await res.text();
-                            throw new Error(`HTTP ${res.status}: ${errText.slice(0, 200)}`);
-                          }
+                          if (!res.ok) throw new Error(`HTTP ${res.status}`);
                           const tdata = await res.json();
                           if (tdata?.variations?.length && ref.copyVariations) {
                             const updated = ref.copyVariations.map((v) =>
                               v.id === vId ? tdata.variations[0] : v
                             );
                             replaceCopyVariations(ref.id, updated);
-                          } else {
-                            throw new Error("Unexpected response shape");
                           }
                         }}
                         onSyncForeignToHebrew={async (vId) => {
-                          console.log("[page] onSyncForeignToHebrew called for variation", vId);
                           if (!needsHebrewCompanion(state.language)) throw new Error(`Language ${state.language} not supported`);
                           const variation = ref.copyVariations?.find((v) => v.id === vId);
                           if (!variation) throw new Error(`Variation ${vId} not found`);
@@ -653,19 +543,13 @@ export default function Home() {
                               direction: "foreign-to-hebrew",
                             }),
                           });
-                          console.log("[page] translate-copy response status:", res.status);
-                          if (!res.ok) {
-                            const errText = await res.text();
-                            throw new Error(`HTTP ${res.status}: ${errText.slice(0, 200)}`);
-                          }
+                          if (!res.ok) throw new Error(`HTTP ${res.status}`);
                           const tdata = await res.json();
                           if (tdata?.variations?.length && ref.copyVariations) {
                             const updated = ref.copyVariations.map((v) =>
                               v.id === vId ? tdata.variations[0] : v
                             );
                             replaceCopyVariations(ref.id, updated);
-                          } else {
-                            throw new Error("Unexpected response shape");
                           }
                         }}
                         language={state.language}
@@ -680,7 +564,7 @@ export default function Home() {
               <label className="flex items-center gap-2 cursor-pointer">
                 <div
                   className={`relative h-5 w-9 rounded-full transition-colors ${
-                    state.enhancedVariationMatching ? "bg-primary" : "bg-gray-300"
+                    state.enhancedVariationMatching ? "bg-violet-600" : "bg-gray-300"
                   }`}
                   onClick={() => setEnhancedVariationMatching(!state.enhancedVariationMatching)}
                 >
@@ -691,12 +575,11 @@ export default function Home() {
                   />
                 </div>
                 <span className="text-sm text-gray-600">Enhanced variation matching</span>
-                <span className="text-xs text-gray-400">(match visuals to each variation&apos;s text)</span>
               </label>
               <button
                 onClick={handleGenerate}
                 disabled={!canGenerate}
-                className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-xl bg-violet-600 px-6 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Generate {totalToGenerate} Ad{totalToGenerate !== 1 ? "s" : ""}
               </button>
@@ -709,15 +592,13 @@ export default function Home() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Generating Ads</h2>
-                <p className="text-sm text-gray-500">
-                  Your ads are being generated via Nano Banana
-                </p>
+                <h2 className="text-xl font-bold text-gray-900">Generating Bugo Guard Ads</h2>
+                <p className="text-sm text-gray-500">Your ads are being generated via Nano Banana</p>
               </div>
               {allDone && (
                 <button
                   onClick={reset}
-                  className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-primary-dark"
+                  className="rounded-xl bg-violet-600 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-violet-700"
                 >
                   Start New Batch
                 </button>
@@ -728,12 +609,47 @@ export default function Home() {
 
             <div className="space-y-4">
               {state.references.map((ref) => (
-                <GenerationCard
-                  key={ref.id}
-                  reference={ref}
-                  onAddGeneration={addGeneration}
-                  selectedProductImageIds={state.selectedProductImageIds}
-                />
+                <div key={ref.id} className="rounded-2xl border border-border bg-white p-4">
+                  <div className="flex gap-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={ref.previewUrl}
+                      alt="Reference"
+                      className="h-24 w-24 rounded-lg border border-border object-cover"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">
+                        {(ref.generations || []).filter((g) => g.status === "completed").length} /{" "}
+                        {(ref.generations || []).length} generations completed
+                      </p>
+                      {ref.error && <p className="mt-1 text-xs text-red-600">{ref.error}</p>}
+                      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                        {(ref.generations || []).map((g) => (
+                          <div
+                            key={g.jobId}
+                            className="rounded-lg border border-border bg-gray-50 p-2 text-center"
+                          >
+                            {g.resultUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={g.resultUrl}
+                                alt={`${g.size}`}
+                                className="aspect-square w-full rounded object-cover"
+                              />
+                            ) : (
+                              <div className="aspect-square w-full flex items-center justify-center text-xs text-gray-400">
+                                {g.status === "queued" && "Queued..."}
+                                {g.status === "processing" && "Generating..."}
+                                {g.status === "failed" && "✗ Failed"}
+                              </div>
+                            )}
+                            <p className="mt-1 text-xs text-gray-500">{g.size}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>

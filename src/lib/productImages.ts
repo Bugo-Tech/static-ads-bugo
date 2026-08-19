@@ -28,7 +28,7 @@ export interface StoredProduct {
 }
 
 /** One per product catalog in the app. */
-export type ProductScope = "main" | "ants" | "birds" | "fly" | "pet-tag";
+export type ProductScope = "main" | "ants" | "birds" | "fly" | "pet-tag" | "guard";
 
 /** Directory name shared by the seed store and the uploads store. */
 const SCOPE_DIRS: Record<ProductScope, string> = {
@@ -37,6 +37,7 @@ const SCOPE_DIRS: Record<ProductScope, string> = {
   birds: "birds-products",
   fly: "fly-products",
   "pet-tag": "pet-tag-products",
+  guard: "guard-products",
 };
 
 /** API prefix that serves a scope's files, e.g. "/api/ants/products/file/". */
@@ -46,6 +47,7 @@ const SCOPE_ROUTES: Record<ProductScope, string> = {
   birds: "/api/birds/products/file/",
   fly: "/api/fly/products/file/",
   "pet-tag": "/api/pet-tag/products/file/",
+  guard: "/api/guard/products/file/",
 };
 
 const INDEX_FILE = "index.json";

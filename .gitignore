@@ -85,3 +85,6 @@ next-env.d.ts
 # claude code working folders
 /claude
 .claude
+
+# supabase CLI scratch
+supabase/.temp/
