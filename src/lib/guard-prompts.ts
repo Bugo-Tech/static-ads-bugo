@@ -153,9 +153,10 @@ The "suggestedPrompt" must be 600-1500 words. Include:
 2. **BACKGROUND**: exact gradient / colors with hex codes / direction
 3. **EVERY TEXT ELEMENT** described separately top-to-bottom — exact ${lang} text in quotes, font, color hex, position. If reference has a 12-month calendar ring, list all 12 ${language === "he" ? `Hebrew months in order: ${HEBREW_MONTHS}` : `${lang} months in order"`}.
 4. **PRODUCT**:
-   - ${brand.productName} is a small, flat scented SACHET (pouch) filled with essential oils, sold in a box of 12. It is NOT an electronic device — it has no plug, no cable, no battery, no speaker, no LED, no buttons, no vents and no mounting bracket. Never draw one.
-   - If a product photo is provided as a second reference image (Image 2), use that exact image — pixel-perfect copy.
-   - NEVER overlay marketing text on top of the sachet or its box.
+   - ${brand.productName} ships as a resealable stand-up foil POUCH in Bugo blue, carrying the white "bugo" wordmark, holding 12 individual SACHETS. Each sachet is a small flat white non-woven pillow printed with the blue "bugo" logo. Ads may show the retail pouch, a single sachet, or the pouch with a sachet beside it.
+   - It is NOT an electronic device — no plug, no cable, no battery, no speaker, no LED, no buttons, no vents, no mounting bracket. Never draw one.
+   - If a product photo is provided as a second reference image (Image 2), use that exact image — pixel-perfect copy. Image 2 always wins over this description.
+   - NEVER overlay marketing text on top of the pouch or the sachet.
 5. **RODENT / HOME VISUALS** — be specific:
    - The sachet sits INSIDE an enclosed space: a kitchen cabinet, under a sink, a pantry shelf, a drawer, a storage box, a garage shelf, an attic corner, a car engine bay, an RV compartment. It is never mounted on a wall, hung outdoors, or installed like a device.
    - Mice, if depicted at all: small, ordinary house mice, realistic, alive and unharmed, kept incidental and non-graphic. No rats snarling, no gore, no corpses, no animals in traps.
@@ -210,7 +211,7 @@ Placement rule — the product appears as EXACTLY ONE presentation in your outpu
 - If Image 1 (the reference) contains a competitor rodent product (repellent pouch, snap trap, glue board, bait station, poison pellets, ultrasonic plug-in, spray bottle), REMOVE the competitor entirely (product + brand text + all its visual features per the COMPETITOR ERASURE rule above) and place Image 2 in that single position.
 - If Image 1 has no visible product, render Image 2 in a natural position consistent with the layout — resting on a shelf, tucked inside an open cabinet, beside stored food containers, or presented flat as a packshot.
 
-"ONE PRESENTATION" means: whatever Image 2 shows is rendered once. If Image 2 shows a single sachet, render one sachet. If Image 2 shows the retail box, render the box. If Image 2 shows a box with a few sachets fanned beside it, reproduce that arrangement as the single product presentation — do not multiply it, and do not scatter extra sachets around the canvas.
+"ONE PRESENTATION" means: whatever Image 2 shows is rendered once, as one arrangement. If Image 2 shows a single sachet, render one sachet. If Image 2 shows the blue retail pouch, render that pouch. If Image 2 shows the pouch with a sachet standing beside it, reproduce that exact pairing as the single product presentation — do not multiply it, do not add a third element, and do not scatter extra sachets around the canvas.
 
 FORBIDDEN: adding extra sachets beyond what Image 2 shows, additional product graphics, duplicate copies of the packshot, "decorative" Image 2 elements in corners, or trust-seal badges that weren't in the reference.
 
@@ -218,11 +219,11 @@ Any text printed on competitor packaging in Image 1 is DISCARDED — never trans
 
     rules.push(`${brand.productName.toUpperCase()} VISUAL FIDELITY — STRICT (PIXEL-PERFECT COPY):
 The product in your output MUST look identical to Image 2 in EVERY visual aspect:
-- Same shape (do NOT render it as a different product, alternative form factor, or generic "rodent repellent" interpretation. If Image 2 is a flat rectangular pouch, the output is a flat rectangular pouch. If Image 2 is a cardboard box, the output is that box. Not "similar" — IDENTICAL.)
-- Same color and material finish (same fabric/paper/foil texture, same color hex)
+- Same shape (do NOT render it as a different product, alternative form factor, or generic "rodent repellent" interpretation. If Image 2 is a stand-up foil pouch, the output is that pouch. If Image 2 is a flat non-woven sachet, the output is that sachet. Not "similar" — IDENTICAL.)
+- Same color and material finish (same foil sheen or non-woven fabric texture, same blue hex, same white)
 - Same proportions and silhouette
-- Same logo/branding and label artwork placement on the product face (only ${brand.productName}'s branding from Image 2 — never competitor branding)
-- Same details: seam or stitching, drawstring or seal, printed graphics, label position — all match Image 2
+- Same logo/branding and label artwork placement on the product face (only ${brand.productName}'s branding from Image 2 — never competitor branding). The Hebrew text printed on the pouch is part of the packaging artwork: reproduce it as it appears in Image 2, and never treat it as ad copy to rewrite or translate.
+- Same details: zip seal, seam, rounded corners, printed badges, logo position — all match Image 2
 
 DO NOT redraw, redesign, reimagine, mirror, flip, or "improve" the product. DO NOT use Image 1's product as a template and "rebrand" it — that is forbidden. DO NOT substitute an electronic device for the sachet under any circumstances. The output product is Image 2 placed into the layout, NOT Image 1's product with a different sticker.
 

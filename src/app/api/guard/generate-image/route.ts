@@ -4,7 +4,7 @@ import { uploadToPublicHost } from "@/lib/imageHost";
 import path from "path";
 import {
   resolveProductFile,
-  resolveProductFileById,
+  resolveProductImageUrl,
   type ProductScope,
 } from "@/lib/productImages";
 import { loadGuardBrandConfig } from "@/lib/guard-claude";
@@ -65,12 +65,15 @@ export async function POST(request: NextRequest) {
     let publicProductUrl: string | undefined;
     if (!isCrossSize && includeProduct && Array.isArray(productImageIds) && productImageIds.length > 0) {
       try {
-        const filepath = await resolveProductFileById(PRODUCT_SCOPE, productImageIds[0]);
-        if (filepath) {
-          publicProductUrl = await uploadToPublicHost(filepath);
+        // Resolves Supabase-uploaded products as well as committed seed files.
+        publicProductUrl = await resolveProductImageUrl(PRODUCT_SCOPE, productImageIds[0]);
+        if (!publicProductUrl) {
+          console.warn(
+            `[guard] product ${productImageIds[0]} found in neither Supabase nor disk — generating without a product image`
+          );
         }
-      } catch {
-        // No product image found — continue without
+      } catch (err) {
+        console.warn("[guard] product image lookup failed:", err);
       }
     }
 

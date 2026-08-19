@@ -1,18 +1,26 @@
 /**
- * Single mapping between product images on disk and every place that uses them.
+ * Single mapping between product images and every place that uses them.
  *
- * Product images live in two stores:
+ * Product images live in three stores:
  *
- *   seed     public/product-images/<dir>/  — committed to git, ships with a clone
- *   uploads  uploads/<dir>/                — gitignored, written at runtime
+ *   supabase  product_images rows + bytes in the `products` bucket — where the
+ *             UI writes uploads since the Supabase migration
+ *   seed      public/product-images/<dir>/  — committed to git, ships with a clone
+ *   uploads   uploads/<dir>/                — gitignored, pre-migration leftovers
  *
- * Reads merge both (uploads wins on id collision) so a fresh clone has the
- * product catalog immediately while runtime uploads keep working. Writes only
- * ever touch `uploads/` — the seed store is read-only because it is in git.
+ * Disk reads merge seed + uploads (uploads wins on id collision) so a fresh
+ * clone has the catalog immediately. Disk writes only ever touch `uploads/` —
+ * the seed store is read-only because it is in git.
+ *
+ * Server-only: this module reaches Supabase with the service-role client. Every
+ * importer is an API route; never import it from a "use client" component.
  */
 
 import { readFile, writeFile, mkdir, unlink, stat } from "fs/promises";
 import path from "path";
+import { getProductImages } from "@/lib/supabase-db";
+import { getSignedUrl } from "@/lib/supabase-storage";
+import { uploadToPublicHost } from "@/lib/imageHost";
 
 /**
  * Fields every scope's product type shares. Each caller keeps its own type
@@ -165,6 +173,36 @@ export async function resolveProductFileById(
 ): Promise<string | null> {
   const product = (await readProductIndex<StoredProduct>(scope)).find((p) => p.id === id);
   return product ? resolveProductFile(scope, product.filename) : null;
+}
+
+/**
+ * Public URL for a product image, ready to hand to the external image generator.
+ *
+ * Use this rather than resolveProductFileById() when you need a URL. Products
+ * uploaded through the UI live only in Supabase — they have no file on disk and
+ * no entry in the on-disk index — so the disk-only lookup returned null for
+ * them and callers silently generated with no product image at all.
+ *
+ * Supabase-backed products return their signed URL directly: the generator
+ * already consumes signed Supabase URLs for reference images, so no re-hosting
+ * is needed. Committed seed products still have to be pushed to a public host,
+ * since a local path is not reachable from outside.
+ *
+ * Returns undefined when the id matches nothing in either store.
+ */
+export async function resolveProductImageUrl(
+  scope: ProductScope,
+  id: string
+): Promise<string | undefined> {
+  try {
+    const row = (await getProductImages(scope)).find((p) => p.id === id);
+    if (row?.storage_path) return await getSignedUrl("products", row.storage_path);
+  } catch {
+    // Supabase unreachable or the row is gone — fall back to the disk stores.
+  }
+
+  const filepath = await resolveProductFileById(scope, id);
+  return filepath ? uploadToPublicHost(filepath) : undefined;
 }
 
 /** Records a newly uploaded product. Only touches the uploads store. */
