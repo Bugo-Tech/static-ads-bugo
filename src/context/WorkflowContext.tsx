@@ -75,7 +75,7 @@ interface JobStatus {
 
 export function WorkflowProvider({ children }: { children: ReactNode }) {
   const workflow = useAdWorkflow();
-  const { state, updateGeneration, addGeneration } = workflow;
+  const { state, updateGeneration } = workflow;
 
   // Compute active state
   const activeJobs = useMemo(
@@ -159,36 +159,20 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
                 if (qc.passed) {
                   updateGeneration(ref.id, gen.jobId, { qcStatus: "passed" });
                 } else {
+                  // Report the failure and stop. Fixing is the user's call —
+                  // the Fix button on each gallery card runs the same flow.
+                  //
+                  // This used to auto-submit a regeneration here. That made the
+                  // poller a producer of jobs, not just a reader of them: each
+                  // fix was polled, QC'd, and could spawn another, with no depth
+                  // limit. It also passed the generated image back as its own
+                  // reference, so every round drifted further from the original
+                  // — which is exactly what QC grades — making the next failure
+                  // more likely. One request could snowball into 30-40 images.
                   updateGeneration(ref.id, gen.jobId, {
                     qcStatus: "failed",
                     qcIssues: qc.issues || [],
                   });
-                  // Auto-fix: trigger a regeneration with the fix instruction
-                  if (qc.fixInstruction && (qc.severity === "critical" || qc.severity === "moderate")) {
-                    updateGeneration(ref.id, gen.jobId, { qcStatus: "fixing" });
-                    try {
-                      const fixRes = await fetch("/api/generate-image", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          prompt: `CRITICAL OVERRIDE — APPLY BEFORE ANYTHING ELSE:\n${qc.fixInstruction}\n\n---\n\n${ref.prompt || ""}`,
-                          referenceImageUrl: data.resultUrl,
-                          productImageIds: state.selectedProductImageIds || [],
-                          size: gen.size,
-                          copyVariation: ref.copyVariations?.find((v) => v.id === gen.variationId),
-                        }),
-                      });
-                      const fixData = await fixRes.json();
-                      if (fixRes.ok && fixData.jobId) {
-                        addGeneration(ref.id, {
-                          jobId: fixData.jobId,
-                          size: gen.size as "1:1" | "9:16",
-                          variationId: gen.variationId,
-                          status: "queued",
-                        });
-                      }
-                    } catch {}
-                  }
                 }
               }
             } catch {
@@ -237,7 +221,7 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
         }
       }
     }
-  }, [state.references, state.selectedProductImageIds, updateGeneration, addGeneration]);
+  }, [state.references, state.selectedProductImageIds, updateGeneration]);
 
   usePolling(pollGenerations, {
     enabled: activeJobs.length > 0,
