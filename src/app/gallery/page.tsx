@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, DragEvent } from "react";
 import Link from "next/link";
 import { GalleryImage, GalleryFolder } from "@/lib/types";
 import RegenerateModal from "../components/RegenerateModal";
-import { useAuth } from "@/context/AuthContext";
 
 interface PendingJob {
   jobId: string;
@@ -13,7 +12,6 @@ interface PendingJob {
 }
 
 export default function GalleryPage() {
-  const { isAdmin } = useAuth();
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [folders, setFolders] = useState<GalleryFolder[]>([]);
   const [activeFolder, setActiveFolder] = useState<string>("root");
@@ -45,24 +43,53 @@ export default function GalleryPage() {
 
   const filteredImages = images.filter((img) => img.folderId === activeFolder);
 
+  // Deleting removes the storage object as well as the DB row — there is no
+  // undo and no trash. Every delete path confirms first, and only updates the
+  // UI once the server actually reports success.
   async function handleDelete(id: string) {
-    await fetch(`/api/gallery?imageId=${id}`, { method: "DELETE" });
-    setImages((prev) => prev.filter((img) => img.id !== id));
-    setSelectedImages((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
+    if (!confirm("למחוק את התמונה הזו לצמיתות? לא ניתן לשחזר.")) return;
+    try {
+      const res = await fetch(`/api/gallery?imageId=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setImages((prev) => prev.filter((img) => img.id !== id));
+      setSelectedImages((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    } catch (err) {
+      alert(`מחיקה נכשלה: ${err instanceof Error ? err.message : String(err)}`);
+    }
   }
 
   async function handleDeleteSelected() {
-    await Promise.all(
-      [...selectedImages].map((id) =>
-        fetch(`/api/gallery?imageId=${id}`, { method: "DELETE" })
-      )
+    const ids = [...selectedImages];
+    if (ids.length === 0) return;
+    if (!confirm(`למחוק ${ids.length} תמונות לצמיתות? לא ניתן לשחזר.`)) return;
+
+    const results = await Promise.all(
+      ids.map(async (id) => {
+        try {
+          const res = await fetch(`/api/gallery?imageId=${encodeURIComponent(id)}`, {
+            method: "DELETE",
+          });
+          return res.ok ? id : null;
+        } catch {
+          return null;
+        }
+      })
     );
-    setImages((prev) => prev.filter((img) => !selectedImages.has(img.id)));
-    setSelectedImages(new Set());
+
+    // Drop only what the server confirmed; anything that failed stays on screen
+    // so it doesn't look deleted when it isn't.
+    const deleted = new Set(results.filter((id): id is string => id !== null));
+    setImages((prev) => prev.filter((img) => !deleted.has(img.id)));
+    setSelectedImages((prev) => new Set([...prev].filter((id) => !deleted.has(id))));
+
+    const failed = ids.length - deleted.size;
+    if (failed > 0) alert(`${failed} מתוך ${ids.length} תמונות לא נמחקו.`);
   }
 
   async function handleCreateFolder() {
@@ -81,12 +108,22 @@ export default function GalleryPage() {
   }
 
   async function handleDeleteFolder(id: string) {
-    await fetch(`/api/gallery?folderId=${id}`, { method: "DELETE" });
-    setFolders((prev) => prev.filter((f) => f.id !== id));
-    setImages((prev) =>
-      prev.map((img) => (img.folderId === id ? { ...img, folderId: "root" } : img))
-    );
-    if (activeFolder === id) setActiveFolder("root");
+    const name = folders.find((f) => f.id === id)?.name ?? "";
+    if (!confirm(`למחוק את התיקייה "${name}"? התמונות שבתוכה יעברו לתיקייה הראשית.`))
+      return;
+    try {
+      const res = await fetch(`/api/gallery?folderId=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setFolders((prev) => prev.filter((f) => f.id !== id));
+      setImages((prev) =>
+        prev.map((img) => (img.folderId === id ? { ...img, folderId: "root" } : img))
+      );
+      if (activeFolder === id) setActiveFolder("root");
+    } catch (err) {
+      alert(`מחיקת התיקייה נכשלה: ${err instanceof Error ? err.message : String(err)}`);
+    }
   }
 
   async function handleMoveImage(imageId: string, folderId: string) {
@@ -318,11 +355,9 @@ ${basePrompt}`;
                 <button onClick={handleDownloadSelected} className="rounded-lg bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/20">
                   Download Selected
                 </button>
-                {isAdmin && (
-                  <button onClick={handleDeleteSelected} className="rounded-lg bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-100">
-                    Delete Selected
-                  </button>
-                )}
+                <button onClick={handleDeleteSelected} className="rounded-lg bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-100">
+                  Delete Selected
+                </button>
                 <button onClick={deselectAll} className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50">
                   Deselect
                 </button>
@@ -414,16 +449,14 @@ ${basePrompt}`;
                       {images.filter((i) => i.folderId === folder.id).length}
                     </span>
                   </button>
-                  {isAdmin && (
-                    <button
-                      onClick={() => handleDeleteFolder(folder.id)}
-                      className="absolute right-1 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 opacity-0 transition-opacity hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
-                    >
-                      <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  )}
+                  <button
+                    onClick={() => handleDeleteFolder(folder.id)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 opacity-0 transition-opacity hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
+                  >
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
               ))}
             </div>
@@ -718,7 +751,6 @@ function detectImageLanguage(img: GalleryImage): { flag: string; code: string } 
 }
 
 function GalleryImageCard({ img, selectedImages, pendingJobs, onToggleSelect, onLightbox, onDelete, onDownload, onDragStart, onFix, onCrossSize, imageHasMetadata }: Omit<GroupedGridProps, "images"> & { img: GalleryImage }) {
-  const { isAdmin } = useAuth();
   const isSelected = selectedImages.has(img.id);
   return (
     <div
@@ -771,11 +803,9 @@ function GalleryImageCard({ img, selectedImages, pendingJobs, onToggleSelect, on
             <button onClick={() => onDownload(img.url, img.filename)} className="rounded p-0.5 text-gray-400 hover:bg-primary/10 hover:text-primary" title="Download">
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
             </button>
-            {isAdmin && (
-              <button onClick={() => onDelete(img.id)} className="rounded p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500" title="Delete">
-                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-              </button>
-            )}
+            <button onClick={() => onDelete(img.id)} className="rounded p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500" title="Delete">
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            </button>
           </div>
         </div>
         {pendingJobs.some((j) => j.sourceImageId === img.id) && (
