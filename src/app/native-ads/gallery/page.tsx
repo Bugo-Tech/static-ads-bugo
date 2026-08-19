@@ -158,6 +158,7 @@ export default function NativeAdsGalleryPage() {
                       alt={img.description || img.prompt.slice(0, 60)}
                       className="w-full h-full object-cover"
                       loading="lazy"
+                      decoding="async"
                     />
                     <span className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
                       {img.size}

@@ -701,7 +701,7 @@ function GalleryImageCard({ img, selectedImages, pendingJobs, onToggleSelect, on
       </button>
       <div className={`overflow-hidden bg-gray-100 cursor-pointer ${img.size === "9:16" ? "aspect-[9/16] max-h-56" : "aspect-square"}`} onClick={() => onLightbox(img)}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={img.url} alt="" className="h-full w-full object-contain" loading="lazy" />
+        <img src={img.url} alt="" className="h-full w-full object-contain" loading="lazy" decoding="async" />
       </div>
       <div className="p-1.5">
         <div className="flex items-center justify-between">
