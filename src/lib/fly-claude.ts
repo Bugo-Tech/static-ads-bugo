@@ -9,6 +9,7 @@ import type { AnalysisResult, CopyVariation, Language } from "./types";
 import { getFlyAnalysisPrompt } from "./fly-prompts";
 import { defaultFlyBrandConfig, type FlyBrandConfig } from "./fly-defaults";
 import { readBrandConfigFile } from "./brand-config-store";
+import { extractJsonFromClaudeText } from "./claude-json";
 
 function getClient() {
   return new Anthropic();
@@ -53,18 +54,22 @@ export async function analyzeFlyReference(
     ],
   });
 
+  if (response.stop_reason === "max_tokens") {
+    throw new Error(
+      "Claude's response was cut off before it finished. Try again, or simplify the reference ad."
+    );
+  }
+
   const textContent = response.content.find((c) => c.type === "text");
   if (!textContent || textContent.type !== "text") {
     throw new Error("No text response from Claude");
   }
 
-  let jsonStr = textContent.text;
-  const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (jsonMatch) {
-    jsonStr = jsonMatch[1];
-  }
-
-  const parsed = JSON.parse(jsonStr.trim());
+  // Sonnet may wrap the JSON in fences, or add a preamble/postamble, or leave a
+  // trailing comma. The main flow has used this helper for a while; the
+  // verticals were left on a fence-only match that threw on all the other
+  // cases — and the thrown SyntaxError surfaced as a blank screen.
+  const parsed = JSON.parse(extractJsonFromClaudeText(textContent.text));
 
   return {
     analysis: parsed.analysis,

@@ -29,6 +29,13 @@ import {
   type NativeVibeId,
 } from "@/lib/native-ads-defaults";
 
+// A Claude vision call with max_tokens 8192 takes 20-60s. Without this, Vercel
+// uses its default function limit (10s on Hobby) and kills the request, handing
+// the browser an HTML error page instead of JSON. 60 is the Hobby ceiling and is
+// valid on Pro too; raise to 300 on Pro if analyses still get cut off.
+export const maxDuration = 60;
+
+
 interface NativeGenerationJob {
   jobId: string;
   size: string;

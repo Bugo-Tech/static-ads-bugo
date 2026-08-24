@@ -11,6 +11,13 @@ import { loadPetTagBrandConfig } from "@/lib/pet-tag-claude";
 import { getPetTagProductRules } from "@/lib/pet-tag-prompts";
 import type { Language } from "@/lib/types";
 
+// A Claude vision call with max_tokens 8192 takes 20-60s. Without this, Vercel
+// uses its default function limit (10s on Hobby) and kills the request, handing
+// the browser an HTML error page instead of JSON. 60 is the Hobby ceiling and is
+// valid on Pro too; raise to 300 on Pro if analyses still get cut off.
+export const maxDuration = 60;
+
+
 const PRODUCT_SCOPE: ProductScope = "pet-tag";
 
 /**

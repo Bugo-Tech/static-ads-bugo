@@ -37,6 +37,18 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/api/callback")
   ) {
+    // API calls get JSON, never a redirect. A redirect here is a 307, which
+    // preserves the POST method, so fetch follows it and receives the login
+    // page as HTML with status 200 — res.ok is true and res.json() blows up on
+    // "<!doctype". That turned an expired session into an unexplained failure
+    // deep inside the workflow instead of a plain "log in again".
+    if (request.nextUrl.pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { error: "Not authenticated — your session expired. Reload the page and sign in again." },
+        { status: 401 }
+      );
+    }
+
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

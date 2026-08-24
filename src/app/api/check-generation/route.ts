@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { extractJsonFromClaudeText } from "@/lib/claude-json";
 
+// A Claude vision call with max_tokens 8192 takes 20-60s. Without this, Vercel
+// uses its default function limit (10s on Hobby) and kills the request, handing
+// the browser an HTML error page instead of JSON. 60 is the Hobby ceiling and is
+// valid on Pro too; raise to 300 on Pro if analyses still get cut off.
+export const maxDuration = 60;
+
+
 /**
  * QC Agent — compares a generated ad image against the original reference + product photo.
  * Returns pass/fail + specific issues + auto-fix instruction.

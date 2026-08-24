@@ -3,6 +3,13 @@ import Anthropic from "@anthropic-ai/sdk";
 import { Language } from "@/lib/types";
 import { getReplicatorAnalysisPrompt, ReplicatorAnalysis } from "@/lib/replicator-prompts";
 
+// A Claude vision call with max_tokens 8192 takes 20-60s. Without this, Vercel
+// uses its default function limit (10s on Hobby) and kills the request, handing
+// the browser an HTML error page instead of JSON. 60 is the Hobby ceiling and is
+// valid on Pro too; raise to 300 on Pro if analyses still get cut off.
+export const maxDuration = 60;
+
+
 /**
  * Replicator analyze endpoint — DOES NOT touch /api/analyze.
  * Detects Indoor vs Outdoor + extracts canvas text + returns translated copy.
