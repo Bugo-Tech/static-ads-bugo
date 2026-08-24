@@ -61,6 +61,12 @@ export interface ReferenceAd {
   file: File;
   previewUrl: string;
   uploadedUrl?: string;
+  /**
+   * Path of the upload inside the `references` bucket. Persisted because
+   * `uploadedUrl` is a signed URL that expires after an hour, while the path is
+   * permanent — so a re-analysis after a page reload can still be served.
+   */
+  storagePath?: string;
   status: "idle" | "uploading" | "analyzing" | "analyzed" | "generating" | "done" | "error";
   error?: string;
   analysis?: AnalysisResult;

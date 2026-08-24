@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useWorkflow } from "@/context/WorkflowContext";
 import { useAuth } from "@/context/AuthContext";
 import { createClient } from "@/lib/supabase/client";
+import { fetchJson } from "@/lib/fetchJson";
+import type { AnalysisResult, CopyVariation } from "@/lib/types";
 import { WorkflowStep, needsHebrewCompanion } from "@/lib/types";
 import UploadZone from "./components/UploadZone";
 import ReferenceCard from "./components/ReferenceCard";
@@ -127,7 +129,11 @@ export default function Home() {
     const promises = state.references.map(async (ref) => {
       // Step 1: Upload to Supabase Storage
       let uploadedUrl = ref.uploadedUrl;
-      let storagePath = "";
+      // Reuse the stored path on re-analysis. It used to be a local that was
+      // only assigned inside the upload branch, so any reference restored from
+      // localStorage (which keeps only ones that already uploaded) sent an
+      // empty path and the server answered 400 "No image provided" forever.
+      let storagePath = ref.storagePath || "";
       if (!uploadedUrl) {
         updateReference(ref.id, { status: "uploading" });
         try {
@@ -142,28 +148,46 @@ export default function Home() {
             .from("references")
             .createSignedUrl(storagePath, 3600);
           uploadedUrl = urlData?.signedUrl || "";
-          updateReference(ref.id, { uploadedUrl });
+          updateReference(ref.id, { uploadedUrl, storagePath });
         } catch (err) {
+          console.error("[analyze] upload failed:", err);
           updateReference(ref.id, { status: "error", error: err instanceof Error ? err.message : "Upload failed" });
-          return;
+          return false;
         }
       }
 
       // Step 2: Analyze — send storagePath/storageBucket so the server fetches from Supabase
       updateReference(ref.id, { status: "analyzing" });
       try {
-        const res = await fetch("/api/analyze", {
+        if (!storagePath && !uploadedUrl) {
+          throw new Error("This reference has no uploaded image — please re-upload it.");
+        }
+        const data = await fetchJson<{
+          analysis?: AnalysisResult;
+          copyVariations?: CopyVariation[];
+        }>("/api/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            storagePath,
-            storageBucket: "references",
-            language: state.language,
-            productId: state.selectedProductId,
-          }),
+          // Prefer the storage path: the server re-signs it, so it works even
+          // after the reference's own signed URL has expired.
+          body: JSON.stringify(
+            storagePath
+              ? {
+                  storagePath,
+                  storageBucket: "references",
+                  language: state.language,
+                  productId: state.selectedProductId,
+                }
+              : {
+                  imageUrl: uploadedUrl,
+                  language: state.language,
+                  productId: state.selectedProductId,
+                }
+          ),
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Analysis failed");
+        if (!data.analysis) {
+          throw new Error("The analysis came back empty. Please try again.");
+        }
         updateReference(ref.id, {
           status: "analyzed",
           analysis: data.analysis,
@@ -227,15 +251,27 @@ export default function Home() {
           })
           .catch(() => {}); // silently save
       } catch (err) {
+        console.error("[analyze] failed for reference", ref.id, err);
         updateReference(ref.id, {
           status: "error",
           error: err instanceof Error ? err.message : "Analysis failed",
         });
+        return false;
       }
+      return true;
     });
 
-    await Promise.all(promises);
-    setStep("review");
+    const results = await Promise.all(promises);
+
+    // Only move on if something actually succeeded. Advancing unconditionally
+    // is what made every failure look identical and silent: the review step
+    // renders nothing without an analysis, and the reference cards that do show
+    // the error unmount the moment the step changes.
+    if (results.some(Boolean)) {
+      setStep("review");
+    } else {
+      setStep("upload");
+    }
   }
 
   // --- Generate (runs in background, doesn't block UI) ---
@@ -565,6 +601,19 @@ export default function Home() {
 
             {state.references.map((ref) => (
               <div key={ref.id} className="space-y-4 rounded-2xl border border-border bg-white p-6">
+                {/* A failed reference used to render as an empty card with a
+                    placeholder prompt and no explanation. Show what happened. */}
+                {ref.status === "error" && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+                    <p className="text-sm font-semibold text-red-800">Analysis failed</p>
+                    <p className="mt-1 break-words text-xs text-red-700">
+                      {ref.error || "Unknown error"}
+                    </p>
+                    <p className="mt-2 text-xs text-red-600">
+                      Try again. If it keeps failing, send this message to Elad.
+                    </p>
+                  </div>
+                )}
                 <div className="flex gap-6">
                   {/* Reference image thumbnail */}
                   <div className="w-48 flex-shrink-0">

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePetTagWorkflowContext } from "@/context/PetTagWorkflowContext";
 import { WorkflowStep, needsHebrewCompanion } from "@/lib/types";
+import { readJsonResponse } from "@/lib/fetchJson";
+import type { AnalysisResult, CopyVariation } from "@/lib/types";
 import UploadZone from "../components/UploadZone";
 import ReferenceCard from "../components/ReferenceCard";
 import LanguageSelector from "../components/LanguageSelector";
@@ -121,6 +123,11 @@ export default function PetTagHome() {
       // Step 2: Analyze with the pet-tag prompts
       updateReference(ref.id, { status: "analyzing" });
       try {
+        if (!(ref.file instanceof File)) {
+          throw new Error(
+            "This reference was restored from a previous session and its image is gone — please re-upload it."
+          );
+        }
         const analyzeForm = new FormData();
         analyzeForm.append("file", ref.file);
         analyzeForm.append("language", state.language);
@@ -129,8 +136,13 @@ export default function PetTagHome() {
           method: "POST",
           body: analyzeForm,
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Analysis failed");
+        const data = await readJsonResponse<{
+          analysis?: AnalysisResult;
+          copyVariations?: CopyVariation[];
+        }>(res);
+        if (!data.analysis) {
+          throw new Error("The analysis came back empty. Please try again.");
+        }
         updateReference(ref.id, {
           status: "analyzed",
           analysis: data.analysis,
@@ -159,15 +171,21 @@ export default function PetTagHome() {
           })();
         }
       } catch (err) {
+        console.error("[analyze] failed for reference", ref.id, err);
         updateReference(ref.id, {
           status: "error",
           error: err instanceof Error ? err.message : "Analysis failed",
         });
+        return false;
       }
+      return true;
     });
 
-    await Promise.all(promises);
-    setStep("review");
+    const results = await Promise.all(promises);
+    // Advancing unconditionally is what hid every failure: the review step
+    // renders nothing without an analysis, and the cards that do show the
+    // error unmount as soon as the step changes.
+    setStep(results.some(Boolean) ? "review" : "upload");
   }
 
   // --- Generate ---
@@ -472,6 +490,19 @@ export default function PetTagHome() {
 
             {state.references.map((ref) => (
               <div key={ref.id} className="space-y-4 rounded-2xl border border-border bg-white p-6">
+                {/* A failed reference used to render as an empty card with a
+                    placeholder prompt and no explanation. Show what happened. */}
+                {ref.status === "error" && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+                    <p className="text-sm font-semibold text-red-800">Analysis failed</p>
+                    <p className="mt-1 break-words text-xs text-red-700">
+                      {ref.error || "Unknown error"}
+                    </p>
+                    <p className="mt-2 text-xs text-red-600">
+                      Try again. If it keeps failing, send this message to Elad.
+                    </p>
+                  </div>
+                )}
                 <div className="flex gap-6">
                   <div className="w-48 flex-shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
