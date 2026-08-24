@@ -4,6 +4,7 @@ import { getAnalysisPrompt, getCopyGenerationPrompt } from "./prompts";
 import { defaultBrandConfig } from "./brand-defaults";
 import { extractJsonFromClaudeText } from "./claude-json";
 import { getBrandConfig } from "./supabase-db";
+import { analyzeReferenceSplit } from "./claude-analyze";
 
 function getClient() {
   return new Anthropic();
@@ -60,44 +61,7 @@ export async function analyzeReference(
 
   const systemPrompt = getAnalysisPrompt(effectiveBrand, language, selectedProduct?.name);
 
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 8192,
-    system: systemPrompt,
-    messages: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: mimeType as "image/png" | "image/jpeg" | "image/webp" | "image/gif",
-              data: imageBase64,
-            },
-          },
-          {
-            type: "text",
-            text: "Analyze this reference ad image and generate the Nano Banana prompt and copy variations. Return the response as JSON.",
-          },
-        ],
-      },
-    ],
-  });
-
-  const textContent = response.content.find((c) => c.type === "text");
-  if (!textContent || textContent.type !== "text") {
-    throw new Error("No text response from Claude");
-  }
-
-  // Robust JSON extraction (Sonnet 4.6 may add fences, preamble, postamble,
-  // or trailing commas — see claude-json.ts).
-  const parsed = JSON.parse(extractJsonFromClaudeText(textContent.text));
-
-  return {
-    analysis: parsed.analysis,
-    copyVariations: parsed.copyVariations,
-  };
+  return analyzeReferenceSplit(client, systemPrompt, imageBase64, mimeType);
 }
 
 const LANGUAGE_FULL_NAMES: Record<Language, string> = {
@@ -178,7 +142,12 @@ Example output: {"v1::s1": "חסוך עד 50%", "v1::s2": "משלוח חינם"}
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 4096,
-    system: systemPrompt,
+    // The system prompt is identical for every call with the same brand and
+    // language — roughly 4,900 tokens of it. Caching cuts the repeat cost by
+    // ~90% and shaves a few seconds off each call. It does not solve the
+    // function timeout: output generation, not input processing, is what takes
+    // the time (measured 83.6s -> 76.6s on a real ad).
+    system: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],
     messages: [
       {
         role: "user",
@@ -247,8 +216,13 @@ export async function generateCopy(
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
-    max_tokens: 8192,
-    system: systemPrompt,
+    max_tokens: 4096,
+    // The system prompt is identical for every call with the same brand and
+    // language — roughly 4,900 tokens of it. Caching cuts the repeat cost by
+    // ~90% and shaves a few seconds off each call. It does not solve the
+    // function timeout: output generation, not input processing, is what takes
+    // the time (measured 83.6s -> 76.6s on a real ad).
+    system: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],
     messages: [
       {
         role: "user",

@@ -135,7 +135,9 @@ VARIATION 1 (var-1) MUST be a near-exact adaptation of the reference: same angle
 VARIATIONS 2-4: Different marketing angles (clean balcony / protected solar panels / humane no-harm solution / one device covers the whole facade).
 
 ## NANO BANANA PROMPT FORMAT
-The "suggestedPrompt" must be 600-1500 words. Include:
+The "suggestedPrompt" must be DENSE, not long: 400-700 words. Every sentence
+carries a concrete instruction — an exact hex code, a position, a font weight, a
+quoted string. Cut restatements and anything a renderer cannot act on. Include:
 
 1. **Opening**:
    - Same niche: "REPLICATE THE REFERENCE EXACTLY. Only changes: (1) replace brand with '${brand.productName}', (2) all visible text in ${lang}, ${dir === "RTL (right-to-left)" ? "right-aligned (RTL)" : "left-aligned (LTR)"}."

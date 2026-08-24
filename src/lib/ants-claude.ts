@@ -9,7 +9,7 @@ import type { AnalysisResult, CopyVariation, Language } from "./types";
 import { getAntsAnalysisPrompt } from "./ants-prompts";
 import { defaultAntsBrandConfig, type AntsBrandConfig } from "./ants-defaults";
 import { readBrandConfigFile } from "./brand-config-store";
-import { extractJsonFromClaudeText } from "./claude-json";
+import { analyzeReferenceSplit } from "./claude-analyze";
 
 function getClient() {
   return new Anthropic();
@@ -29,52 +29,13 @@ export async function analyzeAntsReference(
 
   const systemPrompt = getAntsAnalysisPrompt(brandConfig, language);
 
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 8192,
-    system: systemPrompt,
-    messages: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: mimeType as "image/png" | "image/jpeg" | "image/webp" | "image/gif",
-              data: imageBase64,
-            },
-          },
-          {
-            type: "text",
-            text: "Analyze this reference ad image and generate the Nano Banana prompt and copy variations adapted for the Bugo Ants gel ant trap. Return the response as JSON.",
-          },
-        ],
-      },
-    ],
-  });
-
-  if (response.stop_reason === "max_tokens") {
-    throw new Error(
-      "Claude's response was cut off before it finished. Try again, or simplify the reference ad."
-    );
-  }
-
-  const textContent = response.content.find((c) => c.type === "text");
-  if (!textContent || textContent.type !== "text") {
-    throw new Error("No text response from Claude");
-  }
-
-  // Sonnet may wrap the JSON in fences, or add a preamble/postamble, or leave a
-  // trailing comma. The main flow has used this helper for a while; the
-  // verticals were left on a fence-only match that threw on all the other
-  // cases — and the thrown SyntaxError surfaced as a blank screen.
-  const parsed = JSON.parse(extractJsonFromClaudeText(textContent.text));
-
-  return {
-    analysis: parsed.analysis,
-    copyVariations: parsed.copyVariations,
-  };
+  return analyzeReferenceSplit(
+    client,
+    systemPrompt,
+    imageBase64,
+    mimeType,
+    "the Bugo Ants ant-killing gel bait station"
+  );
 }
 
 const LANGUAGE_FULL_NAMES: Record<Language, string> = {
@@ -127,7 +88,12 @@ The JSON has the same keys as the input, with values being the ${targetLangName}
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 4096,
-    system: systemPrompt,
+    // The system prompt is identical for every call with the same brand and
+    // language — roughly 4,900 tokens of it. Caching cuts the repeat cost by
+    // ~90% and shaves a few seconds off each call. It does not solve the
+    // function timeout: output generation, not input processing, is what takes
+    // the time (measured 83.6s -> 76.6s on a real ad).
+    system: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],
     messages: [
       {
         role: "user",

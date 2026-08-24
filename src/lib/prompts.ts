@@ -156,9 +156,14 @@ Return a single JSON object with this exact structure:
 }
 
 ## NANO BANANA PROMPT FORMAT — CRITICAL
-The prompt in "suggestedPrompt" is the MOST IMPORTANT part of your output. Nano Banana needs an EXTREMELY detailed, pixel-level prompt to reproduce the reference faithfully. A vague prompt like "recreate this ad" will produce garbage.
+The prompt in "suggestedPrompt" is the MOST IMPORTANT part of your output. Nano Banana needs a precise, pixel-level prompt to reproduce the reference faithfully. A vague prompt like "recreate this ad" will produce garbage.
 
-The prompt MUST be 800-2000 words and follow this exact structure:
+Write it DENSE, not long: 400-700 words. Every sentence must carry a concrete
+instruction — an exact hex code, a position, a font weight, a quoted string.
+Cut restatements, cut hedging, cut anything a renderer cannot act on. A tight
+500-word prompt full of specifics beats a padded 1500-word one.
+
+Follow this exact structure:
 
 ### PROMPT STRUCTURE:
 1. **Opening instruction**:
