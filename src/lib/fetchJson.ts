@@ -28,12 +28,31 @@ function describeBody(body: string): string {
   const trimmed = body.trim();
   if (!trimmed) return "(empty response body)";
 
-  const snippet = trimmed.slice(0, SNIPPET_LENGTH).replace(/\s+/g, " ");
-  const looksLikeHtml = /^<(!doctype|html)/i.test(trimmed);
+  if (!/^<(!doctype|html)/i.test(trimmed)) {
+    return trimmed.slice(0, SNIPPET_LENGTH).replace(/\s+/g, " ");
+  }
 
-  return looksLikeHtml
-    ? `server returned an HTML page instead of JSON: ${snippet}`
-    : snippet;
+  // An HTML body is a platform error page. Raw markup is useless in a UI
+  // message, and the part that names the failure ("FUNCTION_INVOCATION_FAILED",
+  // "FUNCTION_INVOCATION_TIMEOUT") sits in the <title> or the visible text —
+  // past where a raw snippet would have been cut off. Pull those out instead.
+  const title = trimmed.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.trim() ?? "";
+  let text = trimmed
+    .replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&[a-z]+;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // The <title> is normally repeated in the visible text. Dropping the repeat
+  // keeps the character budget for the part that actually names the failure —
+  // "Code: FUNCTION_INVOCATION_FAILED" sits at the end of these pages.
+  if (title && text.startsWith(title)) {
+    text = text.slice(title.length).trim();
+  }
+
+  const detail = [title, text].filter(Boolean).join(" — ").slice(0, SNIPPET_LENGTH);
+  return `server returned an HTML page instead of JSON: ${detail || "(no readable text)"}`;
 }
 
 /**
